@@ -68,8 +68,8 @@ function App() {
     let animationId: number;
     let lastDancerTime = 0;
     let lastTeacherTime = 0;
-    const dancerInterval = 1000 / 15; // 15 FPS for dancer
-    const teacherInterval = 1000 / 10; // 10 FPS for teacher
+    const dancerInterval = 1000 / 60; // 60 FPS for dancer (smoother skeleton)
+    const teacherInterval = 1000 / 30; // 30 FPS for teacher
 
     const processLoop = async (timestamp: number) => {
       // Process dancer frame
@@ -188,7 +188,7 @@ function App() {
 
     let animationId: number;
     let lastProcessTime = 0;
-    const targetInterval = 1000 / 15; // 15 FPS for calibration
+    const targetInterval = 1000 / 60; // 30 FPS for calibration (smoother skeleton)
 
     const processLoop = async (timestamp: number) => {
       if (timestamp - lastProcessTime >= targetInterval && webcamRef.current) {
@@ -217,18 +217,18 @@ function App() {
   return (
     <div className="h-screen bg-gray-900 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+      <header className="bg-gray-800 border-b border-gray-700 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-white">
+          <h1 className="text-lg sm:text-xl font-bold text-white">
             AI Dance Training
           </h1>
           {appState !== 'setup' && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {isPoseLoading && (
-                <span className="text-sm text-yellow-400">Loading AI model...</span>
+                <span className="text-xs sm:text-sm text-yellow-400">Loading AI...</span>
               )}
               {isPoseReady && (
-                <span className="text-sm text-green-400">AI Ready</span>
+                <span className="text-xs sm:text-sm text-green-400">AI Ready</span>
               )}
             </div>
           )}
@@ -236,21 +236,21 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className={`flex-1 p-6 min-h-0 ${appState === 'setup' ? 'overflow-auto' : 'overflow-hidden'}`}>
+      <main className={`flex-1 p-3 sm:p-6 min-h-0 ${appState === 'setup' ? 'overflow-auto' : 'overflow-hidden'}`}>
         {appState === 'setup' && (
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-3">
+            <div className="text-center mb-4 sm:mb-8">
+              <h2 className="text-xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
                 Welcome to AI Dance Training
               </h2>
-              <p className="text-gray-400">
+              <p className="text-sm sm:text-base text-gray-400">
                 Load a dance video, follow along, and get real-time feedback on your moves
               </p>
             </div>
 
             {/* Video Upload */}
-            <div className="bg-gray-800 rounded-2xl p-8 mb-8">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 mb-4 sm:mb-8">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
                 1. Load Teacher Video
               </h3>
               {teacherVideoUrl ? (
@@ -278,12 +278,12 @@ function App() {
             </div>
 
             {/* Options */}
-            <div className="bg-gray-800 rounded-2xl p-8 mb-8">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 mb-4 sm:mb-8">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
                 2. Options
               </h3>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Camera Select */}
                 {devices.length > 0 && (
                   <div>
@@ -333,7 +333,7 @@ function App() {
               onClick={handleStartSession}
               disabled={!teacherVideoUrl}
               className={`
-                w-full py-4 rounded-xl font-semibold text-lg transition-all
+                w-full py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all
                 ${teacherVideoUrl
                   ? 'bg-blue-600 hover:bg-blue-500 text-white'
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
@@ -351,10 +351,10 @@ function App() {
 
         {(appState === 'calibration' || appState === 'training') && (
           <div className="h-full flex flex-col min-h-0">
-            {/* Split View */}
-            <div className="flex-1 grid grid-cols-2 gap-4 mb-4 min-h-0">
-              {/* Camera Panel (Left) */}
-              <div className="relative min-h-[400px]">
+            {/* Split View - stacked on mobile, side-by-side on desktop */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4 min-h-0">
+              {/* Camera Panel (Top on mobile, Left on desktop) */}
+              <div className="relative min-h-[200px] sm:min-h-[300px] lg:min-h-[400px]">
                 <CameraPanel
                   videoRef={webcamRef}
                   isActive={isCameraActive}
@@ -377,7 +377,7 @@ function App() {
                 )}
               </div>
 
-              {/* Teacher Panel (Right) */}
+              {/* Teacher Panel (Bottom on mobile, Right on desktop) */}
               <TeacherVideoPanel
                 videoUrl={teacherVideoUrl}
                 isPlaying={isPlaying}
@@ -390,21 +390,21 @@ function App() {
 
             {/* Controls */}
             {appState === 'training' && (
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center gap-2 sm:gap-4">
                 <button
                   onClick={handlePlayPause}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-medium flex items-center gap-2"
+                  className="px-4 sm:px-8 py-2 sm:py-3 bg-blue-600 hover:bg-blue-500 rounded-lg sm:rounded-xl text-white font-medium flex items-center gap-2 text-sm sm:text-base"
                 >
                   {isPlaying ? (
                     <>
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
                       </svg>
                       Pause
                     </>
                   ) : (
                     <>
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                       Play
@@ -413,7 +413,7 @@ function App() {
                 </button>
                 <button
                   onClick={handleSessionEnd}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-500 rounded-xl text-white font-medium"
+                  className="px-4 sm:px-8 py-2 sm:py-3 bg-red-600 hover:bg-red-500 rounded-lg sm:rounded-xl text-white font-medium text-sm sm:text-base"
                 >
                   End Session
                 </button>

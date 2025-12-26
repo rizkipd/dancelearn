@@ -9,6 +9,60 @@ let globalPosePromise: Promise<Pose> | null = null;
 let globalResultsCallback: ((results: Results, source: 'dancer' | 'teacher') => void) | null = null;
 let currentProcessingSource: 'dancer' | 'teacher' = 'dancer';
 
+// Smoothing for dancer keypoints to reduce trembling
+// Simple one-pole low-pass filter (very fast, minimal lag)
+let previousKeypoints: Keypoint[] | null = null;
+const SMOOTHING = 0.6; // 0.6 = 60% current + 40% previous (responsive but stable)
+const JITTER_THRESHOLD = 0.008; // Ignore movements smaller than 0.8% of screen
+
+function smoothKeypoints(current: Keypoint[]): Keypoint[] {
+  if (!previousKeypoints) {
+    previousKeypoints = current;
+    return current;
+  }
+
+  const smoothed = current.map((kp, idx) => {
+    const prev = previousKeypoints![idx];
+    if (!prev) return kp;
+
+    const currentVis = kp.visibility ?? 0;
+    const prevVis = prev.visibility ?? 0;
+
+    // If visibility is low, don't smooth
+    if (currentVis < 0.5 || prevVis < 0.5) {
+      return kp;
+    }
+
+    // Calculate movement
+    const dx = kp.x - prev.x;
+    const dy = kp.y - prev.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // If movement is tiny (jitter), keep previous position
+    if (distance < JITTER_THRESHOLD) {
+      return { ...kp, x: prev.x, y: prev.y, z: prev.z };
+    }
+
+    // Apply simple smoothing: blend current with previous
+    return {
+      ...kp,
+      x: kp.x * SMOOTHING + prev.x * (1 - SMOOTHING),
+      y: kp.y * SMOOTHING + prev.y * (1 - SMOOTHING),
+      z: kp.z !== undefined && prev.z !== undefined
+        ? kp.z * SMOOTHING + prev.z * (1 - SMOOTHING)
+        : kp.z,
+    };
+  });
+
+  previousKeypoints = smoothed;
+  return smoothed;
+}
+
+// Export for external reset if needed
+export function resetSmoothing() {
+  previousKeypoints = null;
+}
+
 async function getOrCreatePose(): Promise<Pose> {
   if (globalPoseInstance) {
     return globalPoseInstance;
@@ -86,13 +140,18 @@ export function usePoseEstimation(options: UsePoseEstimationOptions = {}): UsePo
       if (!isMountedRef.current) return;
 
       if (results.poseLandmarks) {
-        const keypoints: Keypoint[] = results.poseLandmarks.map((lm, idx) => ({
+        let keypoints: Keypoint[] = results.poseLandmarks.map((lm, idx) => ({
           x: lm.x,
           y: lm.y,
           z: lm.z,
           visibility: lm.visibility,
           name: POSE_LANDMARK_NAMES[idx],
         }));
+
+        // Apply smoothing only to dancer to reduce trembling
+        if (source === 'dancer') {
+          keypoints = smoothKeypoints(keypoints);
+        }
 
         const angles = calculateAngles(keypoints);
         const confidence = calculateConfidence(keypoints);
