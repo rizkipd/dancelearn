@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Keypoint } from '../types/pose';
+import { Keypoint, ScoreResult } from '../types/pose';
 import { LANDMARKS } from '../engines/PoseNormalizer';
 
 interface CameraPanelProps {
@@ -9,6 +9,30 @@ interface CameraPanelProps {
   showSkeleton?: boolean;
   keypoints?: Keypoint[];
   onVideoReady?: () => void;
+  score?: ScoreResult | null; // For color-coded skeleton
+}
+
+// Map landmarks to body parts for color coding
+const LANDMARK_BODY_PART: Record<number, 'arms' | 'legs' | 'torso'> = {
+  [LANDMARKS.LEFT_SHOULDER]: 'torso',
+  [LANDMARKS.RIGHT_SHOULDER]: 'torso',
+  [LANDMARKS.LEFT_HIP]: 'torso',
+  [LANDMARKS.RIGHT_HIP]: 'torso',
+  [LANDMARKS.LEFT_ELBOW]: 'arms',
+  [LANDMARKS.LEFT_WRIST]: 'arms',
+  [LANDMARKS.RIGHT_ELBOW]: 'arms',
+  [LANDMARKS.RIGHT_WRIST]: 'arms',
+  [LANDMARKS.LEFT_KNEE]: 'legs',
+  [LANDMARKS.LEFT_ANKLE]: 'legs',
+  [LANDMARKS.RIGHT_KNEE]: 'legs',
+  [LANDMARKS.RIGHT_ANKLE]: 'legs',
+};
+
+// Get color based on score: green (good) -> yellow (ok) -> red (needs work)
+function getScoreColor(score: number): string {
+  if (score >= 80) return '#00ff88'; // Green - good
+  if (score >= 60) return '#ffcc00'; // Yellow - ok
+  return '#ff4444'; // Red - needs work
 }
 
 const SKELETON_CONNECTIONS: [number, number][] = [
@@ -38,6 +62,7 @@ export function CameraPanel({
   showSkeleton = true,
   keypoints,
   onVideoReady,
+  score,
 }: CameraPanelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,8 +104,22 @@ export function CameraPanel({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw skeleton connections
-    ctx.strokeStyle = '#00ff88';
+    // Helper to transform coordinates
+    const transformX = (x: number) => {
+      const tx = x * video.videoWidth * scale + offsetX;
+      return mirrored ? canvas.width - tx : tx;
+    };
+    const transformY = (y: number) => y * video.videoHeight * scale + offsetY;
+
+    // Helper to get color for a body part
+    const getBodyPartColor = (landmarkIdx: number): string => {
+      if (!score) return '#00ff88'; // Default green if no score
+      const bodyPart = LANDMARK_BODY_PART[landmarkIdx];
+      if (!bodyPart) return '#00ff88';
+      return getScoreColor(score.bodyParts[bodyPart]);
+    };
+
+    // COLOR-CODED DRAWING: Draw skeleton connections with body part colors
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
 
@@ -91,48 +130,40 @@ export function CameraPanel({
       if (!start || !end) continue;
       if ((start.visibility ?? 0) < 0.5 || (end.visibility ?? 0) < 0.5) continue;
 
-      // Convert normalized coords to video coords, then to canvas coords
-      let startX = start.x * video.videoWidth * scale + offsetX;
-      let startY = start.y * video.videoHeight * scale + offsetY;
-      let endX = end.x * video.videoWidth * scale + offsetX;
-      let endY = end.y * video.videoHeight * scale + offsetY;
-
-      if (mirrored) {
-        startX = canvas.width - startX;
-        endX = canvas.width - endX;
-      }
-
+      // Use color based on the body part of the connection
+      ctx.strokeStyle = getBodyPartColor(startIdx);
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
+      ctx.moveTo(transformX(start.x), transformY(start.y));
+      ctx.lineTo(transformX(end.x), transformY(end.y));
       ctx.stroke();
     }
 
-    // Draw keypoints
+    // COLOR-CODED DRAWING: Draw keypoint circles with body part colors
     const relevantLandmarks = Object.values(LANDMARKS);
+
     for (const idx of relevantLandmarks) {
       const kp = keypoints[idx];
       if (!kp || (kp.visibility ?? 0) < 0.5) continue;
 
-      let x = kp.x * video.videoWidth * scale + offsetX;
-      let y = kp.y * video.videoHeight * scale + offsetY;
+      const x = transformX(kp.x);
+      const y = transformY(kp.y);
+      const color = getBodyPartColor(idx);
 
-      if (mirrored) {
-        x = canvas.width - x;
-      }
-
+      // Fill circle
+      ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, 2 * Math.PI);
-      ctx.fillStyle = '#00ff88';
       ctx.fill();
+
+      // Stroke circle
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 2;
       ctx.stroke();
     }
-  }, [keypoints, showSkeleton, mirrored, videoRef]);
+  }, [keypoints, showSkeleton, mirrored, videoRef, score]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full min-h-[400px] bg-gray-900 rounded-lg overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-full min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-gray-900 rounded-lg overflow-hidden">
       <video
         ref={videoRef}
         autoPlay

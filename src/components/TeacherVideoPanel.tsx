@@ -10,9 +10,12 @@ interface TeacherVideoPanelProps {
   onEnded?: () => void;
   onPosesExtracted?: (poses: PoseFrame[]) => void;
   playbackRate?: number;
+  onPlaybackRateChange?: (rate: number) => void;
   currentPose?: PoseFrame | null;
   videoRef?: React.RefObject<HTMLVideoElement>;
 }
+
+const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5];
 
 const SKELETON_CONNECTIONS: [number, number][] = [
   [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
@@ -36,6 +39,7 @@ export function TeacherVideoPanel({
   onTimeUpdate,
   onEnded,
   playbackRate = 1,
+  onPlaybackRateChange,
   currentPose,
   videoRef: externalVideoRef,
 }: TeacherVideoPanelProps) {
@@ -78,6 +82,7 @@ export function TeacherVideoPanel({
   }, []);
 
   // Draw skeleton overlay - canvas matches video dimensions directly
+  // BATCHED DRAWING for better performance
   useEffect(() => {
     if (!showSkeleton || !currentPose || !canvasRef.current || !videoRef.current) return;
 
@@ -98,10 +103,11 @@ export function TeacherVideoPanel({
 
     const keypoints = currentPose.keypoints;
 
-    // Draw connections
+    // BATCHED: Draw all connections in a single path
     ctx.strokeStyle = '#ff6b6b';
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
+    ctx.beginPath();
 
     for (const [startIdx, endIdx] of SKELETON_CONNECTIONS) {
       const start = keypoints[startIdx];
@@ -110,26 +116,42 @@ export function TeacherVideoPanel({
       if (!start || !end) continue;
       if ((start.visibility ?? 0) < 0.5 || (end.visibility ?? 0) < 0.5) continue;
 
-      ctx.beginPath();
       ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
       ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
-      ctx.stroke();
     }
+    ctx.stroke();
 
-    // Draw keypoints
+    // BATCHED: Draw all keypoint circles
     const relevantLandmarks = Object.values(LANDMARKS);
+
+    // First pass: fill all circles
+    ctx.fillStyle = '#ff6b6b';
+    ctx.beginPath();
     for (const idx of relevantLandmarks) {
       const kp = keypoints[idx];
       if (!kp || (kp.visibility ?? 0) < 0.5) continue;
 
-      ctx.beginPath();
-      ctx.arc(kp.x * videoWidth, kp.y * videoHeight, 6, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ff6b6b';
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      const x = kp.x * videoWidth;
+      const y = kp.y * videoHeight;
+      ctx.moveTo(x + 6, y);
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
     }
+    ctx.fill();
+
+    // Second pass: stroke all circles
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (const idx of relevantLandmarks) {
+      const kp = keypoints[idx];
+      if (!kp || (kp.visibility ?? 0) < 0.5) continue;
+
+      const x = kp.x * videoWidth;
+      const y = kp.y * videoHeight;
+      ctx.moveTo(x + 6, y);
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+    }
+    ctx.stroke();
   }, [currentPose, showSkeleton, videoRef]);
 
   const formatTime = (seconds: number) => {
@@ -211,6 +233,25 @@ export function TeacherVideoPanel({
           <span className="text-xs text-gray-400 w-12 text-right">
             {formatTime(duration)}
           </span>
+
+          {/* Playback speed control */}
+          {onPlaybackRateChange && (
+            <div className="flex items-center gap-1 ml-2 border-l border-gray-600 pl-3">
+              {PLAYBACK_SPEEDS.map((speed) => (
+                <button
+                  key={speed}
+                  onClick={() => onPlaybackRateChange(speed)}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${
+                    playbackRate === speed
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  }`}
+                >
+                  {speed}x
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

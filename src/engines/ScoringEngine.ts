@@ -7,7 +7,16 @@ const ANGLE_WEIGHTS = {
   torso: 0.25,
 };
 
-const MIN_CONFIDENCE_THRESHOLD = 0.5;
+// Increased confidence threshold for more accurate scoring
+const MIN_CONFIDENCE_THRESHOLD = 0.65;
+
+// Tolerance windows in radians (converted from degrees)
+// Small errors within tolerance get minimal penalty
+const TOLERANCE_WINDOWS = {
+  arms: 25 * (Math.PI / 180),   // 25 degrees tolerance for arms
+  legs: 30 * (Math.PI / 180),   // 30 degrees tolerance for legs
+  torso: 15 * (Math.PI / 180),  // 15 degrees tolerance for torso
+};
 
 function angleDifference(a1: number, a2: number): number {
   let diff = Math.abs(a1 - a2);
@@ -15,13 +24,31 @@ function angleDifference(a1: number, a2: number): number {
   return diff;
 }
 
+// Non-linear scoring: small errors = minimal penalty, large errors = heavy penalty
+function calculateAngleScore(diff: number, tolerance: number): number {
+  if (diff <= tolerance) {
+    // Within tolerance: score 85-100 (small linear penalty)
+    return 100 - (diff / tolerance) * 15;
+  }
+
+  // Outside tolerance: exponential penalty
+  const excessDiff = diff - tolerance;
+  const maxExcess = Math.PI - tolerance;
+  const ratio = Math.min(excessDiff / maxExcess, 1);
+
+  // Exponential curve: starts at 85, drops faster as error increases
+  return Math.max(0, 85 * Math.pow(1 - ratio, 1.5));
+}
+
 function calculateBodyPartScore(
   dancerAngles: number[],
   teacherAngles: number[],
-  confidence: number[]
+  confidence: number[],
+  bodyPart: 'arms' | 'legs' | 'torso'
 ): number {
   if (dancerAngles.length === 0 || teacherAngles.length === 0) return 0;
 
+  const tolerance = TOLERANCE_WINDOWS[bodyPart];
   let totalScore = 0;
   let validCount = 0;
 
@@ -30,11 +57,12 @@ function calculateBodyPartScore(
     if (conf < MIN_CONFIDENCE_THRESHOLD) continue;
 
     const diff = angleDifference(dancerAngles[i], teacherAngles[i]);
-    const maxDiff = Math.PI; // Maximum possible difference
-    const score = Math.max(0, 1 - diff / maxDiff) * 100;
+    const score = calculateAngleScore(diff, tolerance);
 
-    totalScore += score * conf;
-    validCount += conf;
+    // Weight by confidence squared (low confidence = much less impact)
+    const confWeight = conf * conf;
+    totalScore += score * confWeight;
+    validCount += confWeight;
   }
 
   return validCount > 0 ? totalScore / validCount : 0;
@@ -48,9 +76,9 @@ export function compareFrames(
   const teacherParts = getBodyPartAngles(teacherPose.angles);
   const confParts = getBodyPartAngles(dancerPose.confidence);
 
-  const armsScore = calculateBodyPartScore(dancerParts.arms, teacherParts.arms, confParts.arms);
-  const legsScore = calculateBodyPartScore(dancerParts.legs, teacherParts.legs, confParts.legs);
-  const torsoScore = calculateBodyPartScore(dancerParts.torso, teacherParts.torso, confParts.torso);
+  const armsScore = calculateBodyPartScore(dancerParts.arms, teacherParts.arms, confParts.arms, 'arms');
+  const legsScore = calculateBodyPartScore(dancerParts.legs, teacherParts.legs, confParts.legs, 'legs');
+  const torsoScore = calculateBodyPartScore(dancerParts.torso, teacherParts.torso, confParts.torso, 'torso');
 
   const overallScore = Math.round(
     armsScore * ANGLE_WEIGHTS.arms +

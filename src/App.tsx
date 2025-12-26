@@ -24,6 +24,7 @@ function App() {
     mirrored: true,
     showSkeleton: true,
   });
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   const sessionScorerRef = useRef(new SessionScorer());
   const teacherVideoRef = useRef<HTMLVideoElement>(null);
@@ -361,6 +362,7 @@ function App() {
                   mirrored={options.mirrored}
                   showSkeleton={options.showSkeleton}
                   keypoints={dancerPose?.keypoints}
+                  score={currentScore}
                 />
 
                 {appState === 'calibration' && (
@@ -385,6 +387,8 @@ function App() {
                 onEnded={handleSessionEnd}
                 videoRef={teacherVideoRef}
                 currentPose={teacherPose}
+                playbackRate={playbackRate}
+                onPlaybackRateChange={setPlaybackRate}
               />
             </div>
 

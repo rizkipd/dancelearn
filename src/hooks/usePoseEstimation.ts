@@ -9,15 +9,20 @@ let globalPosePromise: Promise<Pose> | null = null;
 let globalResultsCallback: ((results: Results, source: 'dancer' | 'teacher') => void) | null = null;
 let currentProcessingSource: 'dancer' | 'teacher' = 'dancer';
 
-// Smoothing for dancer keypoints to reduce trembling
-// Simple one-pole low-pass filter (very fast, minimal lag)
+// Velocity-based smoothing for dancer keypoints
+// Fast movements = responsive (minimal smoothing), slow movements = stable (more smoothing)
 let previousKeypoints: Keypoint[] | null = null;
-const SMOOTHING = 0.6; // 0.6 = 60% current + 40% previous (responsive but stable)
-const JITTER_THRESHOLD = 0.008; // Ignore movements smaller than 0.8% of screen
+let keypointVelocities: number[] = [];
+
+const JITTER_THRESHOLD = 0.004; // Ignore movements smaller than 0.4% of screen
+const FAST_MOVEMENT_THRESHOLD = 0.03; // Movement > 3% = fast movement
+const MIN_SMOOTHING = 0.85; // Fast movements: 85% current frame (very responsive)
+const MAX_SMOOTHING = 0.55; // Slow movements: 55% current frame (more stable)
 
 function smoothKeypoints(current: Keypoint[]): Keypoint[] {
   if (!previousKeypoints) {
     previousKeypoints = current;
+    keypointVelocities = new Array(current.length).fill(0);
     return current;
   }
 
@@ -33,23 +38,34 @@ function smoothKeypoints(current: Keypoint[]): Keypoint[] {
       return kp;
     }
 
-    // Calculate movement
+    // Calculate movement velocity
     const dx = kp.x - prev.x;
     const dy = kp.y - prev.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
+    // Update velocity with exponential moving average
+    const prevVelocity = keypointVelocities[idx] || 0;
+    keypointVelocities[idx] = distance * 0.7 + prevVelocity * 0.3;
+    const velocity = keypointVelocities[idx];
+
     // If movement is tiny (jitter), keep previous position
-    if (distance < JITTER_THRESHOLD) {
+    if (distance < JITTER_THRESHOLD && velocity < JITTER_THRESHOLD) {
       return { ...kp, x: prev.x, y: prev.y, z: prev.z };
     }
 
-    // Apply simple smoothing: blend current with previous
+    // Velocity-based smoothing factor
+    // Fast movement = high smoothing factor (more responsive)
+    // Slow movement = low smoothing factor (more stable)
+    const velocityRatio = Math.min(velocity / FAST_MOVEMENT_THRESHOLD, 1);
+    const smoothingFactor = MIN_SMOOTHING * velocityRatio + MAX_SMOOTHING * (1 - velocityRatio);
+
+    // Apply smoothing: blend current with previous
     return {
       ...kp,
-      x: kp.x * SMOOTHING + prev.x * (1 - SMOOTHING),
-      y: kp.y * SMOOTHING + prev.y * (1 - SMOOTHING),
+      x: kp.x * smoothingFactor + prev.x * (1 - smoothingFactor),
+      y: kp.y * smoothingFactor + prev.y * (1 - smoothingFactor),
       z: kp.z !== undefined && prev.z !== undefined
-        ? kp.z * SMOOTHING + prev.z * (1 - SMOOTHING)
+        ? kp.z * smoothingFactor + prev.z * (1 - smoothingFactor)
         : kp.z,
     };
   });
@@ -61,6 +77,7 @@ function smoothKeypoints(current: Keypoint[]): Keypoint[] {
 // Export for external reset if needed
 export function resetSmoothing() {
   previousKeypoints = null;
+  keypointVelocities = [];
 }
 
 async function getOrCreatePose(): Promise<Pose> {
@@ -81,7 +98,7 @@ async function getOrCreatePose(): Promise<Pose> {
 
     pose.setOptions({
       modelComplexity: 1,
-      smoothLandmarks: true,
+      smoothLandmarks: false, // Disabled - using custom velocity-based smoothing instead
       enableSegmentation: false,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
