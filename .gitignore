@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+python-desktop/myenv
+python-desktop/src/__pycache__
