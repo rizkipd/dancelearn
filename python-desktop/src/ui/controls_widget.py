@@ -131,21 +131,47 @@ class ControlsWidget(QWidget):
         self._speed_combo.addItems(["0.5x", "0.75x", "1x", "1.25x", "1.5x"])
         self._speed_combo.setCurrentText("1x")
         self._speed_combo.setFixedWidth(80)
+        self._speed_combo.setFixedHeight(36)
         self._speed_combo.setStyleSheet("""
             QComboBox {
                 background: #374151;
                 color: white;
-                border: none;
+                border: 1px solid #4b5563;
                 border-radius: 6px;
                 padding: 6px 12px;
+                font-size: 13px;
+            }
+            QComboBox:hover {
+                border: 1px solid #3b82f6;
             }
             QComboBox::drop-down {
                 border: none;
+                width: 24px;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid #9ca3af;
+                margin-right: 8px;
             }
             QComboBox QAbstractItemView {
-                background: #374151;
+                background: #1f2937;
                 color: white;
                 selection-background-color: #3b82f6;
+                border: 1px solid #4b5563;
+                padding: 4px;
+                outline: none;
+            }
+            QComboBox QAbstractItemView::item {
+                min-height: 32px;
+                padding: 6px 12px;
+            }
+            QComboBox QAbstractItemView::item:hover {
+                background: #374151;
+            }
+            QComboBox QAbstractItemView::item:selected {
+                background: #3b82f6;
             }
         """)
         self._speed_combo.currentTextChanged.connect(self._on_speed_changed)
@@ -228,3 +254,12 @@ class ControlsWidget(QWidget):
         self._progress_slider.setValue(0)
         self._time_label.setText("0:00 / 0:00")
         self._speed_combo.setCurrentText("1x")
+        self.set_controls_enabled(False)  # Disabled until calibration complete
+
+    def set_controls_enabled(self, enabled: bool):
+        """Enable/disable all playback controls (disabled during calibration)."""
+        self._play_btn.setEnabled(enabled)
+        self._restart_btn.setEnabled(enabled)
+        self._progress_slider.setEnabled(enabled)
+        self._speed_combo.setEnabled(enabled)
+        # Stop button always enabled to allow canceling

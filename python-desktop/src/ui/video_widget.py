@@ -22,7 +22,8 @@ class VideoWidget(QWidget):
         self.is_dancer = is_dancer
         self._title = title
         self._show_skeleton = True
-        self._skeleton_drawer = SkeletonDrawer()
+        self._skeleton_drawer = SkeletonDrawer(smoothing=0.5)  # Higher smoothing for smoother skeleton
+        self._last_pose: Optional[PoseResult] = None  # Store last pose for continuous drawing
         self._setup_ui()
 
     def _setup_ui(self):
@@ -76,11 +77,15 @@ class VideoWidget(QWidget):
         """Update displayed frame."""
         self._placeholder.hide()
 
-        # Draw skeleton if enabled
-        if self._show_skeleton and pose:
+        # Update last pose if new pose available
+        if pose:
+            self._last_pose = pose
+
+        # Draw skeleton if enabled (use last pose for continuous smooth drawing)
+        if self._show_skeleton and self._last_pose:
             frame = self._skeleton_drawer.draw(
                 frame.copy(),
-                pose,
+                pose,  # Pass current pose (can be None, smoother will interpolate)
                 is_dancer=self.is_dancer,
             )
 
@@ -126,6 +131,7 @@ class VideoWidget(QWidget):
     def reset(self):
         self.clear()
         self._skeleton_drawer.reset()
+        self._last_pose = None
 
     def sizeHint(self):
         return QSize(640, 480)

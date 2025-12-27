@@ -15,6 +15,7 @@ class PoseWorker(QThread):
     Runs pose detection in a separate thread for smooth UI.
 
     Receives frames, processes them, emits results.
+    Uses SEPARATE detectors for dancer and teacher to avoid tracking interference.
     """
 
     # Signals
@@ -27,7 +28,9 @@ class PoseWorker(QThread):
         super().__init__()
         self._model_complexity = model_complexity
         self._running = False
-        self._detector: Optional[PoseDetector] = None
+        # Separate detectors to avoid tracking state interference
+        self._dancer_detector: Optional[PoseDetector] = None
+        self._teacher_detector: Optional[PoseDetector] = None
         self._mutex = QMutex()
 
         # Queued frames
@@ -37,8 +40,14 @@ class PoseWorker(QThread):
     def run(self):
         """Main thread loop."""
         try:
-            # Initialize detector in this thread
-            self._detector = PoseDetector(
+            # Initialize SEPARATE detectors for dancer and teacher
+            # This prevents MediaPipe's internal tracking from getting confused
+            self._dancer_detector = PoseDetector(
+                model_complexity=self._model_complexity,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5,
+            )
+            self._teacher_detector = PoseDetector(
                 model_complexity=self._model_complexity,
                 min_detection_confidence=0.5,
                 min_tracking_confidence=0.5,
@@ -49,11 +58,16 @@ class PoseWorker(QThread):
             self.ready.emit()
 
             while self._running:
+                if not self._running:
+                    break
+
                 dancer_frame = None
                 teacher_frame = None
 
                 # Get queued frames
                 with QMutexLocker(self._mutex):
+                    if not self._running:
+                        break
                     if self._dancer_frame:
                         dancer_frame = self._dancer_frame
                         self._dancer_frame = None
@@ -61,17 +75,33 @@ class PoseWorker(QThread):
                         teacher_frame = self._teacher_frame
                         self._teacher_frame = None
 
-                # Process dancer frame
-                if dancer_frame is not None:
-                    frame, timestamp = dancer_frame
-                    pose = self._detector.detect(frame, timestamp)
-                    self.dancer_pose_ready.emit(pose, timestamp)
+                if not self._running:
+                    break
 
-                # Process teacher frame
-                if teacher_frame is not None:
+                # Process dancer frame with dancer detector
+                if dancer_frame is not None and self._running:
+                    frame, timestamp = dancer_frame
+                    try:
+                        pose = self._dancer_detector.detect(frame, timestamp)
+                        # Double-check running before emit
+                        if self._running:
+                            self.dancer_pose_ready.emit(pose, timestamp)
+                    except:
+                        pass
+
+                if not self._running:
+                    break
+
+                # Process teacher frame with teacher detector
+                if teacher_frame is not None and self._running:
                     frame, timestamp = teacher_frame
-                    pose = self._detector.detect(frame, timestamp)
-                    self.teacher_pose_ready.emit(pose, timestamp)
+                    try:
+                        pose = self._teacher_detector.detect(frame, timestamp)
+                        # Double-check running before emit
+                        if self._running:
+                            self.teacher_pose_ready.emit(pose, timestamp)
+                    except:
+                        pass
 
                 # Small sleep if no work
                 if dancer_frame is None and teacher_frame is None:
@@ -80,8 +110,10 @@ class PoseWorker(QThread):
         except Exception as e:
             self.error.emit(str(e))
         finally:
-            if self._detector:
-                self._detector.close()
+            if self._dancer_detector:
+                self._dancer_detector.close()
+            if self._teacher_detector:
+                self._teacher_detector.close()
 
     def process_dancer_frame(self, frame: np.ndarray, timestamp: float):
         """Queue dancer frame for processing."""
@@ -95,6 +127,5 @@ class PoseWorker(QThread):
             self._teacher_frame = (frame.copy(), timestamp)
 
     def stop(self):
-        """Stop the worker."""
+        """Stop the worker (non-blocking)."""
         self._running = False
-        self.wait()

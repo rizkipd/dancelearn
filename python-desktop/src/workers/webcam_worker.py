@@ -67,10 +67,18 @@ class WebcamWorker(QThread):
             last_frame_time = 0.0
 
             while self._running:
+                if not self._running:
+                    break
+
                 with QMutexLocker(self._mutex):
-                    if self._paused:
-                        time.sleep(0.01)
-                        continue
+                    is_paused = self._paused
+
+                if is_paused:
+                    time.sleep(0.01)
+                    continue
+
+                if not self._running:
+                    break
 
                 # Timing control
                 current_time = time.perf_counter()
@@ -83,6 +91,9 @@ class WebcamWorker(QThread):
                 if not ret:
                     continue
 
+                if not self._running:
+                    break
+
                 last_frame_time = current_time
                 timestamp_ms = current_time * 1000 - self._start_time
 
@@ -90,8 +101,12 @@ class WebcamWorker(QThread):
                 if self.mirror:
                     frame = cv2.flip(frame, 1)
 
-                # Emit frame
-                self.frame_ready.emit(frame, timestamp_ms)
+                # Emit frame only if still running (double-check)
+                if self._running:
+                    try:
+                        self.frame_ready.emit(frame, timestamp_ms)
+                    except:
+                        break
 
         except Exception as e:
             self.error.emit(str(e))
@@ -101,9 +116,8 @@ class WebcamWorker(QThread):
             self.stopped_signal.emit()
 
     def stop(self):
-        """Stop capturing."""
+        """Stop capturing (non-blocking)."""
         self._running = False
-        self.wait()
 
     def pause(self):
         """Pause capturing."""

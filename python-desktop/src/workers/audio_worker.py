@@ -1,9 +1,10 @@
 """
 Audio Worker - Play audio from video files using PyQt6 multimedia.
 
-Syncs with video playback.
+Syncs with video playback - audio is the master clock.
 """
 
+import threading
 from typing import Optional
 from PyQt6.QtCore import QObject, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
@@ -13,6 +14,7 @@ class AudioWorker(QObject):
     """
     Plays audio from video files.
     Uses Qt Multimedia for proper audio playback.
+    Acts as master clock for video sync.
     """
 
     error = pyqtSignal(str)
@@ -23,6 +25,9 @@ class AudioWorker(QObject):
         self._audio_output: Optional[QAudioOutput] = None
         self._video_path: Optional[str] = None
         self._playback_rate = 1.0
+        # Thread-safe position cache using threading.Lock (not Qt mutex)
+        self._position_lock = threading.Lock()
+        self._cached_position = 0.0
 
     def load(self, video_path: str) -> bool:
         """Load audio from video file."""
@@ -88,10 +93,21 @@ class AudioWorker(QObject):
 
     @property
     def position(self) -> float:
-        """Get current position in ms."""
+        """Get current position in ms (thread-safe, uses cached value)."""
+        with self._position_lock:
+            return self._cached_position
+
+    def get_position_for_sync(self) -> float:
+        """Get cached position for video sync (thread-safe)."""
+        with self._position_lock:
+            return self._cached_position
+
+    def update_cached_position(self):
+        """Update cached position for thread-safe access. Call from main thread only."""
         if self._player:
-            return float(self._player.position())
-        return 0.0
+            pos = float(self._player.position())
+            with self._position_lock:
+                self._cached_position = pos
 
     def cleanup(self):
         """Clean up resources."""

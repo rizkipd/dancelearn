@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QFileDialog, QMessageBox, QLabel,
     QPushButton, QCheckBox, QComboBox, QFrame, QStackedWidget
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSlot, QUrl
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot, QUrl, QMetaObject, Q_ARG
 from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtMultimediaWidgets import QVideoWidget
@@ -21,7 +21,8 @@ from PyQt6.QtMultimediaWidgets import QVideoWidget
 from .video_widget import DancerVideoWidget, TeacherVideoWidget
 from .score_widget import ScoreWidget
 from .controls_widget import ControlsWidget
-from .calibration_dialog import CalibrationDialog
+from .calibration_dialog import CalibrationDialog, CalibrationOverlay
+from .session_report import SessionReportDialog
 from ..workers.webcam_worker import WebcamWorker
 from ..workers.video_worker import VideoWorker
 from ..workers.pose_worker import PoseWorker
@@ -425,6 +426,7 @@ class MainWindow(QMainWindow):
         self._dancer_normalized: Optional[NormalizedPose] = None
         self._teacher_normalized: Optional[NormalizedPose] = None
         self._is_training = False
+        self._is_cleaning_up = False  # Flag to prevent processing during cleanup
         self._frame_width = 1280
         self._frame_height = 720
         self._pending_video_path: Optional[str] = None
@@ -432,12 +434,17 @@ class MainWindow(QMainWindow):
         # Frame timing for throttling pose requests
         self._last_dancer_pose_request = 0.0
         self._last_teacher_pose_request = 0.0
-        self._pose_request_interval = 1.0 / 15  # Request pose 15 times/sec
+        self._pose_request_interval = 1.0 / 30  # Request pose 30 times/sec for smoother skeleton
 
         # Score update timer
         self._score_timer = QTimer(self)
         self._score_timer.timeout.connect(self._update_score)
         self._score_timer.setInterval(150)  # Update score every 150ms
+
+        # Audio position update timer (for video sync)
+        self._audio_sync_timer = QTimer(self)
+        self._audio_sync_timer.timeout.connect(self._update_audio_position)
+        self._audio_sync_timer.setInterval(16)  # ~60fps for smooth sync
 
         self._setup_ui()
         self._setup_menu()
@@ -486,6 +493,7 @@ class MainWindow(QMainWindow):
 
         # Controls (bg-gray-800)
         self._controls = ControlsWidget()
+        self._controls.setFixedHeight(64)
         self._controls.play_clicked.connect(self._on_play_pause)
         self._controls.stop_clicked.connect(self._on_end_session)
         self._controls.restart_clicked.connect(self._on_restart)
@@ -582,11 +590,21 @@ class MainWindow(QMainWindow):
         """Initialize session workers (called after UI updates)."""
         video_path = self._pending_video_path
 
+        # Reset cleanup flag
+        self._is_cleaning_up = False
+
         # Initialize pose worker (runs in separate thread!)
+        # Use QueuedConnection for ALL cross-thread signals to prevent blocking
         self._pose_worker = PoseWorker(model_complexity=0)  # 0 = Lite model
-        self._pose_worker.dancer_pose_ready.connect(self._on_dancer_pose_ready)
-        self._pose_worker.teacher_pose_ready.connect(self._on_teacher_pose_ready)
-        self._pose_worker.ready.connect(self._on_pose_worker_ready)
+        self._pose_worker.dancer_pose_ready.connect(
+            self._on_dancer_pose_ready, Qt.ConnectionType.QueuedConnection
+        )
+        self._pose_worker.teacher_pose_ready.connect(
+            self._on_teacher_pose_ready, Qt.ConnectionType.QueuedConnection
+        )
+        self._pose_worker.ready.connect(
+            self._on_pose_worker_ready, Qt.ConnectionType.QueuedConnection
+        )
         self._pose_worker.start()
 
         # Initialize video worker
@@ -596,13 +614,21 @@ class MainWindow(QMainWindow):
             self._stack.setCurrentIndex(0)
             return
 
-        self._video_worker.frame_ready.connect(self._on_teacher_frame)
-        self._video_worker.progress.connect(self._on_video_progress)
-        self._video_worker.finished.connect(self._on_video_finished)
+        # Use QueuedConnection for cross-thread signals
+        self._video_worker.frame_ready.connect(
+            self._on_teacher_frame, Qt.ConnectionType.QueuedConnection
+        )
+        self._video_worker.progress.connect(
+            self._on_video_progress, Qt.ConnectionType.QueuedConnection
+        )
+        # Don't connect finished signal - we poll for video end in _update_score instead
 
         # Initialize audio worker for sound playback
         self._audio_worker = AudioWorker(self)
         self._audio_worker.load(video_path)
+
+        # Connect video worker to audio for sync (uses thread-safe cached position)
+        self._video_worker.set_audio_sync(self._audio_worker.get_position_for_sync)
 
         # Initialize webcam worker
         self._webcam_worker = WebcamWorker(
@@ -610,8 +636,13 @@ class MainWindow(QMainWindow):
             target_fps=30,
             mirror=self._setup_page.mirror_enabled,
         )
-        self._webcam_worker.frame_ready.connect(self._on_dancer_frame)
-        self._webcam_worker.error.connect(self._on_webcam_error)
+        # Use QueuedConnection for cross-thread signals
+        self._webcam_worker.frame_ready.connect(
+            self._on_dancer_frame, Qt.ConnectionType.QueuedConnection
+        )
+        self._webcam_worker.error.connect(
+            self._on_webcam_error, Qt.ConnectionType.QueuedConnection
+        )
 
         # Update skeleton visibility
         show_skeleton = self._setup_page.skeleton_enabled
@@ -641,45 +672,98 @@ class MainWindow(QMainWindow):
         self._show_calibration()
 
     def _show_calibration(self):
-        """Show calibration dialog."""
-        dialog = CalibrationDialog(self)
+        """Show calibration as overlay instead of modal dialog."""
+        # Create calibration widget as overlay on the training page
+        self._calibration_widget = CalibrationOverlay(self.centralWidget())
+        self._calibration_widget.calibration_complete.connect(self._on_calibration_complete)
+        self._calibration_widget.cancelled.connect(self._cancel_session)
+
+        # Position it centered on screen
+        self._calibration_widget.move(
+            (self.width() - self._calibration_widget.width()) // 2,
+            (self.height() - self._calibration_widget.height()) // 2
+        )
+        self._calibration_widget.show()
+        self._calibration_widget.raise_()
 
         # Update calibration with pose data
-        def update_calibration():
+        self._calibration_timer = QTimer(self)
+        self._calibration_timer.timeout.connect(self._update_calibration)
+        self._calibration_timer.start(100)
+
+    def _update_calibration(self):
+        """Update calibration overlay with pose data."""
+        if hasattr(self, '_calibration_widget') and self._calibration_widget:
             if self._current_dancer_pose:
-                dialog.update_pose(
+                self._calibration_widget.update_pose(
                     self._current_dancer_pose,
                     self._frame_width,
                     self._frame_height
                 )
 
-        calibration_timer = QTimer(self)
-        calibration_timer.timeout.connect(update_calibration)
-        calibration_timer.start(100)
-
-        dialog.calibration_complete.connect(lambda: self._start_training())
-        dialog.cancelled.connect(lambda: self._cancel_session())
-
-        result = dialog.exec()
-        calibration_timer.stop()
+    def _on_calibration_complete(self):
+        """Handle calibration complete."""
+        if hasattr(self, '_calibration_timer'):
+            self._calibration_timer.stop()
+        if hasattr(self, '_calibration_widget') and self._calibration_widget:
+            self._calibration_widget.hide()
+            self._calibration_widget.deleteLater()
+            self._calibration_widget = None
+        self._start_training()
 
     def _start_training(self):
         """Start actual training after calibration."""
         self._is_training = True
+
+        # Enable controls now that calibration is complete
+        self._controls.set_controls_enabled(True)
+
+        # Auto-start video and audio playback
         self._video_worker.play()
         if self._audio_worker:
             self._audio_worker.play()  # Start audio with video
         self._controls.set_playing(True)
         self._score_timer.start()
+        self._audio_sync_timer.start()  # Start audio position sync
 
     def _cancel_session(self):
         """Cancel session and return to setup."""
-        self._cleanup_session()
+        # Prevent multiple calls
+        if self._is_cleaning_up:
+            return
+
+        # Stop calibration timer first
+        if hasattr(self, '_calibration_timer') and self._calibration_timer:
+            self._calibration_timer.stop()
+            self._calibration_timer = None
+
+        # Hide calibration widget
+        if hasattr(self, '_calibration_widget') and self._calibration_widget:
+            self._calibration_widget.hide()
+            self._calibration_widget.deleteLater()
+            self._calibration_widget = None
+
+        # Stop timers
+        self._is_training = False
+        self._score_timer.stop()
+        self._audio_sync_timer.stop()
+
+        # Stop all workers immediately (non-blocking)
+        self._stop_all_workers()
+
+        # Return to setup page immediately
         self._stack.setCurrentIndex(0)
+
+        # Finalize cleanup after delay
+        QTimer.singleShot(300, self._finalize_cleanup)
 
     @pyqtSlot(object, float)
     def _on_dancer_frame(self, frame, timestamp_ms: float):
         """Handle webcam frame - display immediately, queue pose detection."""
+        # Guard: skip if cleaning up
+        if self._is_cleaning_up:
+            return
+
         self._frame_height, self._frame_width = frame.shape[:2]
         self._current_dancer_frame = frame
 
@@ -690,12 +774,16 @@ class MainWindow(QMainWindow):
         current_time = time.perf_counter()
         if (current_time - self._last_dancer_pose_request) >= self._pose_request_interval:
             self._last_dancer_pose_request = current_time
-            if self._pose_worker:
+            if self._pose_worker and self._pose_worker._running:
                 self._pose_worker.process_dancer_frame(frame, timestamp_ms)
 
     @pyqtSlot(object, float)
     def _on_teacher_frame(self, frame, timestamp_ms: float):
         """Handle teacher video frame - display immediately, queue pose detection."""
+        # Guard: skip if cleaning up
+        if self._is_cleaning_up:
+            return
+
         self._current_teacher_frame = frame
 
         # Always update display immediately
@@ -705,12 +793,16 @@ class MainWindow(QMainWindow):
         current_time = time.perf_counter()
         if (current_time - self._last_teacher_pose_request) >= self._pose_request_interval:
             self._last_teacher_pose_request = current_time
-            if self._pose_worker:
+            if self._pose_worker and self._pose_worker._running:
                 self._pose_worker.process_teacher_frame(frame, timestamp_ms)
 
     @pyqtSlot(object, float)
     def _on_dancer_pose_ready(self, pose: Optional[PoseResult], timestamp: float):
         """Handle pose detection result from worker thread."""
+        # Guard: skip if cleaning up
+        if self._is_cleaning_up:
+            return
+
         self._current_dancer_pose = pose
 
         # Update display with skeleton
@@ -727,6 +819,10 @@ class MainWindow(QMainWindow):
     @pyqtSlot(object, float)
     def _on_teacher_pose_ready(self, pose: Optional[PoseResult], timestamp: float):
         """Handle pose detection result from worker thread."""
+        # Guard: skip if cleaning up
+        if self._is_cleaning_up:
+            return
+
         self._current_teacher_pose = pose
 
         # Update display with skeleton
@@ -741,9 +837,19 @@ class MainWindow(QMainWindow):
                 apply_smoothing=True,
             )
 
+    def _update_audio_position(self):
+        """Update cached audio position for thread-safe video sync."""
+        if self._audio_worker:
+            self._audio_worker.update_cached_position()
+
     def _update_score(self):
         """Update score display (runs on timer)."""
         if not self._is_training:
+            return
+
+        # Check if video has ended
+        if self._video_worker and self._video_worker.has_ended:
+            QTimer.singleShot(0, self._on_end_session)
             return
 
         if self._dancer_normalized and self._teacher_normalized:
@@ -763,12 +869,9 @@ class MainWindow(QMainWindow):
     @pyqtSlot(float, float)
     def _on_video_progress(self, current_ms: float, duration_ms: float):
         """Handle video progress update."""
+        if self._is_cleaning_up:
+            return
         self._controls.set_progress(current_ms, duration_ms)
-
-    @pyqtSlot()
-    def _on_video_finished(self):
-        """Handle video playback finished."""
-        self._on_end_session()
 
     @pyqtSlot(str)
     def _on_webcam_error(self, error: str):
@@ -791,8 +894,10 @@ class MainWindow(QMainWindow):
 
             if is_playing:
                 self._score_timer.start()
+                self._audio_sync_timer.start()
             else:
                 self._score_timer.stop()
+                self._audio_sync_timer.stop()
 
     def _on_restart(self):
         """Restart from beginning."""
@@ -828,54 +933,133 @@ class MainWindow(QMainWindow):
 
     def _on_end_session(self):
         """End training session and show results."""
+        # Prevent multiple calls
+        if self._is_cleaning_up:
+            return
+
         self._is_training = False
         self._score_timer.stop()
+        self._audio_sync_timer.stop()
 
-        # Get session results
+        # Get session results before cleanup
         result = self._session_tracker.get_session_result()
+        video_path = self._setup_page.video_path
 
-        # Show results dialog
-        QMessageBox.information(
-            self,
-            "Session Complete",
-            f"Grade: {result.grade}\n"
-            f"Overall Score: {result.overall_score}/100\n\n"
-            f"Arms: {result.body_parts.arms}/100\n"
-            f"Legs: {result.body_parts.legs}/100\n"
-            f"Torso: {result.body_parts.torso}/100\n\n"
-            f"Weak sections: {len(result.weak_sections)}"
-        )
+        # Stop all workers immediately (non-blocking)
+        self._stop_all_workers()
 
-        self._cleanup_session()
+        # Deferred: show dialog after cleanup starts
+        QTimer.singleShot(300, lambda: self._show_session_report(result, video_path))
+
+    def _show_session_report(self, result, video_path):
+        """Show session report after cleanup."""
+        # Finalize cleanup first
+        self._finalize_cleanup()
+
+        # Return to setup page
         self._stack.setCurrentIndex(0)
 
-    def _cleanup_session(self):
-        """Cleanup workers and state."""
+        # Show session report dialog
+        dialog = SessionReportDialog(result, self)
+        dialog.try_again.connect(lambda: self._on_try_again(video_path))
+        dialog.new_video.connect(self._on_new_video)
+        dialog.exec()
+
+    def _on_try_again(self, video_path: str):
+        """Restart training with the same video."""
+        if video_path:
+            QTimer.singleShot(100, self._on_start_session)
+
+    def _on_new_video(self):
+        """Return to setup to select new video."""
+        pass
+
+    def _stop_all_workers(self):
+        """Signal all workers to stop immediately (non-blocking)."""
+        # Set cleanup flag FIRST - all slots check this and return immediately
+        self._is_cleaning_up = True
         self._is_training = False
+
+        # Stop timers immediately
         self._score_timer.stop()
+        self._audio_sync_timer.stop()
+
+        # Signal threads to stop - DON'T disconnect signals (can cause deadlock)
+        # Set all flags atomically
+        if self._video_worker:
+            self._video_worker._running = False
+            self._video_worker._playing = False
+            self._video_worker._use_audio_sync = False
 
         if self._webcam_worker:
-            self._webcam_worker.stop()
-            self._webcam_worker = None
-
-        if self._video_worker:
-            self._video_worker.stop()
-            self._video_worker = None
+            self._webcam_worker._running = False
 
         if self._pose_worker:
-            self._pose_worker.stop()
+            self._pose_worker._running = False
+
+        # Stop audio BEFORE waiting for threads (it's not threaded)
+        if self._audio_worker:
+            try:
+                self._audio_worker.stop()
+            except:
+                pass
+
+        # Process pending events to flush signal queue
+        from PyQt6.QtWidgets import QApplication
+        QApplication.processEvents()
+
+    def _finalize_cleanup(self):
+        """Finalize cleanup of worker threads (called after delay)."""
+        # Wait briefly for threads to finish naturally, then terminate if needed
+        wait_ms = 100  # Short wait time
+
+        if self._video_worker:
+            if self._video_worker.isRunning():
+                if not self._video_worker.wait(wait_ms):
+                    self._video_worker.terminate()
+                    self._video_worker.wait(50)
+            self._video_worker = None
+
+        if self._webcam_worker:
+            if self._webcam_worker.isRunning():
+                if not self._webcam_worker.wait(wait_ms):
+                    self._webcam_worker.terminate()
+                    self._webcam_worker.wait(50)
+            self._webcam_worker = None
+
+        if self._pose_worker:
+            if self._pose_worker.isRunning():
+                if not self._pose_worker.wait(wait_ms):
+                    self._pose_worker.terminate()
+                    self._pose_worker.wait(50)
             self._pose_worker = None
 
+        # Cleanup audio
         if self._audio_worker:
-            self._audio_worker.cleanup()
+            try:
+                self._audio_worker.cleanup()
+            except:
+                pass
             self._audio_worker = None
 
+        # Reset state
         self._current_dancer_pose = None
         self._current_teacher_pose = None
         self._current_dancer_frame = None
         self._current_teacher_frame = None
         self._dancer_normalized = None
         self._teacher_normalized = None
+
+        # Reset cleanup flag
+        self._is_cleaning_up = False
+
+    def _cleanup_session(self):
+        """Cleanup workers and state."""
+        self._is_training = False
+        self._score_timer.stop()
+        self._audio_sync_timer.stop()
+        self._stop_all_workers()
+        QTimer.singleShot(100, self._finalize_cleanup)
 
     def closeEvent(self, event):
         """Handle window close."""

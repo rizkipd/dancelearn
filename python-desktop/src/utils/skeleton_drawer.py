@@ -102,7 +102,7 @@ class SkeletonDrawer:
         joint_radius: int = 6,
         min_confidence: float = 0.5,
         antialiased: bool = True,
-        smoothing: float = 0.4,  # Skeleton smoothing factor
+        smoothing: float = 0.6,  # Skeleton smoothing factor (higher = smoother)
     ):
         """
         Args:
@@ -110,16 +110,15 @@ class SkeletonDrawer:
             joint_radius: Radius of joint circles
             min_confidence: Minimum confidence to draw a joint
             antialiased: Use antialiased lines for smoother look
-            smoothing: 0-1, higher = smoother skeleton movement
+            smoothing: 0-1, higher = smoother skeleton movement (0.6 for 60fps-like feel)
         """
         self.line_thickness = line_thickness
         self.joint_radius = joint_radius
         self.min_confidence = min_confidence
         self.antialiased = antialiased
 
-        # Separate smoothers for dancer and teacher
-        self._dancer_smoother = SkeletonSmoother(smoothing=smoothing)
-        self._teacher_smoother = SkeletonSmoother(smoothing=smoothing)
+        # Single smoother per drawer (each VideoWidget has its own SkeletonDrawer)
+        self._smoother = SkeletonSmoother(smoothing=smoothing)
 
     def draw(
         self,
@@ -142,11 +141,8 @@ class SkeletonDrawer:
         Returns:
             Frame with skeleton overlay
         """
-        # Choose smoother
-        smoother = self._dancer_smoother if is_dancer else self._teacher_smoother
-
         # Update smoother with new pose (even if None, keeps last position)
-        smooth_keypoints = smoother.update(pose)
+        smooth_keypoints = self._smoother.update(pose)
 
         # Check if we have valid data
         if not any(kp._initialized for kp in smooth_keypoints):
@@ -237,9 +233,8 @@ class SkeletonDrawer:
         return frame
 
     def reset(self):
-        """Reset smoothers (call when starting new session)."""
-        self._dancer_smoother.reset()
-        self._teacher_smoother.reset()
+        """Reset smoother (call when starting new session)."""
+        self._smoother.reset()
 
 
 def draw_score_on_frame(

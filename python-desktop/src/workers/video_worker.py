@@ -2,12 +2,13 @@
 Video Worker - Play video files in a separate thread.
 
 Supports playback control and speed adjustment.
+SYNCED with audio using audio position as master clock.
 """
 
 import cv2
 import time
 import numpy as np
-from typing import Optional
+from typing import Optional, Callable
 from PyQt6.QtCore import QThread, pyqtSignal, QMutex, QMutexLocker
 
 
@@ -15,6 +16,7 @@ class VideoWorker(QThread):
     """
     Plays video files in a separate thread.
     Supports pause, seek, and speed adjustment.
+    Uses external audio position for sync.
     """
 
     # Signals
@@ -33,6 +35,13 @@ class VideoWorker(QThread):
         self._playback_rate = 1.0
         self._seek_to_ms: Optional[float] = None
         self._mutex = QMutex()
+
+        # Audio sync - callback to get audio position
+        self._audio_position_getter: Optional[Callable[[], float]] = None
+        self._use_audio_sync = False
+
+        # Video ended flag
+        self._video_ended = False
 
         # Video info
         self.duration_ms = 0.0
@@ -61,8 +70,17 @@ class VideoWorker(QThread):
         self.loaded.emit(self.duration_ms, self.width, self.height)
         return True
 
+    def set_audio_sync(self, position_getter: Callable[[], float]):
+        """Set callback to get audio position for sync.
+
+        Args:
+            position_getter: Callable that returns current audio position in ms
+        """
+        self._audio_position_getter = position_getter
+        self._use_audio_sync = True
+
     def run(self):
-        """Main thread loop - play video."""
+        """Main thread loop - play video synced to audio."""
         if not self._video_path:
             return
 
@@ -75,50 +93,97 @@ class VideoWorker(QThread):
             self._running = True
             frame_interval_base = 1.0 / self.fps
             last_frame_time = time.perf_counter()
+            last_video_ms = 0.0
 
             while self._running:
-                # Handle seek
+                # Handle seek and get state
                 with QMutexLocker(self._mutex):
+                    if not self._running:
+                        break
                     if self._seek_to_ms is not None:
                         frame_num = int((self._seek_to_ms / 1000) * self.fps)
                         self._cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
                         self._seek_to_ms = None
                         last_frame_time = time.perf_counter()
 
-                    if not self._playing:
+                    is_playing = self._playing
+                    playback_rate = self._playback_rate
+                    use_audio_sync = self._use_audio_sync
+                    audio_getter = self._audio_position_getter
+
+                if not self._running:
+                    break
+
+                # Sleep outside of mutex if paused
+                if not is_playing:
+                    time.sleep(0.01)
+                    continue
+
+                # Audio sync mode
+                if use_audio_sync and audio_getter:
+                    if not self._running:
+                        break
+                    try:
+                        audio_ms = audio_getter()
+                        video_ms = self._cap.get(cv2.CAP_PROP_POS_MSEC)
+                        drift = audio_ms - video_ms
+
+                        if drift > 100:
+                            target_frame = int((audio_ms / 1000) * self.fps)
+                            self._cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                        elif drift < -50:
+                            time.sleep(0.005)
+                            continue
+
+                        ret, frame = self._cap.read()
+                        if not ret:
+                            # Video ended - just stop, don't emit (main thread detects via progress)
+                            self._playing = False
+                            self._video_ended = True
+                            break
+
+                        if not self._running:
+                            break
+
+                        current_ms = self._cap.get(cv2.CAP_PROP_POS_MSEC)
+                        # Check running before emit to minimize queued signals
+                        if self._running:
+                            self.frame_ready.emit(frame, current_ms)
+                            self.progress.emit(current_ms, self.duration_ms)
+                        time.sleep(frame_interval_base / 2)
+
+                    except:
                         time.sleep(0.01)
                         continue
+                else:
+                    # Normal timing mode
+                    frame_interval = frame_interval_base / playback_rate
+                    current_time = time.perf_counter()
+                    elapsed = current_time - last_frame_time
 
-                    playback_rate = self._playback_rate
+                    if elapsed < frame_interval:
+                        time.sleep(0.001)
+                        continue
 
-                # Timing control
-                frame_interval = frame_interval_base / playback_rate
-                current_time = time.perf_counter()
-                elapsed = current_time - last_frame_time
+                    ret, frame = self._cap.read()
+                    if not ret:
+                        # Video ended - just stop, don't emit (main thread detects via progress)
+                        self._playing = False
+                        self._video_ended = True
+                        break
 
-                if elapsed < frame_interval:
-                    time.sleep(0.001)
-                    continue
+                    if not self._running:
+                        break
 
-                # Read frame
-                ret, frame = self._cap.read()
-                if not ret:
-                    # Video ended
-                    self.finished.emit()
-                    self._playing = False
-                    continue
-
-                last_frame_time = current_time
-
-                # Get current position
-                current_ms = self._cap.get(cv2.CAP_PROP_POS_MSEC)
-
-                # Emit frame and progress
-                self.frame_ready.emit(frame, current_ms)
-                self.progress.emit(current_ms, self.duration_ms)
+                    last_frame_time = current_time
+                    current_ms = self._cap.get(cv2.CAP_PROP_POS_MSEC)
+                    # Check running before emit to minimize queued signals
+                    if self._running:
+                        self.frame_ready.emit(frame, current_ms)
+                        self.progress.emit(current_ms, self.duration_ms)
 
         except Exception as e:
-            self.error.emit(str(e))
+            pass  # Don't emit errors from thread
         finally:
             if self._cap:
                 self._cap.release()
@@ -139,10 +204,11 @@ class VideoWorker(QThread):
             self._playing = not self._playing
 
     def stop(self):
-        """Stop playback and thread."""
+        """Stop playback and thread (non-blocking)."""
         self._running = False
         self._playing = False
-        self.wait()
+        # Disable audio sync to prevent blocking
+        self._use_audio_sync = False
 
     def seek(self, position_ms: float):
         """Seek to position in milliseconds."""
@@ -171,3 +237,8 @@ class VideoWorker(QThread):
     def is_playing(self) -> bool:
         """Check if video is playing."""
         return self._playing
+
+    @property
+    def has_ended(self) -> bool:
+        """Check if video has ended."""
+        return self._video_ended
