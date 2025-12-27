@@ -20,6 +20,7 @@ class PoseWorker(QThread):
     # Signals
     dancer_pose_ready = pyqtSignal(object, float)  # PoseResult, timestamp
     teacher_pose_ready = pyqtSignal(object, float)  # PoseResult, timestamp
+    ready = pyqtSignal()  # Emitted when MediaPipe is initialized
     error = pyqtSignal(str)
 
     def __init__(self, model_complexity: int = 0):
@@ -43,6 +44,9 @@ class PoseWorker(QThread):
                 min_tracking_confidence=0.5,
             )
             self._running = True
+
+            # Signal that we're ready
+            self.ready.emit()
 
             while self._running:
                 dancer_frame = None

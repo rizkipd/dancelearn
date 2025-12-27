@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 python-desktop/myenv
 python-desktop/src/__pycache__
+python-desktop/src/ui/__pycache__
+python-desktop/src/ui/__pycache__/calibration_dialog.cpython-312.pyc
+python-desktop/src/ui/__pycache__/controls_widget.cpython-312.pyc
+python-desktop/src/ui/__pycache__/main_window.cpython-312.pyc
+python-desktop/src/ui/__pycache__/score_widget.cpython-312.pyc
+python-desktop/src/ui/__pycache__/video_widget.cpython-312.pyc

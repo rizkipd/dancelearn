@@ -42,10 +42,11 @@ class ControlsWidget(QWidget):
         layout.setContentsMargins(16, 12, 16, 12)
         layout.setSpacing(12)
 
+        # Matches web version: bg-gray-800/90
         self.setStyleSheet("""
             ControlsWidget {
-                background: #1f1f1f;
-                border-top: 1px solid #333;
+                background: rgba(31, 41, 55, 0.95);
+                border-top: 1px solid #374151;
             }
         """)
 

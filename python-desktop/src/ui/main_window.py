@@ -10,11 +10,13 @@ import time
 from typing import Optional
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QSplitter, QFileDialog, QMessageBox, QLabel,
+    QFileDialog, QMessageBox, QLabel,
     QPushButton, QCheckBox, QComboBox, QFrame, QStackedWidget
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot, QUrl
 from PyQt6.QtGui import QFont, QAction
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PyQt6.QtMultimediaWidgets import QVideoWidget
 
 from .video_widget import DancerVideoWidget, TeacherVideoWidget
 from .score_widget import ScoreWidget
@@ -36,147 +38,341 @@ class SetupPage(QWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self._video_path: Optional[str] = None
+        self._media_player: Optional[QMediaPlayer] = None
+        self._audio_output: Optional[QAudioOutput] = None
+        self._is_previewing = False
         self._setup_ui()
 
     def _setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(40, 40, 40, 40)
+        # Main background
+        self.setStyleSheet("background: #1f2937;")  # gray-800
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(32, 32, 32, 32)
         layout.setSpacing(24)
 
-        # Title
+        # Left side - Video preview (using stacked layout for overlay)
+        from PyQt6.QtWidgets import QStackedLayout, QSizePolicy
+
+        preview_frame = QFrame()
+        preview_frame.setStyleSheet("background: #0a0a0a; border-radius: 12px;")
+        preview_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        preview_layout = QVBoxLayout(preview_frame)
+        preview_layout.setContentsMargins(0, 0, 0, 0)
+        preview_layout.setSpacing(8)
+
+        # Video widget - fills the space
+        self._video_widget = QVideoWidget()
+        self._video_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self._video_widget.setAspectRatioMode(Qt.AspectRatioMode.KeepAspectRatio)
+        self._video_widget.setStyleSheet("background: #0a0a0a;")
+        self._video_widget.hide()
+        preview_layout.addWidget(self._video_widget, 1)
+
+        # Placeholder for when no video
+        self._preview_placeholder = QLabel("Select a video to preview")
+        self._preview_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._preview_placeholder.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self._preview_placeholder.setStyleSheet("""
+            font-size: 18px;
+            color: #666666;
+            background: #0a0a0a;
+        """)
+        preview_layout.addWidget(self._preview_placeholder, 1)
+
+        # Play button below video
+        self._play_preview_btn = QPushButton("▶ Play Preview")
+        self._play_preview_btn.setFixedHeight(44)
+        self._play_preview_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._play_preview_btn.setStyleSheet("""
+            QPushButton {
+                background: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 0 24px;
+            }
+            QPushButton:hover {
+                background: #3b82f6;
+            }
+        """)
+        self._play_preview_btn.clicked.connect(self._toggle_preview)
+        self._play_preview_btn.hide()
+        preview_layout.addWidget(self._play_preview_btn, 0, Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(preview_frame, 2)  # Give preview more space
+
+        # Right side - Controls
+        right_panel = QWidget()
+        right_panel.setFixedWidth(360)  # Fixed width for controls
+        right_panel.setStyleSheet("background: transparent;")
+        right_layout = QVBoxLayout(right_panel)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.setSpacing(24)
+
+        # Title section
         title = QLabel("AI Dance Training")
-        title.setFont(QFont("Arial", 32, QFont.Weight.Bold))
-        title.setStyleSheet("color: white;")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        title.setFont(QFont("Arial", 28, QFont.Weight.Bold))
+        title.setStyleSheet("color: white; background: transparent;")
+        right_layout.addWidget(title)
 
-        subtitle = QLabel("Load a dance video, follow along, and get real-time feedback")
-        subtitle.setFont(QFont("Arial", 14))
-        subtitle.setStyleSheet("color: #888;")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(subtitle)
+        subtitle = QLabel("Load a dance video, follow along,\nand get real-time feedback")
+        subtitle.setFont(QFont("Arial", 13))
+        subtitle.setStyleSheet("color: #9ca3af; background: transparent;")
+        right_layout.addWidget(subtitle)
 
-        layout.addSpacing(20)
+        right_layout.addSpacing(16)
 
         # Video load section
         video_frame = QFrame()
         video_frame.setStyleSheet("""
             QFrame {
-                background: #262626;
-                border-radius: 16px;
-                padding: 24px;
+                background: #1e293b;
+                border-radius: 12px;
             }
         """)
         video_layout = QVBoxLayout(video_frame)
+        video_layout.setContentsMargins(20, 20, 20, 20)
+        video_layout.setSpacing(12)
 
         video_title = QLabel("1. Load Teacher Video")
-        video_title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
-        video_title.setStyleSheet("color: white;")
+        video_title.setFont(QFont("Arial", 15, QFont.Weight.Bold))
+        video_title.setStyleSheet("color: white; background: transparent;")
         video_layout.addWidget(video_title)
 
         self._video_status = QLabel("No video loaded")
         self._video_status.setFont(QFont("Arial", 12))
-        self._video_status.setStyleSheet("color: #888;")
+        self._video_status.setStyleSheet("color: #9ca3af; background: transparent;")
         video_layout.addWidget(self._video_status)
 
         self._load_btn = QPushButton("Browse Video File...")
-        self._load_btn.setFont(QFont("Arial", 12))
+        self._load_btn.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         self._load_btn.setFixedHeight(44)
+        self._load_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self._load_btn.setStyleSheet("""
             QPushButton {
-                background: #3b82f6;
+                background: #2563eb;
                 color: white;
                 border: none;
-                border-radius: 8px;
+                border-radius: 10px;
             }
             QPushButton:hover {
-                background: #2563eb;
+                background: #3b82f6;
+            }
+            QPushButton:pressed {
+                background: #1d4ed8;
             }
         """)
         video_layout.addWidget(self._load_btn)
 
-        layout.addWidget(video_frame)
+        right_layout.addWidget(video_frame)
 
         # Options section
         options_frame = QFrame()
         options_frame.setStyleSheet("""
             QFrame {
-                background: #262626;
-                border-radius: 16px;
-                padding: 24px;
+                background: #1e293b;
+                border-radius: 12px;
             }
         """)
         options_layout = QVBoxLayout(options_frame)
+        options_layout.setContentsMargins(20, 20, 20, 20)
+        options_layout.setSpacing(12)
 
         options_title = QLabel("2. Options")
-        options_title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
-        options_title.setStyleSheet("color: white;")
+        options_title.setFont(QFont("Arial", 15, QFont.Weight.Bold))
+        options_title.setStyleSheet("color: white; background: transparent;")
         options_layout.addWidget(options_title)
 
         # Camera selection
-        camera_layout = QHBoxLayout()
         camera_label = QLabel("Camera:")
-        camera_label.setStyleSheet("color: #888;")
-        camera_layout.addWidget(camera_label)
+        camera_label.setFont(QFont("Arial", 12))
+        camera_label.setStyleSheet("color: #9ca3af; background: transparent;")
+        options_layout.addWidget(camera_label)
 
         self._camera_combo = QComboBox()
-        self._camera_combo.setFixedWidth(300)
+        self._camera_combo.setFixedHeight(36)
         self._camera_combo.setStyleSheet("""
             QComboBox {
                 background: #374151;
                 color: white;
-                border: none;
+                border: 1px solid #4b5563;
                 border-radius: 6px;
-                padding: 8px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 20px;
+            }
+            QComboBox QAbstractItemView {
+                background: #374151;
+                color: white;
+                selection-background-color: #2563eb;
+                border: 1px solid #4b5563;
             }
         """)
-        camera_layout.addWidget(self._camera_combo)
-        camera_layout.addStretch()
-        options_layout.addLayout(camera_layout)
+        options_layout.addWidget(self._camera_combo)
 
         # Checkboxes
-        self._mirror_check = QCheckBox("Mirror mode")
+        self._mirror_check = QCheckBox("Mirror mode (recommended)")
         self._mirror_check.setChecked(True)
-        self._mirror_check.setStyleSheet("color: #ccc;")
+        self._mirror_check.setFont(QFont("Arial", 12))
+        self._mirror_check.setStyleSheet("""
+            QCheckBox {
+                color: #d1d5db;
+                background: transparent;
+                spacing: 6px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                background: #374151;
+                border: 1px solid #4b5563;
+            }
+            QCheckBox::indicator:checked {
+                background: #2563eb;
+                border: 1px solid #2563eb;
+            }
+        """)
         options_layout.addWidget(self._mirror_check)
 
         self._skeleton_check = QCheckBox("Show skeleton overlay")
         self._skeleton_check.setChecked(True)
-        self._skeleton_check.setStyleSheet("color: #ccc;")
+        self._skeleton_check.setFont(QFont("Arial", 12))
+        self._skeleton_check.setStyleSheet("""
+            QCheckBox {
+                color: #d1d5db;
+                background: transparent;
+                spacing: 6px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                background: #374151;
+                border: 1px solid #4b5563;
+            }
+            QCheckBox::indicator:checked {
+                background: #2563eb;
+                border: 1px solid #2563eb;
+            }
+        """)
         options_layout.addWidget(self._skeleton_check)
 
-        layout.addWidget(options_frame)
+        right_layout.addWidget(options_frame)
 
-        layout.addStretch()
+        right_layout.addStretch()
 
         # Start button
         self._start_btn = QPushButton("Start Training Session")
         self._start_btn.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        self._start_btn.setFixedHeight(56)
+        self._start_btn.setFixedHeight(50)
         self._start_btn.setEnabled(False)
+        self._start_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self._start_btn.setStyleSheet("""
             QPushButton {
-                background: #22c55e;
+                background: #2563eb;
                 color: white;
                 border: none;
-                border-radius: 12px;
+                border-radius: 10px;
             }
             QPushButton:hover {
-                background: #16a34a;
+                background: #3b82f6;
             }
             QPushButton:disabled {
                 background: #374151;
-                color: #666;
+                color: #6b7280;
             }
         """)
-        layout.addWidget(self._start_btn)
+        right_layout.addWidget(self._start_btn)
+
+        layout.addWidget(right_panel)
 
     def set_video(self, path: str, name: str):
-        """Set loaded video."""
+        """Set loaded video (no auto-play)."""
+        # Stop any existing preview first
+        self._stop_preview()
+
         self._video_path = path
         self._video_status.setText(f"Loaded: {name}")
-        self._video_status.setStyleSheet("color: #22c55e;")
+        self._video_status.setStyleSheet("color: #22c55e; background: transparent;")
         self._start_btn.setEnabled(True)
+
+        # Update placeholder to show video name
+        self._preview_placeholder.setText(f"📹 {name}\n\nClick Play Preview to watch")
+        self._preview_placeholder.show()
+        self._video_widget.hide()
+
+        # Show play button
+        self._play_preview_btn.setText("▶ Play Preview")
+        self._play_preview_btn.show()
+
+    def _toggle_preview(self):
+        """Toggle video preview play/stop."""
+        if self._media_player:
+            # Stop preview
+            self._stop_preview()
+            self._preview_placeholder.setText(f"Video loaded\n\nClick Play to preview")
+            self._preview_placeholder.show()
+            self._video_widget.hide()
+            self._play_preview_btn.setText("▶ Play Preview")
+        else:
+            # Start preview
+            self._start_preview()
+
+    def _start_preview(self):
+        """Start video preview playback."""
+        if not self._video_path:
+            return
+
+        self._audio_output = QAudioOutput()
+        self._audio_output.setVolume(0.5)
+
+        self._media_player = QMediaPlayer()
+        self._media_player.setAudioOutput(self._audio_output)
+        self._media_player.setVideoOutput(self._video_widget)
+        self._media_player.setSource(QUrl.fromLocalFile(self._video_path))
+        self._media_player.mediaStatusChanged.connect(self._on_media_status)
+
+        # Show video widget, hide placeholder
+        self._preview_placeholder.hide()
+        self._video_widget.show()
+        self._play_preview_btn.setText("⏹ Stop")
+
+        self._media_player.play()
+
+    def _on_media_status(self, status):
+        """Handle media status changes for looping."""
+        if self._media_player and status == QMediaPlayer.MediaStatus.EndOfMedia:
+            self._media_player.setPosition(0)
+            self._media_player.play()
+
+    def _stop_preview(self):
+        """Stop video preview and cleanup."""
+        if self._media_player:
+            self._media_player.stop()
+            try:
+                self._media_player.mediaStatusChanged.disconnect()
+            except:
+                pass
+            self._media_player.setSource(QUrl())
+            self._media_player.deleteLater()
+            self._media_player = None
+        if self._audio_output:
+            self._audio_output.deleteLater()
+            self._audio_output = None
+
+    def stop_preview(self):
+        """Public method to stop preview (called when starting training)."""
+        self._stop_preview()
+        self._video_widget.hide()
+        self._preview_placeholder.setText("Select a video to preview")
+        self._preview_placeholder.show()
+        self._play_preview_btn.hide()
 
     def populate_cameras(self, cameras: list):
         """Populate camera dropdown."""
@@ -231,6 +427,7 @@ class MainWindow(QMainWindow):
         self._is_training = False
         self._frame_width = 1280
         self._frame_height = 720
+        self._pending_video_path: Optional[str] = None
 
         # Frame timing for throttling pose requests
         self._last_dancer_pose_request = 0.0
@@ -266,33 +463,28 @@ class MainWindow(QMainWindow):
 
         # Page 1: Training
         training_page = QWidget()
+        training_page.setStyleSheet("background: #0f0f0f;")
         training_layout = QVBoxLayout(training_page)
-        training_layout.setContentsMargins(0, 0, 0, 0)
-        training_layout.setSpacing(0)
+        training_layout.setContentsMargins(8, 8, 8, 0)
+        training_layout.setSpacing(8)
 
-        # Video panels
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        splitter.setStyleSheet("""
-            QSplitter::handle {
-                background: #333;
-                width: 4px;
-            }
-        """)
+        # Video panels - side by side
+        video_layout = QHBoxLayout()
+        video_layout.setSpacing(8)
 
         self._dancer_widget = DancerVideoWidget()
         self._teacher_widget = TeacherVideoWidget()
-        splitter.addWidget(self._dancer_widget)
-        splitter.addWidget(self._teacher_widget)
-        splitter.setSizes([600, 600])
+        video_layout.addWidget(self._dancer_widget, 1)
+        video_layout.addWidget(self._teacher_widget, 1)
 
-        training_layout.addWidget(splitter, 1)
+        training_layout.addLayout(video_layout, 1)
 
-        # Score widget
+        # Score widget at bottom
         self._score_widget = ScoreWidget()
-        self._score_widget.setFixedHeight(140)
+        self._score_widget.setFixedHeight(90)
         training_layout.addWidget(self._score_widget)
 
-        # Controls
+        # Controls (bg-gray-800)
         self._controls = ControlsWidget()
         self._controls.play_clicked.connect(self._on_play_pause)
         self._controls.stop_clicked.connect(self._on_end_session)
@@ -303,14 +495,10 @@ class MainWindow(QMainWindow):
 
         self._stack.addWidget(training_page)
 
-        # Apply dark theme
+        # Dark theme
         self.setStyleSheet("""
-            QMainWindow {
-                background: #121212;
-            }
-            QWidget {
-                color: white;
-            }
+            QMainWindow { background: #0f0f0f; }
+            QWidget { color: white; }
         """)
 
         # Populate cameras
@@ -372,16 +560,40 @@ class MainWindow(QMainWindow):
         if not video_path:
             return
 
+        # Stop the preview video first and let Qt process events
+        self._setup_page.stop_preview()
+
+        # Store path for deferred initialization
+        self._pending_video_path = video_path
+
+        # Show training page first (provides visual feedback)
+        self._stack.setCurrentIndex(1)
+        self._dancer_widget.set_placeholder("Initializing camera...")
+        self._teacher_widget.set_placeholder("Loading video...")
+
+        # Process events to update UI before heavy initialization
+        from PyQt6.QtWidgets import QApplication
+        QApplication.processEvents()
+
+        # Defer heavy initialization to next event loop iteration
+        QTimer.singleShot(100, self._initialize_session)
+
+    def _initialize_session(self):
+        """Initialize session workers (called after UI updates)."""
+        video_path = self._pending_video_path
+
         # Initialize pose worker (runs in separate thread!)
         self._pose_worker = PoseWorker(model_complexity=0)  # 0 = Lite model
         self._pose_worker.dancer_pose_ready.connect(self._on_dancer_pose_ready)
         self._pose_worker.teacher_pose_ready.connect(self._on_teacher_pose_ready)
+        self._pose_worker.ready.connect(self._on_pose_worker_ready)
         self._pose_worker.start()
 
         # Initialize video worker
         self._video_worker = VideoWorker()
         if not self._video_worker.load(video_path):
             QMessageBox.critical(self, "Error", "Failed to load video")
+            self._stack.setCurrentIndex(0)
             return
 
         self._video_worker.frame_ready.connect(self._on_teacher_frame)
@@ -423,10 +635,9 @@ class MainWindow(QMainWindow):
         self._webcam_worker.start()
         self._video_worker.start()
 
-        # Show training page
-        self._stack.setCurrentIndex(1)
-
-        # Show calibration dialog
+    def _on_pose_worker_ready(self):
+        """Called when pose worker has finished initializing MediaPipe."""
+        # Now show calibration dialog
         self._show_calibration()
 
     def _show_calibration(self):

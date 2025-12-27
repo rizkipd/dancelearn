@@ -1,19 +1,13 @@
 """
 Calibration Dialog - Pre-session position checks.
-
-Validates:
-- Body in frame
-- Good lighting
-- Proper distance
+Simple and clean design.
 """
 
-from typing import Optional, List
+from typing import Optional
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QFrame, QProgressBar
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont
 
 from ..core.pose_detector import PoseResult
 
@@ -21,103 +15,76 @@ from ..core.pose_detector import PoseResult
 class CheckItem(QFrame):
     """Single calibration check item."""
 
-    def __init__(self, label: str, parent: Optional[QFrame] = None):
+    def __init__(self, label: str, parent=None):
         super().__init__(parent)
-        self.label_text = label
+        self._label_text = label
         self._passed = False
         self._setup_ui()
 
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(10)
 
-        # Status icon
+        # Icon
         self._icon = QLabel("○")
-        self._icon.setFont(QFont("Arial", 16))
-        self._icon.setFixedWidth(24)
+        self._icon.setFixedWidth(20)
+        self._icon.setStyleSheet("font-size: 16px; color: #666666;")
         layout.addWidget(self._icon)
 
         # Label
-        self._label = QLabel(self.label_text)
-        self._label.setFont(QFont("Arial", 12))
+        self._label = QLabel(self._label_text)
+        self._label.setStyleSheet("font-size: 14px; color: #cccccc;")
         layout.addWidget(self._label, 1)
 
-        # Status text
+        # Status
         self._status = QLabel("Checking...")
-        self._status.setFont(QFont("Arial", 11))
+        self._status.setStyleSheet("font-size: 12px; color: #666666;")
         layout.addWidget(self._status)
 
-        self._update_style()
+        self.setStyleSheet("background: #2a2a2a; border-radius: 6px;")
 
-    def set_passed(self, passed: bool, status_text: str = ""):
-        """Update check status."""
+    def set_passed(self, passed: bool, status: str = ""):
         self._passed = passed
-        if status_text:
-            self._status.setText(status_text)
-        else:
-            self._status.setText("OK" if passed else "Not ready")
-        self._update_style()
+        self._status.setText(status or ("OK" if passed else "Not ready"))
 
-    def _update_style(self):
-        if self._passed:
+        if passed:
             self._icon.setText("✓")
-            self._icon.setStyleSheet("color: #22c55e;")
-            self._status.setStyleSheet("color: #22c55e;")
-            self.setStyleSheet("""
-                CheckItem {
-                    background: rgba(34, 197, 94, 0.1);
-                    border-radius: 8px;
-                }
-            """)
+            self._icon.setStyleSheet("font-size: 16px; color: #22c55e;")
+            self._label.setStyleSheet("font-size: 14px; color: #22c55e;")
+            self._status.setStyleSheet("font-size: 12px; color: #22c55e;")
         else:
             self._icon.setText("○")
-            self._icon.setStyleSheet("color: #888;")
-            self._status.setStyleSheet("color: #888;")
-            self.setStyleSheet("""
-                CheckItem {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 8px;
-                }
-            """)
+            self._icon.setStyleSheet("font-size: 16px; color: #666666;")
+            self._label.setStyleSheet("font-size: 14px; color: #cccccc;")
+            self._status.setStyleSheet("font-size: 12px; color: #666666;")
 
     @property
-    def passed(self) -> bool:
+    def passed(self):
         return self._passed
 
 
 class CalibrationDialog(QDialog):
-    """
-    Calibration dialog for pre-session checks.
-
-    Signals:
-        calibration_complete: Emitted when all checks pass
-        cancelled: Emitted when user cancels
-    """
+    """Calibration dialog for pre-session checks."""
 
     calibration_complete = pyqtSignal()
     cancelled = pyqtSignal()
 
-    # Thresholds
     MIN_VISIBLE_KEYPOINTS = 20
-    MIN_BODY_RATIO = 0.3  # Body should be at least 30% of frame
-    MAX_BODY_RATIO = 0.9  # Body should be at most 90% of frame
+    MIN_BODY_RATIO = 0.3
+    MAX_BODY_RATIO = 0.9
 
-    def __init__(self, parent: Optional[QDialog] = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self._setup_ui()
-        self._checks_passed_count = 0
-        self._auto_proceed_timer = QTimer(self)
-        self._auto_proceed_timer.timeout.connect(self._on_auto_proceed)
         self._countdown = 3
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._tick)
+        self._setup_ui()
 
     def _setup_ui(self):
-        self.setWindowTitle("Calibration")
-        self.setFixedSize(400, 350)
-        self.setStyleSheet("""
-            QDialog {
-                background: #1a1a1a;
-            }
-        """)
+        self.setWindowTitle("Position Check")
+        self.setFixedSize(380, 340)
+        self.setStyleSheet("QDialog { background: #1a1a1a; }")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
@@ -125,194 +92,167 @@ class CalibrationDialog(QDialog):
 
         # Title
         title = QLabel("Position Check")
-        title.setFont(QFont("Arial", 20, QFont.Weight.Bold))
-        title.setStyleSheet("color: white;")
+        title.setStyleSheet("font-size: 22px; font-weight: bold; color: white;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         # Subtitle
-        subtitle = QLabel("Stand in front of the camera")
-        subtitle.setFont(QFont("Arial", 12))
-        subtitle.setStyleSheet("color: #888;")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(subtitle)
+        sub = QLabel("Stand in front of the camera")
+        sub.setStyleSheet("font-size: 13px; color: #888888;")
+        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(sub)
 
-        layout.addSpacing(12)
+        layout.addSpacing(8)
 
-        # Check items
+        # Checks
         self._body_check = CheckItem("Body in frame")
-        layout.addWidget(self._body_check)
-
         self._distance_check = CheckItem("Proper distance")
-        layout.addWidget(self._distance_check)
+        self._joints_check = CheckItem("Joints visible")
 
-        self._visibility_check = CheckItem("Joints visible")
-        layout.addWidget(self._visibility_check)
+        layout.addWidget(self._body_check)
+        layout.addWidget(self._distance_check)
+        layout.addWidget(self._joints_check)
 
         layout.addStretch()
 
-        # Status / countdown
-        self._status_label = QLabel("Waiting for position...")
-        self._status_label.setFont(QFont("Arial", 14))
-        self._status_label.setStyleSheet("color: #3b82f6;")
-        self._status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self._status_label)
+        # Countdown
+        self._countdown_label = QLabel("")
+        self._countdown_label.setStyleSheet("font-size: 56px; font-weight: bold; color: #22c55e;")
+        self._countdown_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._countdown_label.hide()
+        layout.addWidget(self._countdown_label)
 
-        layout.addSpacing(12)
+        # Status
+        self._status = QLabel("Waiting for position...")
+        self._status.setStyleSheet("font-size: 14px; color: #3b82f6;")
+        self._status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self._status)
+
+        layout.addSpacing(8)
 
         # Buttons
         btn_layout = QHBoxLayout()
 
-        self._cancel_btn = QPushButton("Cancel")
-        self._cancel_btn.setFont(QFont("Arial", 12))
-        self._cancel_btn.setFixedSize(120, 40)
-        self._cancel_btn.setStyleSheet("""
+        self._back_btn = QPushButton("Back")
+        self._back_btn.setFixedHeight(40)
+        self._back_btn.setStyleSheet("""
             QPushButton {
-                background: #374151;
-                color: white;
+                background: #333333;
+                color: #cccccc;
                 border: none;
-                border-radius: 8px;
+                border-radius: 6px;
+                padding: 0 20px;
+                font-size: 13px;
             }
-            QPushButton:hover {
-                background: #4b5563;
-            }
+            QPushButton:hover { background: #444444; }
         """)
-        self._cancel_btn.clicked.connect(self._on_cancel)
-        btn_layout.addWidget(self._cancel_btn)
+        self._back_btn.clicked.connect(self._cancel)
+        btn_layout.addWidget(self._back_btn)
 
         btn_layout.addStretch()
 
         self._start_btn = QPushButton("Start Now")
-        self._start_btn.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-        self._start_btn.setFixedSize(120, 40)
+        self._start_btn.setFixedHeight(40)
         self._start_btn.setEnabled(False)
         self._start_btn.setStyleSheet("""
             QPushButton {
-                background: #22c55e;
+                background: #2563eb;
                 color: white;
                 border: none;
-                border-radius: 8px;
+                border-radius: 6px;
+                padding: 0 24px;
+                font-size: 13px;
+                font-weight: bold;
             }
-            QPushButton:hover {
-                background: #16a34a;
-            }
-            QPushButton:disabled {
-                background: #374151;
-                color: #666;
-            }
+            QPushButton:hover { background: #3b82f6; }
+            QPushButton:disabled { background: #333333; color: #666666; }
         """)
-        self._start_btn.clicked.connect(self._on_start)
+        self._start_btn.clicked.connect(self._start)
         btn_layout.addWidget(self._start_btn)
 
         layout.addLayout(btn_layout)
 
     def update_pose(self, pose: Optional[PoseResult], frame_width: int, frame_height: int):
-        """
-        Update calibration checks based on current pose.
-
-        Args:
-            pose: Current pose detection result
-            frame_width: Video frame width
-            frame_height: Video frame height
-        """
-        if pose is None or not pose.keypoints:
-            self._body_check.set_passed(False, "No body detected")
-            self._distance_check.set_passed(False, "—")
-            self._visibility_check.set_passed(False, "—")
-            self._on_checks_updated()
+        """Update checks based on pose."""
+        if not pose or not pose.keypoints:
+            self._body_check.set_passed(False, "No body")
+            self._distance_check.set_passed(False, "-")
+            self._joints_check.set_passed(False, "-")
+            self._update_state()
             return
 
-        keypoints = pose.keypoints
+        kps = pose.keypoints
 
-        # Check 1: Body in frame (major joints visible)
-        visible_count = sum(1 for kp in keypoints if kp.visibility > 0.5)
-        body_in_frame = visible_count >= self.MIN_VISIBLE_KEYPOINTS
-        self._body_check.set_passed(
-            body_in_frame,
-            f"{visible_count} joints" if body_in_frame else f"Only {visible_count} joints"
-        )
+        # Check 1: Body visible
+        visible = sum(1 for k in kps if k.visibility > 0.5)
+        body_ok = visible >= self.MIN_VISIBLE_KEYPOINTS
+        self._body_check.set_passed(body_ok, f"{visible} joints" if body_ok else f"Only {visible}")
 
-        # Check 2: Proper distance (body size relative to frame)
-        if body_in_frame:
-            # Calculate bounding box
-            visible_kps = [kp for kp in keypoints if kp.visibility > 0.5]
-            min_x = min(kp.x for kp in visible_kps)
-            max_x = max(kp.x for kp in visible_kps)
-            min_y = min(kp.y for kp in visible_kps)
-            max_y = max(kp.y for kp in visible_kps)
+        # Check 2: Distance
+        if body_ok:
+            vis_kps = [k for k in kps if k.visibility > 0.5]
+            w = max(k.x for k in vis_kps) - min(k.x for k in vis_kps)
+            h = max(k.y for k in vis_kps) - min(k.y for k in vis_kps)
+            ratio = max(w, h)
 
-            body_width = max_x - min_x
-            body_height = max_y - min_y
-            body_ratio = max(body_width, body_height)
-
-            if body_ratio < self.MIN_BODY_RATIO:
-                self._distance_check.set_passed(False, "Too far away")
-            elif body_ratio > self.MAX_BODY_RATIO:
+            if ratio < self.MIN_BODY_RATIO:
+                self._distance_check.set_passed(False, "Too far")
+            elif ratio > self.MAX_BODY_RATIO:
                 self._distance_check.set_passed(False, "Too close")
             else:
-                self._distance_check.set_passed(True, "Good distance")
+                self._distance_check.set_passed(True, "Good")
         else:
-            self._distance_check.set_passed(False, "—")
+            self._distance_check.set_passed(False, "-")
 
-        # Check 3: Key joints visible with good confidence
-        key_indices = [11, 12, 23, 24, 13, 14, 25, 26]  # Shoulders, hips, elbows, knees
-        key_visible = sum(1 for i in key_indices if keypoints[i].visibility > 0.6)
-        joints_ok = key_visible >= 6
-        self._visibility_check.set_passed(
-            joints_ok,
-            f"{key_visible}/8 key joints" if not joints_ok else "All visible"
-        )
+        # Check 3: Key joints
+        key_idx = [11, 12, 23, 24, 13, 14, 25, 26]
+        key_vis = sum(1 for i in key_idx if kps[i].visibility > 0.6)
+        joints_ok = key_vis >= 6
+        self._joints_check.set_passed(joints_ok, f"{key_vis}/8" if not joints_ok else "All visible")
 
-        self._on_checks_updated()
+        self._update_state()
 
-    def _on_checks_updated(self):
-        """Handle check status changes."""
-        all_passed = (
-            self._body_check.passed and
-            self._distance_check.passed and
-            self._visibility_check.passed
-        )
+    def _update_state(self):
+        all_ok = self._body_check.passed and self._distance_check.passed and self._joints_check.passed
+        self._start_btn.setEnabled(all_ok)
 
-        self._start_btn.setEnabled(all_passed)
-
-        if all_passed:
-            if not self._auto_proceed_timer.isActive():
+        if all_ok:
+            if not self._timer.isActive():
                 self._countdown = 3
-                self._auto_proceed_timer.start(1000)
-                self._status_label.setText(f"Starting in {self._countdown}...")
-                self._status_label.setStyleSheet("color: #22c55e;")
+                self._timer.start(1000)
+                self._countdown_label.setText(str(self._countdown))
+                self._countdown_label.show()
+                self._status.setText("Get ready!")
+                self._status.setStyleSheet("font-size: 14px; color: #22c55e;")
         else:
-            self._auto_proceed_timer.stop()
-            self._status_label.setText("Waiting for position...")
-            self._status_label.setStyleSheet("color: #3b82f6;")
+            self._timer.stop()
+            self._countdown_label.hide()
+            self._status.setText("Waiting for position...")
+            self._status.setStyleSheet("font-size: 14px; color: #3b82f6;")
 
-    def _on_auto_proceed(self):
-        """Auto-proceed countdown tick."""
+    def _tick(self):
         self._countdown -= 1
         if self._countdown <= 0:
-            self._auto_proceed_timer.stop()
-            self._on_start()
+            self._timer.stop()
+            self._start()
         else:
-            self._status_label.setText(f"Starting in {self._countdown}...")
+            self._countdown_label.setText(str(self._countdown))
 
-    def _on_start(self):
-        """Start button clicked."""
-        self._auto_proceed_timer.stop()
+    def _start(self):
+        self._timer.stop()
         self.calibration_complete.emit()
         self.accept()
 
-    def _on_cancel(self):
-        """Cancel button clicked."""
-        self._auto_proceed_timer.stop()
+    def _cancel(self):
+        self._timer.stop()
         self.cancelled.emit()
         self.reject()
 
     def reset(self):
-        """Reset dialog state."""
         self._body_check.set_passed(False, "Checking...")
         self._distance_check.set_passed(False, "Checking...")
-        self._visibility_check.set_passed(False, "Checking...")
+        self._joints_check.set_passed(False, "Checking...")
         self._start_btn.setEnabled(False)
-        self._status_label.setText("Waiting for position...")
-        self._status_label.setStyleSheet("color: #3b82f6;")
-        self._auto_proceed_timer.stop()
+        self._countdown_label.hide()
+        self._status.setText("Waiting for position...")
+        self._timer.stop()
