@@ -116,33 +116,33 @@ export function CalibrationView({
       </div>
 
       {/* Status panel */}
-      <div className="glass-dark rounded-2xl p-6 sm:p-8 pointer-events-auto max-w-sm mx-4 shadow-2xl">
+      <div className="glass-dark rounded-2xl p-6 sm:p-10 pointer-events-auto w-full max-w-md mx-4 shadow-2xl">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-            <svg className="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">
+          <h3 className="text-2xl font-bold text-white mb-2">
             Position Check
           </h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-base text-gray-400">
             {completedChecks}/3 checks passed
           </p>
         </div>
 
         {/* Progress bar */}
-        <div className="h-1.5 bg-white/10 rounded-full mb-6 overflow-hidden">
+        <div className="h-2 bg-white/10 rounded-full mb-8 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-500"
             style={{ width: `${(completedChecks / 3) * 100}%` }}
           />
         </div>
 
         {/* Status items */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-8">
           <StatusItem
             label="Full body visible"
             isOk={status.bodyInFrame}
@@ -231,27 +231,27 @@ function StatusItem({
   hint: string;
 }) {
   return (
-    <div className={`flex items-center gap-3 p-3 rounded-xl transition-all ${isOk ? 'bg-emerald-500/10' : 'bg-white/5'}`}>
+    <div className={`flex items-center gap-4 p-4 rounded-xl transition-all ${isOk ? 'bg-emerald-500/10' : 'bg-white/5'}`}>
       <div
-        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
+        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
           isOk ? 'bg-emerald-500/20' : 'bg-white/10'
         }`}
       >
         {isOk ? (
-          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
         ) : (
-          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
           </svg>
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium truncate ${isOk ? 'text-emerald-400' : 'text-gray-300'}`}>
+        <p className={`text-base font-medium ${isOk ? 'text-emerald-400' : 'text-gray-200'}`}>
           {label}
         </p>
-        {!isOk && <p className="text-xs text-gray-500 truncate">{hint}</p>}
+        {!isOk && <p className="text-sm text-gray-500 mt-0.5">{hint}</p>}
       </div>
     </div>
   );

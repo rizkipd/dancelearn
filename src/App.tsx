@@ -209,8 +209,25 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden relative">
+      {/* Background Video - only on setup page */}
+      {appState === 'setup' && (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute w-full h-full object-cover opacity-20"
+          >
+            <source src="/DanceTwin-Video.mp4" type="video/mp4" />
+          </video>
+          {/* Dark overlay for better readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        </div>
+      )}
+
       {/* Background Orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
         <div className="bg-orb bg-orb-2" />
         <div className="bg-orb bg-orb-3" />
@@ -445,11 +462,11 @@ function App() {
         )}
 
         {(appState === 'calibration' || appState === 'training') && (
-          <div className="h-full flex flex-col min-h-0">
+          <div className="h-full flex flex-col">
             {/* Split View */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4 min-h-0">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4" style={{ minHeight: 'calc(100vh - 180px)' }}>
               {/* Camera Panel */}
-              <div className="relative min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] rounded-2xl overflow-hidden glass">
+              <div className="relative h-full min-h-[300px] sm:min-h-[400px] lg:min-h-0 rounded-2xl overflow-hidden glass">
                 <CameraPanel
                   videoRef={webcamRef}
                   isActive={isCameraActive}
@@ -474,7 +491,7 @@ function App() {
               </div>
 
               {/* Teacher Panel */}
-              <div className="rounded-2xl overflow-hidden glass">
+              <div className="relative h-full min-h-[300px] sm:min-h-[400px] lg:min-h-0 rounded-2xl overflow-hidden glass">
                 <TeacherVideoPanel
                   videoUrl={teacherVideoUrl}
                   isPlaying={isPlaying}
