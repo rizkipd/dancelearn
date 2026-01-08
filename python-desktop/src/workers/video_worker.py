@@ -214,6 +214,7 @@ class VideoWorker(QThread):
         """Seek to position in milliseconds."""
         with QMutexLocker(self._mutex):
             self._seek_to_ms = max(0, min(position_ms, self.duration_ms))
+            self._video_ended = False  # Reset ended flag when seeking
 
     def seek_relative(self, offset_ms: float):
         """Seek relative to current position."""
@@ -231,7 +232,7 @@ class VideoWorker(QThread):
 
     def restart(self):
         """Restart from beginning."""
-        self.seek(0)
+        self.seek(0)  # seek() resets _video_ended
 
     @property
     def is_playing(self) -> bool:

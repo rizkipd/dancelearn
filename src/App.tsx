@@ -42,7 +42,6 @@ function App() {
     error: cameraError,
   } = useWebcam({ mirrored: options.mirrored });
 
-  // Pose estimation with source tracking
   const {
     isLoading: isPoseLoading,
     isReady: isPoseReady,
@@ -62,18 +61,16 @@ function App() {
 
   const lastTeacherPoseRef = useRef<PoseFrame | null>(null);
 
-  // Process both dancer and teacher frames alternately
   useEffect(() => {
     if (appState !== 'training' || !isPlaying || !isPoseReady) return;
 
     let animationId: number;
     let lastDancerTime = 0;
     let lastTeacherTime = 0;
-    const dancerInterval = 1000 / 60; // 60 FPS for dancer (smoother skeleton)
-    const teacherInterval = 1000 / 30; // 30 FPS for teacher
+    const dancerInterval = 1000 / 60;
+    const teacherInterval = 1000 / 30;
 
     const processLoop = async (timestamp: number) => {
-      // Process dancer frame
       if (timestamp - lastDancerTime >= dancerInterval && webcamRef.current) {
         if (webcamRef.current.readyState >= 2 && webcamRef.current.videoWidth > 0) {
           await processFrame(webcamRef.current, 'dancer');
@@ -81,7 +78,6 @@ function App() {
         lastDancerTime = timestamp;
       }
 
-      // Process teacher frame (slightly offset to avoid collision)
       if (timestamp - lastTeacherTime >= teacherInterval && teacherVideoRef.current) {
         if (teacherVideoRef.current.readyState >= 2 &&
             teacherVideoRef.current.videoWidth > 0 &&
@@ -98,7 +94,6 @@ function App() {
     return () => cancelAnimationFrame(animationId);
   }, [appState, isPlaying, isPoseReady, processFrame, webcamRef]);
 
-  // Compare poses and calculate score when we have both
   useEffect(() => {
     if (appState !== 'training' || !isPlaying) return;
 
@@ -110,13 +105,12 @@ function App() {
         const teacherNormalized = normalizePose(tPose.keypoints);
         const score = compareFrames(dancerNormalized, teacherNormalized);
         setCurrentScore(score);
-        // Use video time instead of performance.now() time
         const videoTimeMs = teacherVideoRef.current
           ? teacherVideoRef.current.currentTime * 1000
           : performance.now() - sessionStartTimeRef.current;
         sessionScorerRef.current.addScore(videoTimeMs, score);
       }
-    }, 150); // Compare every 150ms
+    }, 150);
 
     return () => clearInterval(compareInterval);
   }, [appState, isPlaying, options.mirrored]);
@@ -142,7 +136,6 @@ function App() {
     setIsPlaying(true);
     sessionScorerRef.current.reset();
     sessionStartTimeRef.current = performance.now();
-    // Reset teacher video to start
     if (teacherVideoRef.current) {
       teacherVideoRef.current.currentTime = 0;
     }
@@ -183,13 +176,12 @@ function App() {
     setAppState('setup');
   }, [stopCamera]);
 
-  // Process dancer frames during calibration
   useEffect(() => {
     if (appState !== 'calibration' || !isCameraActive || !isPoseReady) return;
 
     let animationId: number;
     let lastProcessTime = 0;
-    const targetInterval = 1000 / 60; // 30 FPS for calibration (smoother skeleton)
+    const targetInterval = 1000 / 60;
 
     const processLoop = async (timestamp: number) => {
       if (timestamp - lastProcessTime >= targetInterval && webcamRef.current) {
@@ -216,20 +208,48 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col overflow-hidden relative">
+      {/* Background Orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="bg-orb bg-orb-1" />
+        <div className="bg-orb bg-orb-2" />
+        <div className="bg-orb bg-orb-3" />
+      </div>
+
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg sm:text-xl font-bold text-white">
-            AI Dance Training
-          </h1>
+      <header className="relative z-10 glass border-b border-white/10 px-4 sm:px-6 py-2 sm:py-3">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          {/* Logo + App Name */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img
+              src="/DanceTwin-Logo-Transparent.png"
+              alt="DanceTwin"
+              className="h-12 sm:h-14 w-auto drop-shadow-lg"
+            />
+            <div className="hidden sm:block">
+              <h1 className="text-xl sm:text-2xl font-bold gradient-text-static leading-none">
+                DanceTwin
+              </h1>
+              <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">Move like your twin</p>
+            </div>
+          </div>
+
+          {/* Status Indicator */}
           {appState !== 'setup' && (
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-3">
               {isPoseLoading && (
-                <span className="text-xs sm:text-sm text-yellow-400">Loading AI...</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass">
+                  <div className="sound-wave">
+                    <span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                  <span className="text-xs sm:text-sm text-cyan-400">Loading...</span>
+                </div>
               )}
               {isPoseReady && (
-                <span className="text-xs sm:text-sm text-green-400">AI Ready</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass glow-cyan">
+                  <div className="w-2 h-2 rounded-full bg-cyan-400 pulse-dot" />
+                  <span className="text-xs sm:text-sm text-cyan-400 font-medium">Ready</span>
+                </div>
               )}
             </div>
           )}
@@ -237,125 +257,199 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className={`flex-1 p-3 sm:p-6 min-h-0 ${appState === 'setup' ? 'overflow-auto' : 'overflow-hidden'}`}>
+      <main className={`relative z-10 flex-1 p-4 sm:p-6 ${appState === 'setup' ? 'overflow-auto' : 'overflow-hidden'}`}>
         {appState === 'setup' && (
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-4 sm:mb-8">
-              <h2 className="text-xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
-                Welcome to AI Dance Training
+            {/* Hero Section */}
+            <div className="text-center mb-8 sm:mb-12">
+              {/* Large centered logo for hero */}
+              <div className="mb-2">
+                <img
+                  src="/DanceTwin-Logo-Transparent.png"
+                  alt="DanceTwin"
+                  className="h-64 sm:h-80 w-auto mx-auto drop-shadow-2xl"
+                />
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 leading-tight">
+                Learn Any Dance,{' '}
+                <span className="gradient-text">Perfectly</span>
               </h2>
-              <p className="text-sm sm:text-base text-gray-400">
-                Load a dance video, follow along, and get real-time feedback on your moves
+              <p className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto">
+                Upload a dance video, practice side-by-side, and get real-time feedback on your moves
               </p>
             </div>
 
-            {/* Video Upload */}
-            <div className="bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 mb-4 sm:mb-8">
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
-                1. Load Teacher Video
-              </h3>
-              {teacherVideoUrl ? (
-                <div className="relative">
-                  <video
-                    src={teacherVideoUrl}
-                    className="w-full rounded-lg"
-                    controls
-                  />
-                  <button
-                    onClick={() => {
-                      setTeacherVideoUrl(null);
-                      setTeacherVideoFile(null);
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+            {/* Steps Container */}
+            <div className="space-y-5">
+              {/* Step 1: Video Upload */}
+              <div className="glass rounded-2xl sm:rounded-3xl p-5 sm:p-8 card-hover">
+                <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm sm:text-base shadow-lg glow-cyan">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-white">
+                      Choose Your Dance
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-500">Upload any dance video to learn from</p>
+                  </div>
                 </div>
-              ) : (
-                <FileVideoLoader onVideoLoaded={handleVideoLoaded} />
+                {teacherVideoUrl ? (
+                  <div className="relative rounded-xl overflow-hidden">
+                    <video
+                      src={teacherVideoUrl}
+                      className="w-full rounded-xl"
+                      controls
+                    />
+                    <button
+                      onClick={() => {
+                        setTeacherVideoUrl(null);
+                        setTeacherVideoFile(null);
+                      }}
+                      className="absolute top-3 right-3 p-2.5 bg-red-500/80 hover:bg-red-500 backdrop-blur-sm rounded-full text-white transition-all hover:scale-110"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <FileVideoLoader onVideoLoaded={handleVideoLoaded} />
+                )}
+              </div>
+
+              {/* Step 2: Options */}
+              <div className="glass rounded-2xl sm:rounded-3xl p-5 sm:p-8 card-hover">
+                <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm sm:text-base shadow-lg glow-purple">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-white">
+                      Customize Settings
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-500">Adjust camera and display options</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
+                  {/* Camera Select */}
+                  {devices.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Camera
+                      </label>
+                      <select
+                        value={selectedDevice}
+                        onChange={(e) => selectDevice(e.target.value)}
+                        className="w-full glass rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      >
+                        {devices.map((device) => (
+                          <option key={device.deviceId} value={device.deviceId} className="bg-gray-900">
+                            {device.label || `Camera ${device.deviceId.slice(0, 8)}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Toggles */}
+                  <div className="space-y-4">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={options.mirrored}
+                        onChange={(e) => setOptions(prev => ({ ...prev, mirrored: e.target.checked }))}
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">Mirror mode</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={options.showSkeleton}
+                        onChange={(e) => setOptions(prev => ({ ...prev, showSkeleton: e.target.checked }))}
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">Show skeleton overlay</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Start Button */}
+              <button
+                onClick={handleStartSession}
+                disabled={!teacherVideoUrl}
+                className={`
+                  w-full py-4 sm:py-5 rounded-2xl font-semibold text-lg sm:text-xl transition-all
+                  ${teacherVideoUrl
+                    ? 'btn-primary text-white'
+                    : 'glass text-gray-500 cursor-not-allowed'
+                  }
+                `}
+              >
+                {teacherVideoUrl ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Start Dancing
+                  </span>
+                ) : (
+                  'Upload a video to start'
+                )}
+              </button>
+
+              {cameraError && (
+                <div className="glass rounded-xl p-4 border border-red-500/30">
+                  <p className="text-center text-red-400">{cameraError}</p>
+                </div>
               )}
             </div>
 
-            {/* Options */}
-            <div className="bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 mb-4 sm:mb-8">
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
-                2. Options
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {/* Camera Select */}
-                {devices.length > 0 && (
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">
-                      Camera
-                    </label>
-                    <select
-                      value={selectedDevice}
-                      onChange={(e) => selectDevice(e.target.value)}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white"
-                    >
-                      {devices.map((device) => (
-                        <option key={device.deviceId} value={device.deviceId}>
-                          {device.label || `Camera ${device.deviceId.slice(0, 8)}`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                {/* Toggles */}
-                <div className="space-y-4">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={options.mirrored}
-                      onChange={(e) => setOptions(prev => ({ ...prev, mirrored: e.target.checked }))}
-                      className="w-5 h-5 rounded bg-gray-700 border-gray-600"
-                    />
-                    <span className="text-gray-300">Mirror mode</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={options.showSkeleton}
-                      onChange={(e) => setOptions(prev => ({ ...prev, showSkeleton: e.target.checked }))}
-                      className="w-5 h-5 rounded bg-gray-700 border-gray-600"
-                    />
-                    <span className="text-gray-300">Show skeleton overlay</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Start Button */}
-            <button
-              onClick={handleStartSession}
-              disabled={!teacherVideoUrl}
-              className={`
-                w-full py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all
-                ${teacherVideoUrl
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+            {/* Features Section */}
+            <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+              <FeatureCard
+                icon={
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
                 }
-              `}
-            >
-              Start Training Session
-            </button>
-
-            {cameraError && (
-              <p className="mt-4 text-center text-red-400">{cameraError}</p>
-            )}
+                title="Side-by-Side"
+                description="Compare your moves with the teacher in real-time"
+                color="cyan"
+              />
+              <FeatureCard
+                icon={
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                }
+                title="Live Scoring"
+                description="Get instant feedback on arms, legs, and body position"
+                color="purple"
+              />
+              <FeatureCard
+                icon={
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                }
+                title="100% Private"
+                description="All processing happens locally on your device"
+                color="pink"
+              />
+            </div>
           </div>
         )}
 
         {(appState === 'calibration' || appState === 'training') && (
           <div className="h-full flex flex-col min-h-0">
-            {/* Split View - stacked on mobile, side-by-side on desktop */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4 min-h-0">
-              {/* Camera Panel (Top on mobile, Left on desktop) */}
-              <div className="relative min-h-[200px] sm:min-h-[300px] lg:min-h-[400px]">
+            {/* Split View */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4 min-h-0">
+              {/* Camera Panel */}
+              <div className="relative min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] rounded-2xl overflow-hidden glass">
                 <CameraPanel
                   videoRef={webcamRef}
                   isActive={isCameraActive}
@@ -379,36 +473,38 @@ function App() {
                 )}
               </div>
 
-              {/* Teacher Panel (Bottom on mobile, Right on desktop) */}
-              <TeacherVideoPanel
-                videoUrl={teacherVideoUrl}
-                isPlaying={isPlaying}
-                showSkeleton={options.showSkeleton}
-                onEnded={handleSessionEnd}
-                videoRef={teacherVideoRef}
-                currentPose={teacherPose}
-                playbackRate={playbackRate}
-                onPlaybackRateChange={setPlaybackRate}
-              />
+              {/* Teacher Panel */}
+              <div className="rounded-2xl overflow-hidden glass">
+                <TeacherVideoPanel
+                  videoUrl={teacherVideoUrl}
+                  isPlaying={isPlaying}
+                  showSkeleton={options.showSkeleton}
+                  onEnded={handleSessionEnd}
+                  videoRef={teacherVideoRef}
+                  currentPose={teacherPose}
+                  playbackRate={playbackRate}
+                  onPlaybackRateChange={setPlaybackRate}
+                />
+              </div>
             </div>
 
             {/* Controls */}
             {appState === 'training' && (
-              <div className="flex justify-center gap-2 sm:gap-4">
+              <div className="flex justify-center gap-3 sm:gap-4">
                 <button
                   onClick={handlePlayPause}
-                  className="px-4 sm:px-8 py-2 sm:py-3 bg-blue-600 hover:bg-blue-500 rounded-lg sm:rounded-xl text-white font-medium flex items-center gap-2 text-sm sm:text-base"
+                  className="px-6 sm:px-10 py-3 sm:py-4 btn-primary rounded-xl sm:rounded-2xl text-white font-semibold flex items-center gap-2 text-sm sm:text-base"
                 >
                   {isPlaying ? (
                     <>
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
                       </svg>
                       Pause
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                       Play
@@ -417,7 +513,7 @@ function App() {
                 </button>
                 <button
                   onClick={handleSessionEnd}
-                  className="px-4 sm:px-8 py-2 sm:py-3 bg-red-600 hover:bg-red-500 rounded-lg sm:rounded-xl text-white font-medium text-sm sm:text-base"
+                  className="px-6 sm:px-10 py-3 sm:py-4 btn-secondary rounded-xl sm:rounded-2xl text-white font-semibold text-sm sm:text-base hover:bg-red-500/20 hover:border-red-500/50 transition-all"
                 >
                   End Session
                 </button>
@@ -426,6 +522,24 @@ function App() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, description, color }: { icon: React.ReactNode; title: string; description: string; color: 'cyan' | 'purple' | 'pink' }) {
+  const colorClasses = {
+    cyan: 'from-cyan-500/20 to-cyan-500/5 text-cyan-400 glow-cyan',
+    purple: 'from-purple-500/20 to-purple-500/5 text-purple-400 glow-purple',
+    pink: 'from-pink-500/20 to-pink-500/5 text-pink-400 glow-pink',
+  };
+
+  return (
+    <div className="glass rounded-2xl p-5 sm:p-6 card-hover text-center">
+      <div className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}>
+        {icon}
+      </div>
+      <h4 className="text-base sm:text-lg font-semibold text-white mb-2">{title}</h4>
+      <p className="text-sm text-gray-400">{description}</p>
     </div>
   );
 }

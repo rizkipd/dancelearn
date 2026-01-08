@@ -6,13 +6,6 @@ interface FeedbackOverlayProps {
   isActive: boolean;
 }
 
-// Track score trends for each body part
-interface ScoreTrend {
-  current: number;
-  previous: number;
-  trend: 'up' | 'down' | 'stable';
-}
-
 function getScoreColor(score: number): string {
   if (score >= 80) return 'text-green-400';
   if (score >= 60) return 'text-yellow-400';

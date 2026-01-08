@@ -15,7 +15,7 @@ export function CalibrationView({
   onCalibrationComplete,
   onBack,
 }: CalibrationViewProps) {
-  void _isReady; // Used for future AI model ready indicator
+  void _isReady; // Reserved for future model ready indicator
   const [status, setStatus] = useState<CalibrationStatus>({
     bodyInFrame: false,
     goodLighting: false,
@@ -35,7 +35,6 @@ export function CalibrationView({
       return;
     }
 
-    // Check if full body is in frame
     const requiredLandmarks = [
       LANDMARKS.LEFT_SHOULDER,
       LANDMARKS.RIGHT_SHOULDER,
@@ -54,14 +53,12 @@ export function CalibrationView({
 
     const bodyInFrame = visibleLandmarks.length >= 6;
 
-    // Check lighting (based on average confidence)
     const avgConfidence = requiredLandmarks.reduce((sum, idx) => {
       return sum + (keypoints[idx]?.visibility ?? 0);
     }, 0) / requiredLandmarks.length;
 
     const goodLighting = avgConfidence > 0.6;
 
-    // Check distance (based on body size in frame)
     const leftHip = keypoints[LANDMARKS.LEFT_HIP];
     const rightHip = keypoints[LANDMARKS.RIGHT_HIP];
     const leftShoulder = keypoints[LANDMARKS.LEFT_SHOULDER];
@@ -105,22 +102,51 @@ export function CalibrationView({
     return () => clearTimeout(timer);
   }, [countdown, onCalibrationComplete]);
 
+  const completedChecks = [status.bodyInFrame, status.goodLighting, status.properDistance].filter(Boolean).length;
+
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      {/* Calibration overlay */}
-      <div className="absolute inset-0 border-4 border-dashed border-gray-600 m-8 rounded-xl" />
+      {/* Calibration frame overlay */}
+      <div className="absolute inset-4 sm:inset-8 border-2 border-dashed border-white/20 rounded-2xl">
+        {/* Corner accents */}
+        <div className="absolute -top-1 -left-1 w-8 h-8 border-t-2 border-l-2 border-purple-500 rounded-tl-xl" />
+        <div className="absolute -top-1 -right-1 w-8 h-8 border-t-2 border-r-2 border-purple-500 rounded-tr-xl" />
+        <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-2 border-l-2 border-purple-500 rounded-bl-xl" />
+        <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-2 border-r-2 border-purple-500 rounded-br-xl" />
+      </div>
 
       {/* Status panel */}
-      <div className="bg-black/80 rounded-xl p-6 pointer-events-auto max-w-sm">
-        <h3 className="text-xl font-semibold text-white mb-4 text-center">
-          Position Check
-        </h3>
+      <div className="glass-dark rounded-2xl p-6 sm:p-8 pointer-events-auto max-w-sm mx-4 shadow-2xl">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+            <svg className="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">
+            Position Check
+          </h3>
+          <p className="text-sm text-gray-400">
+            {completedChecks}/3 checks passed
+          </p>
+        </div>
 
+        {/* Progress bar */}
+        <div className="h-1.5 bg-white/10 rounded-full mb-6 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+            style={{ width: `${(completedChecks / 3) * 100}%` }}
+          />
+        </div>
+
+        {/* Status items */}
         <div className="space-y-3 mb-6">
           <StatusItem
-            label="Full body in frame"
+            label="Full body visible"
             isOk={status.bodyInFrame}
-            hint="Step back so your full body is visible"
+            hint="Step back so we can see you"
           />
           <StatusItem
             label="Good lighting"
@@ -128,33 +154,66 @@ export function CalibrationView({
             hint="Move to a brighter area"
           />
           <StatusItem
-            label="Proper distance"
+            label="Right distance"
             isOk={status.properDistance}
-            hint="Adjust your distance from camera"
+            hint="Adjust your distance"
           />
         </div>
 
+        {/* Countdown or status */}
         {countdown !== null ? (
-          <div className="text-center">
-            <div className="text-6xl font-bold text-green-400 mb-2">
-              {countdown}
+          <div className="text-center py-4">
+            <div className="relative inline-block">
+              <div className="text-6xl font-black gradient-text">
+                {countdown}
+              </div>
+              {/* Animated ring */}
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="url(#gradient)"
+                  strokeWidth="3"
+                  strokeDasharray="283"
+                  strokeDashoffset={283 - (283 * (3 - countdown)) / 3}
+                  strokeLinecap="round"
+                  style={{ transition: 'stroke-dashoffset 1s linear' }}
+                />
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#8b5cf6" />
+                    <stop offset="100%" stopColor="#ec4899" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
-            <p className="text-gray-400">Starting session...</p>
+            <p className="text-gray-400 mt-3 text-sm">Starting session...</p>
           </div>
         ) : (
-          <div className="text-center">
+          <div className="text-center py-2">
             {status.isReady ? (
-              <p className="text-green-400">All checks passed!</p>
+              <div className="flex items-center justify-center gap-2 text-emerald-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="font-medium">All checks passed!</span>
+              </div>
             ) : (
-              <p className="text-gray-400">Adjust your position</p>
+              <p className="text-gray-400 text-sm">Adjust your position to continue</p>
             )}
           </div>
         )}
 
+        {/* Back button */}
         <button
           onClick={onBack}
-          className="mt-6 w-full py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 transition-colors"
+          className="mt-4 w-full py-3 px-4 btn-secondary rounded-xl text-gray-300 font-medium transition-all flex items-center justify-center gap-2"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
           Back to Setup
         </button>
       </div>
@@ -172,27 +231,27 @@ function StatusItem({
   hint: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className={`flex items-center gap-3 p-3 rounded-xl transition-all ${isOk ? 'bg-emerald-500/10' : 'bg-white/5'}`}>
       <div
-        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-          isOk ? 'bg-green-500' : 'bg-gray-600'
+        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
+          isOk ? 'bg-emerald-500/20' : 'bg-white/10'
         }`}
       >
         {isOk ? (
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
         ) : (
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
           </svg>
         )}
       </div>
-      <div>
-        <p className={`text-sm font-medium ${isOk ? 'text-green-400' : 'text-gray-300'}`}>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm font-medium truncate ${isOk ? 'text-emerald-400' : 'text-gray-300'}`}>
           {label}
         </p>
-        {!isOk && <p className="text-xs text-gray-500">{hint}</p>}
+        {!isOk && <p className="text-xs text-gray-500 truncate">{hint}</p>}
       </div>
     </div>
   );
