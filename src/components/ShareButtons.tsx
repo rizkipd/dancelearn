@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaXTwitter, FaFacebook, FaLinkedin, FaWhatsapp, FaLink } from 'react-icons/fa6';
+import { FaFacebook, FaLinkedin, FaWhatsapp, FaLink } from 'react-icons/fa';
+import { BsTwitterX } from 'react-icons/bs';
 
 interface ShareButtonsProps {
   url?: string;
@@ -47,7 +48,7 @@ export function ShareButtons({
   const buttons = [
     {
       name: 'twitter',
-      icon: FaXTwitter,
+      icon: BsTwitterX,
       color: 'text-white',
       hoverBg: 'hover:bg-white/10',
       label: t('share.twitter'),
