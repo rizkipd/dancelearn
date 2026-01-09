@@ -32,3 +32,6 @@ python-desktop/myenv/
 python-desktop/venv/
 .venv/
 venv/
+
+# Installation guide (for local use only)
+INSTALLATION.md

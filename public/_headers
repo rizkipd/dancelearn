@@ -1,0 +1,9 @@
+# Cloudflare Pages Headers
+# Required for MediaPipe WebAssembly and SharedArrayBuffer
+
+/*
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=*, microphone=*
