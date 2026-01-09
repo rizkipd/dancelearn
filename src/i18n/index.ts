@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { countryDetector } from './countryDetector';
 
 // English translations
 import enCommon from './locales/en/common.json';
@@ -65,8 +66,12 @@ const resources = {
   },
 };
 
+// Create language detector instance and add custom country detector
+const languageDetector = new LanguageDetector();
+languageDetector.addDetector(countryDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(languageDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -78,7 +83,7 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage', 'countryDetector'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
     },

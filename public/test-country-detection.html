@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Country-Based Language Detection Test - DanceTwin</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            background: #0f0f23;
+            color: #fff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #8b5cf6; }
+        h2 { color: #ec4899; margin-top: 30px; }
+        .info {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #8b5cf6;
+        }
+        .test-case {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .expected { color: #10b981; }
+        .actual { color: #3b82f6; }
+        button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        code {
+            background: #0a0a14;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f472b6;
+        }
+        .success { color: #10b981; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Country-Based Language Detection Test</h1>
+
+    <div class="info">
+        <h3>Current Browser Settings:</h3>
+        <p><strong>navigator.language:</strong> <code id="current-lang"></code></p>
+        <p><strong>Detected Country Code:</strong> <code id="country-code"></code></p>
+        <p><strong>Expected Language:</strong> <span class="expected" id="expected-lang"></span></p>
+    </div>
+
+    <h2>Test Different Countries</h2>
+    <p>Click a button to simulate different browser language settings:</p>
+
+    <div>
+        <button onclick="testLanguage('ja-JP')">🇯🇵 Japan (ja-JP)</button>
+        <button onclick="testLanguage('en-JP')">🇯🇵 Japan - English browser (en-JP)</button>
+        <button onclick="testLanguage('fr-JP')">🇯🇵 Japan - French browser (fr-JP)</button>
+    </div>
+
+    <div>
+        <button onclick="testLanguage('id-ID')">🇮🇩 Indonesia (id-ID)</button>
+        <button onclick="testLanguage('en-ID')">🇮🇩 Indonesia - English browser (en-ID)</button>
+        <button onclick="testLanguage('ja-ID')">🇮🇩 Indonesia - Japanese browser (ja-ID)</button>
+    </div>
+
+    <div>
+        <button onclick="testLanguage('en-US')">🇺🇸 USA (en-US)</button>
+        <button onclick="testLanguage('fr-FR')">🇫🇷 France (fr-FR)</button>
+        <button onclick="testLanguage('zh-CN')">🇨🇳 China (zh-CN)</button>
+        <button onclick="testLanguage('es-ES')">🇪🇸 Spain (es-ES)</button>
+    </div>
+
+    <div>
+        <button onclick="testLanguage('en')">No Country Code (en)</button>
+        <button onclick="testLanguage('')">Empty String</button>
+    </div>
+
+    <h2>Test Results</h2>
+    <div id="results"></div>
+
+    <h2>How to Test in the Real App</h2>
+    <div class="info">
+        <p><strong>Method 1: Browser DevTools Console</strong></p>
+        <p>Before loading the page, run this in the console:</p>
+        <pre><code>Object.defineProperty(navigator, 'language', {
+  get: () => 'en-JP'  // Change to any country code
+});
+// Then reload the page</code></pre>
+
+        <p><strong>Method 2: Browser Extension</strong></p>
+        <p>Install "Locale Switcher" or similar extension to change navigator.language</p>
+
+        <p><strong>Method 3: Clear localStorage</strong></p>
+        <p>To re-trigger auto-detection after manual language change:</p>
+        <pre><code>localStorage.removeItem('i18nextLng');
+// Then reload the page</code></pre>
+    </div>
+
+    <script>
+        // Country to language mapping (same as countryDetector.ts)
+        const countryToLanguageMap = {
+            JP: 'ja',
+            ID: 'id',
+        };
+        const DEFAULT_LANGUAGE = 'en';
+
+        function detectLanguageFromCountry(browserLang) {
+            if (!browserLang) return DEFAULT_LANGUAGE;
+
+            const parts = browserLang.split('-');
+            if (parts.length < 2) return DEFAULT_LANGUAGE;
+
+            const countryCode = parts[1].toUpperCase();
+            return countryToLanguageMap[countryCode] || DEFAULT_LANGUAGE;
+        }
+
+        function updateCurrentInfo() {
+            const currentLang = navigator.language || 'N/A';
+            const parts = currentLang.split('-');
+            const countryCode = parts.length >= 2 ? parts[1].toUpperCase() : 'None';
+            const expected = detectLanguageFromCountry(currentLang);
+
+            document.getElementById('current-lang').textContent = currentLang;
+            document.getElementById('country-code').textContent = countryCode;
+            document.getElementById('expected-lang').textContent =
+                `${expected} ${expected === 'ja' ? '(Japanese 🇯🇵)' : expected === 'id' ? '(Indonesian 🇮🇩)' : '(English 🇺🇸)'}`;
+        }
+
+        function testLanguage(testLang) {
+            const detected = detectLanguageFromCountry(testLang);
+            const parts = testLang.split('-');
+            const countryCode = parts.length >= 2 ? parts[1] : 'None';
+
+            const languageNames = {
+                'ja': 'Japanese 🇯🇵',
+                'id': 'Indonesian 🇮🇩',
+                'en': 'English 🇺🇸'
+            };
+
+            const results = document.getElementById('results');
+            const testCase = document.createElement('div');
+            testCase.className = 'test-case';
+            testCase.innerHTML = `
+                <strong>Test Input:</strong> <code>${testLang || '(empty)'}</code><br>
+                <strong>Country Code:</strong> <code>${countryCode}</code><br>
+                <strong>Detected Language:</strong> <span class="actual">${detected} - ${languageNames[detected]}</span>
+                <br><small>Timestamp: ${new Date().toLocaleTimeString()}</small>
+            `;
+            results.insertBefore(testCase, results.firstChild);
+        }
+
+        // Initialize
+        updateCurrentInfo();
+
+        // Test current browser language automatically
+        testLanguage(navigator.language);
+    </script>
+
+    <h2>Expected Behavior</h2>
+    <div class="info">
+        <ul>
+            <li>🇯🇵 <strong>Japan (JP):</strong> Any browser language with -JP → Shows Japanese</li>
+            <li>🇮🇩 <strong>Indonesia (ID):</strong> Any browser language with -ID → Shows Indonesian</li>
+            <li>🇺🇸 <strong>All Others:</strong> Any other country or no country code → Shows English</li>
+            <li>💾 <strong>localStorage Priority:</strong> If user manually changed language, it persists</li>
+            <li>🔄 <strong>Re-detection:</strong> Clear localStorage to trigger auto-detection again</li>
+        </ul>
+    </div>
+
+    <h2>✅ Success Criteria</h2>
+    <div class="info">
+        <p class="success">✓ First visit with ja-JP → Language dropdown shows: 🇯🇵 日本語</p>
+        <p class="success">✓ First visit with en-JP → Language dropdown shows: 🇯🇵 日本語 (country-based)</p>
+        <p class="success">✓ First visit with id-ID → Language dropdown shows: 🇮🇩 Indonesia</p>
+        <p class="success">✓ First visit with en-US → Language dropdown shows: 🇺🇸 English</p>
+        <p class="success">✓ Manual change persists across page reloads</p>
+        <p class="warning">⚠️ Clear localStorage to re-trigger country detection</p>
+    </div>
+</body>
+</html>
