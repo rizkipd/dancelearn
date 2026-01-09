@@ -48,5 +48,15 @@
     "en": "English",
     "ja": "日本語",
     "id": "Indonesia"
+  },
+  "share": {
+    "title": "Share DanceTwin",
+    "twitter": "Share on X",
+    "facebook": "Share on Facebook",
+    "linkedin": "Share on LinkedIn",
+    "whatsapp": "Share on WhatsApp",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied to clipboard!",
+    "shareText": "Check out DanceTwin - Learn any dance with AI-powered feedback!"
   }
 }

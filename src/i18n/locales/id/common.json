@@ -48,5 +48,15 @@
     "en": "English",
     "ja": "日本語",
     "id": "Indonesia"
+  },
+  "share": {
+    "title": "Bagikan DanceTwin",
+    "twitter": "Bagikan di X",
+    "facebook": "Bagikan di Facebook",
+    "linkedin": "Bagikan di LinkedIn",
+    "whatsapp": "Bagikan di WhatsApp",
+    "copyLink": "Salin Link",
+    "linkCopied": "Link berhasil disalin!",
+    "shareText": "Coba DanceTwin - Belajar menari dengan feedback AI!"
   }
 }

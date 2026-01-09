@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FileVideoLoader } from '../components/FileVideoLoader';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { ShareButtons } from '../components/ShareButtons';
 import { useWebcam } from '../hooks/useWebcam';
 
 function FeatureCard({ icon, title, description, color }: { icon: React.ReactNode; title: string; description: string; color: 'cyan' | 'purple' | 'pink' }) {
@@ -252,6 +253,13 @@ export function HomePage() {
               description={t('features.private.description')}
               color="pink"
             />
+          </div>
+
+          {/* Share Section */}
+          <div className="mt-12 sm:mt-16">
+            <div className="glass rounded-2xl p-6 sm:p-8">
+              <ShareButtons />
+            </div>
           </div>
         </div>
       </main>

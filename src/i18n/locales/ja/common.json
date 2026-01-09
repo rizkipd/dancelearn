@@ -48,5 +48,15 @@
     "en": "English",
     "ja": "日本語",
     "id": "Indonesia"
+  },
+  "share": {
+    "title": "DanceTwinを共有",
+    "twitter": "Xで共有",
+    "facebook": "Facebookで共有",
+    "linkedin": "LinkedInで共有",
+    "whatsapp": "WhatsAppで共有",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "リンクをコピーしました！",
+    "shareText": "DanceTwinをチェック - AIを活用したダンス学習！"
   }
 }

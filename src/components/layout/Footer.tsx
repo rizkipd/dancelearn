@@ -1,12 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ShareButtons } from '../ShareButtons';
 
 export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="relative z-10 glass border-t border-white/10 px-4 sm:px-6 py-6">
+    <footer className="relative z-10 glass border-t border-white/10 px-4 sm:px-6 py-8">
       <div className="max-w-7xl mx-auto">
+        {/* Share Buttons */}
+        <div className="flex justify-center mb-6">
+          <ShareButtons compact />
+        </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Links */}
           <nav className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
