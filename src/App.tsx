@@ -22,7 +22,7 @@ function App() {
   const [dancerPose, setDancerPose] = useState<PoseFrame | null>(null);
   const [options, setOptions] = useState({
     mirrored: true,
-    showSkeleton: true,
+    showSkeleton: false,
   });
   const [playbackRate, setPlaybackRate] = useState(1);
 
@@ -349,10 +349,10 @@ function App() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
+                <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6">
                   {/* Camera Select */}
                   {devices.length > 0 && (
-                    <div>
+                    <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Camera
                       </label>
@@ -370,25 +370,15 @@ function App() {
                     </div>
                   )}
 
-                  {/* Toggles */}
-                  <div className="space-y-4">
-                    <label className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={options.mirrored}
-                        onChange={(e) => setOptions(prev => ({ ...prev, mirrored: e.target.checked }))}
-                      />
-                      <span className="text-gray-300 group-hover:text-white transition-colors">Mirror mode</span>
-                    </label>
-                    <label className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={options.showSkeleton}
-                        onChange={(e) => setOptions(prev => ({ ...prev, showSkeleton: e.target.checked }))}
-                      />
-                      <span className="text-gray-300 group-hover:text-white transition-colors">Show skeleton overlay</span>
-                    </label>
-                  </div>
+                  {/* Mirror Toggle */}
+                  <label className="flex items-center gap-3 cursor-pointer group glass rounded-xl px-4 py-3 hover:bg-white/10 transition-all">
+                    <input
+                      type="checkbox"
+                      checked={options.mirrored}
+                      onChange={(e) => setOptions(prev => ({ ...prev, mirrored: e.target.checked }))}
+                    />
+                    <span className="text-gray-300 group-hover:text-white transition-colors">Mirror mode</span>
+                  </label>
                 </div>
               </div>
 
@@ -464,9 +454,9 @@ function App() {
         {(appState === 'calibration' || appState === 'training') && (
           <div className="h-full flex flex-col">
             {/* Split View */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4" style={{ minHeight: 'calc(100vh - 180px)' }}>
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4" style={{ minHeight: 'calc(100vh - 200px)' }}>
               {/* Camera Panel */}
-              <div className="relative h-full min-h-[300px] sm:min-h-[400px] lg:min-h-0 rounded-2xl overflow-hidden glass">
+              <div className="relative h-full rounded-2xl overflow-hidden glass">
                 <CameraPanel
                   videoRef={webcamRef}
                   isActive={isCameraActive}
@@ -491,7 +481,7 @@ function App() {
               </div>
 
               {/* Teacher Panel */}
-              <div className="relative h-full min-h-[300px] sm:min-h-[400px] lg:min-h-0 rounded-2xl overflow-hidden glass">
+              <div className="relative h-full rounded-2xl overflow-hidden glass">
                 <TeacherVideoPanel
                   videoUrl={teacherVideoUrl}
                   isPlaying={isPlaying}

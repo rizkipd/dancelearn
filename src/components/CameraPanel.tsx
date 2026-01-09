@@ -163,7 +163,7 @@ export function CameraPanel({
   }, [keypoints, showSkeleton, mirrored, videoRef, score]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-gray-900 rounded-lg overflow-hidden">
+    <div ref={containerRef} className="w-full h-full bg-gray-900 rounded-lg overflow-hidden">
       <video
         ref={videoRef}
         autoPlay

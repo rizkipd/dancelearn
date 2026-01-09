@@ -190,25 +190,17 @@ export function TeacherVideoPanel({
   }
 
   return (
-    <div className="relative w-full h-full min-h-[400px] bg-gray-900 rounded-lg overflow-hidden flex flex-col">
-      <div className="relative flex-1 flex items-center justify-center bg-black">
-        <div className="relative max-w-full max-h-full">
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
-            onEnded={onEnded}
-            className="max-w-full max-h-full object-contain"
-          />
-
-          {showSkeleton && (
-            <canvas
-              ref={canvasRef}
-              className="absolute top-0 left-0 w-full h-full pointer-events-none"
-            />
-          )}
-        </div>
+    <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden flex flex-col">
+      <div className="relative flex-1 min-h-0 flex items-center justify-center bg-black overflow-hidden">
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={onEnded}
+          className="max-w-full object-contain"
+          style={{ maxHeight: 'calc(100vh - 220px)' }}
+        />
 
         <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 rounded text-xs text-gray-300">
           Teacher

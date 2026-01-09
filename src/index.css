@@ -324,3 +324,100 @@ select {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Training Page Background */
+.training-bg {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 25%, #06b6d4 75%, #14b8a6 100%);
+}
+
+/* Video Panel Borders - Training View */
+.panel-user {
+  border: 4px solid #ec4899;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+
+.panel-teacher {
+  border: 4px solid #06b6d4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Progress Bar Styles - Pill shaped */
+.progress-bar-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  overflow: hidden;
+  height: 8px;
+}
+
+.progress-bar-pink {
+  background: linear-gradient(90deg, #ec4899, #f472b6);
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar-pink::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.progress-bar-cyan {
+  background: linear-gradient(90deg, #06b6d4, #22d3ee);
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar-cyan::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* Heart Icon Container */
+.heart-container {
+  filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.4));
+}
+
+/* White Section for Landing Page */
+.white-section {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+/* Feature Card Icon Circles */
+.feature-icon-purple {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  color: #9333ea;
+}
+
+.feature-icon-yellow {
+  background: linear-gradient(135deg, #fef9c3, #fef08a);
+  color: #ca8a04;
+}
+
+.feature-icon-pink {
+  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+  color: #db2777;
+}
