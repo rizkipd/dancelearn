@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Header Test - DanceTwin</title>
+</head>
+<body>
+    <h1>Header Test Page</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+
+        // Test 1: Cross-Origin Isolation
+        const coiTest = typeof SharedArrayBuffer !== 'undefined';
+        results.innerHTML += `<p><strong>SharedArrayBuffer available:</strong> ${coiTest ? '✅ YES' : '❌ NO'}</p>`;
+        results.innerHTML += `<p><strong>crossOriginIsolated:</strong> ${self.crossOriginIsolated ? '✅ YES' : '❌ NO'}</p>`;
+
+        // Test 2: Check if MediaPipe can load
+        results.innerHTML += `<h2>Testing MediaPipe CDN...</h2>`;
+        fetch('https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js')
+            .then(response => {
+                results.innerHTML += `<p><strong>MediaPipe CDN:</strong> ✅ Accessible (Status: ${response.status})</p>`;
+            })
+            .catch(error => {
+                results.innerHTML += `<p><strong>MediaPipe CDN:</strong> ❌ Blocked - ${error.message}</p>`;
+            });
+
+        // Test 3: Camera permissions
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            results.innerHTML += `<p><strong>getUserMedia API:</strong> ✅ Available</p>`;
+            results.innerHTML += `<p><strong>HTTPS:</strong> ${location.protocol === 'https:' ? '✅ YES' : '❌ NO'}</p>`;
+        } else {
+            results.innerHTML += `<p><strong>getUserMedia API:</strong> ❌ Not available</p>`;
+        }
+
+        // Test 4: Display current headers info
+        results.innerHTML += `<h2>Page Info</h2>`;
+        results.innerHTML += `<p><strong>URL:</strong> ${location.href}</p>`;
+        results.innerHTML += `<p><strong>Protocol:</strong> ${location.protocol}</p>`;
+
+    </script>
+</body>
+</html>
