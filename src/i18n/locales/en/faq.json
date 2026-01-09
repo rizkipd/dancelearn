@@ -1,0 +1,78 @@
+{
+  "title": "Frequently Asked Questions",
+  "subtitle": "Find answers to common questions about DanceTwin",
+  "categories": {
+    "all": "All",
+    "privacy": "Privacy & Security",
+    "technical": "Technical",
+    "scoring": "Scoring",
+    "usage": "Usage",
+    "troubleshooting": "Troubleshooting"
+  },
+  "items": [
+    {
+      "category": "privacy",
+      "question": "Is my video uploaded anywhere?",
+      "answer": "No! All processing happens directly in your browser using WebAssembly. Your webcam feed is never recorded or sent to any server. The video frames are processed in real-time and immediately discarded."
+    },
+    {
+      "category": "privacy",
+      "question": "Do you collect any personal data?",
+      "answer": "We don't collect any personal data. DanceTwin doesn't require login, doesn't track usage, and doesn't store any information about you or your dance sessions."
+    },
+    {
+      "category": "technical",
+      "question": "What browsers are supported?",
+      "answer": "DanceTwin works best on modern browsers like Chrome, Edge, or Firefox (latest versions). Safari is supported but may have reduced performance. We recommend Chrome for the best experience."
+    },
+    {
+      "category": "technical",
+      "question": "Why does the app need camera permission?",
+      "answer": "Camera access is required to capture your dance movements for real-time comparison with the teacher video. The camera feed is only used locally and is never recorded or transmitted."
+    },
+    {
+      "category": "technical",
+      "question": "Can I use this on mobile?",
+      "answer": "DanceTwin is optimized for desktop browsers where you can position your device to capture full-body movements. Mobile support is limited due to camera positioning challenges."
+    },
+    {
+      "category": "scoring",
+      "question": "How is the score calculated?",
+      "answer": "Your score is based on comparing joint angles between you and the teacher. We analyze arms (35%), legs (40%), and torso (25%). Higher scores mean your poses more closely match the teacher."
+    },
+    {
+      "category": "scoring",
+      "question": "Why is my score low even when I think I'm matching?",
+      "answer": "Common reasons include: timing differences (you might be slightly ahead or behind), angle precision (small differences add up), or visibility issues (some body parts may not be clearly detected)."
+    },
+    {
+      "category": "scoring",
+      "question": "What do the celebration effects mean?",
+      "answer": "Perfect (90+): You nailed it! Excellent (85-89): Almost perfect! Good (80-84): Great progress! These celebrations appear when you're doing well to keep you motivated."
+    },
+    {
+      "category": "usage",
+      "question": "What video formats are supported?",
+      "answer": "We support MP4, WebM, and MOV video formats. For best results, use videos with clear, full-body movements and good lighting."
+    },
+    {
+      "category": "usage",
+      "question": "How should I position my camera?",
+      "answer": "Position your camera to capture your full body from head to toe. Stand about 2-3 meters away. Make sure the area is well-lit and your background is relatively clear."
+    },
+    {
+      "category": "usage",
+      "question": "What is mirror mode?",
+      "answer": "Mirror mode flips your camera feed horizontally, like looking in a mirror. This makes it easier to follow along when the teacher is facing you."
+    },
+    {
+      "category": "troubleshooting",
+      "question": "The pose detection isn't working well. What can I do?",
+      "answer": "Try improving lighting, wearing clothes that contrast with your background, and ensuring your full body is visible. Avoid loose or baggy clothing that can obscure body shape."
+    }
+  ],
+  "stillHaveQuestions": "Still have questions?",
+  "checkGuide": "Check out our How to Use guide for detailed instructions.",
+  "contactUs": "Or contact us at",
+  "email": "dancetwin2025@gmail.com"
+}

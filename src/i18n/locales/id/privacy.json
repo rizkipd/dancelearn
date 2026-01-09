@@ -1,0 +1,47 @@
+{
+  "title": "Kebijakan Privasi",
+  "subtitle": "Privasi Anda adalah prioritas utama kami",
+  "lastUpdated": "Terakhir diperbarui: Januari 2025",
+  "sections": {
+    "overview": {
+      "title": "Ringkasan",
+      "content": "DanceTwin dirancang dengan privasi sebagai intinya. Kami percaya latihan tari Anda harus tetap privat."
+    },
+    "dataCollection": {
+      "title": "Pengumpulan Data",
+      "content": "Kami TIDAK mengumpulkan:",
+      "items": [
+        "Video atau gambar webcam Anda",
+        "Gerakan tari atau pose Anda",
+        "Informasi pribadi apapun",
+        "Analitik penggunaan atau data pelacakan"
+      ]
+    },
+    "localStorage": {
+      "title": "Penyimpanan Lokal",
+      "content": "Satu-satunya data yang disimpan secara lokal di perangkat Anda:",
+      "items": [
+        "Preferensi bahasa Anda",
+        "Pengaturan aplikasi (pilihan kamera, mode cermin)",
+        "Hasil sesi (hanya jika Anda memilih untuk mengekspor)"
+      ]
+    },
+    "processing": {
+      "title": "Cara Pemrosesan Bekerja",
+      "content": "Semua estimasi pose AI dan penilaian terjadi sepenuhnya di browser Anda menggunakan WebAssembly. Frame video Anda diproses secara real-time dan langsung dihapus. Tidak ada yang dikirim ke server manapun."
+    },
+    "thirdParty": {
+      "title": "Layanan Pihak Ketiga",
+      "content": "DanceTwin menggunakan MediaPipe untuk estimasi pose, yang berjalan sepenuhnya di browser Anda. Tidak ada data yang dikirim ke Google atau pihak ketiga lainnya."
+    },
+    "cookies": {
+      "title": "Cookie",
+      "content": "Kami tidak menggunakan cookie untuk pelacakan. Satu-satunya cookie yang digunakan adalah untuk fungsi esensial seperti mengingat preferensi bahasa Anda."
+    },
+    "contact": {
+      "title": "Hubungi Kami",
+      "content": "Jika Anda memiliki pertanyaan tentang praktik privasi kami, silakan hubungi kami di:",
+      "email": "dancetwin2025@gmail.com"
+    }
+  }
+}

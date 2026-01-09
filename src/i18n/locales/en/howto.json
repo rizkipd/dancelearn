@@ -1,0 +1,81 @@
+{
+  "title": "How to Use DanceTwin",
+  "subtitle": "Get started in 4 easy steps",
+  "steps": {
+    "step1": {
+      "number": "1",
+      "title": "Upload a Dance Video",
+      "description": "Choose any dance video you want to learn from. Drag and drop or click to browse. We support MP4, WebM, and MOV formats.",
+      "tips": [
+        "Choose videos with clear, full-body movements",
+        "Shorter clips (30-60 seconds) work best for practice",
+        "Ensure the dancer is clearly visible throughout"
+      ]
+    },
+    "step2": {
+      "number": "2",
+      "title": "Set Up Your Camera",
+      "description": "Select your webcam and adjust settings. Enable mirror mode if it helps you follow along more naturally.",
+      "tips": [
+        "Position your camera to capture your full body",
+        "Ensure good lighting for better pose detection",
+        "Keep your background clear if possible"
+      ]
+    },
+    "step3": {
+      "number": "3",
+      "title": "Calibration Check",
+      "description": "Before starting, we'll check that you're properly positioned. Make sure your full body is visible and you have enough space.",
+      "tips": [
+        "Stand about 2-3 meters from your camera",
+        "Make sure you have room to move",
+        "Wear clothes that contrast with your background"
+      ]
+    },
+    "step4": {
+      "number": "4",
+      "title": "Start Dancing!",
+      "description": "Follow along with the teacher video. Watch your real-time score and follow the hints to improve your moves.",
+      "tips": [
+        "Focus on matching the timing first",
+        "Pay attention to the body part scores",
+        "Practice weak sections repeatedly"
+      ]
+    }
+  },
+  "scoringGuide": {
+    "title": "Understanding Your Score",
+    "description": "Your score is calculated by comparing your pose to the teacher's:",
+    "bodyParts": {
+      "arms": "Arms (35%): Shoulder and elbow angles",
+      "legs": "Legs (40%): Hip and knee angles",
+      "torso": "Torso (25%): Body alignment"
+    },
+    "grades": {
+      "title": "Score Grades",
+      "aPlus": "A+ (95-100): Perfect!",
+      "a": "A (90-94): Excellent",
+      "b": "B (80-89): Great",
+      "c": "C (70-79): Good",
+      "d": "D (60-69): Keep practicing",
+      "f": "F (Below 60): Needs work"
+    }
+  },
+  "troubleshooting": {
+    "title": "Troubleshooting",
+    "items": [
+      {
+        "problem": "Camera not detected",
+        "solution": "Check browser permissions and ensure no other app is using your camera"
+      },
+      {
+        "problem": "Pose not detected",
+        "solution": "Improve lighting and ensure your full body is visible"
+      },
+      {
+        "problem": "Low scores despite good moves",
+        "solution": "Check timing and try to match the speed of the teacher video"
+      }
+    ]
+  }
+}

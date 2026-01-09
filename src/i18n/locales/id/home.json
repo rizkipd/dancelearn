@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "title": "Pelajari Tarian Apapun,",
+    "titleHighlight": "Dengan Sempurna",
+    "subtitle": "Unggah video tarian, latihan berdampingan, dan dapatkan umpan balik real-time untuk gerakan Anda"
+  },
+  "step1": {
+    "title": "Pilih Tarian Anda",
+    "subtitle": "Unggah video tarian yang ingin dipelajari"
+  },
+  "step2": {
+    "title": "Sesuaikan Pengaturan",
+    "subtitle": "Atur opsi kamera dan tampilan"
+  },
+  "features": {
+    "sideBySide": {
+      "title": "Berdampingan",
+      "description": "Bandingkan gerakan Anda dengan guru secara real-time"
+    },
+    "liveScoring": {
+      "title": "Skor Langsung",
+      "description": "Dapatkan umpan balik instan untuk lengan, kaki, dan posisi tubuh"
+    },
+    "private": {
+      "title": "100% Privat",
+      "description": "Semua pemrosesan dilakukan di perangkat Anda"
+    }
+  },
+  "uploadPrompt": "Seret & lepas video Anda di sini",
+  "uploadHint": "atau klik untuk memilih",
+  "supportedFormats": "Mendukung MP4, WebM, MOV"
+}

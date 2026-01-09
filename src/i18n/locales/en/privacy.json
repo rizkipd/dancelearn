@@ -1,0 +1,47 @@
+{
+  "title": "Privacy Policy",
+  "subtitle": "Your privacy is our top priority",
+  "lastUpdated": "Last updated: January 2025",
+  "sections": {
+    "overview": {
+      "title": "Overview",
+      "content": "DanceTwin is designed with privacy at its core. We believe your dance practice should stay private."
+    },
+    "dataCollection": {
+      "title": "Data Collection",
+      "content": "We do NOT collect:",
+      "items": [
+        "Your webcam video or images",
+        "Your dance movements or poses",
+        "Any personal information",
+        "Usage analytics or tracking data"
+      ]
+    },
+    "localStorage": {
+      "title": "Local Storage",
+      "content": "The only data stored locally on your device:",
+      "items": [
+        "Your language preference",
+        "App settings (camera selection, mirror mode)",
+        "Session results (only if you choose to export)"
+      ]
+    },
+    "processing": {
+      "title": "How Processing Works",
+      "content": "All AI pose estimation and scoring happens entirely in your browser using WebAssembly. Your video frames are processed in real-time and immediately discarded. Nothing is sent to any server."
+    },
+    "thirdParty": {
+      "title": "Third-Party Services",
+      "content": "DanceTwin uses MediaPipe for pose estimation, which runs entirely in your browser. No data is sent to Google or any other third party."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "content": "We do not use cookies for tracking. The only cookies used are for essential functionality like remembering your language preference."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have any questions about our privacy practices, please contact us at:",
+      "email": "dancetwin2025@gmail.com"
+    }
+  }
+}

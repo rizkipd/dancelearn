@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "title": "Learn Any Dance,",
+    "titleHighlight": "Perfectly",
+    "subtitle": "Upload a dance video, practice side-by-side, and get real-time feedback on your moves"
+  },
+  "step1": {
+    "title": "Choose Your Dance",
+    "subtitle": "Upload any dance video to learn from"
+  },
+  "step2": {
+    "title": "Customize Settings",
+    "subtitle": "Adjust camera and display options"
+  },
+  "features": {
+    "sideBySide": {
+      "title": "Side-by-Side",
+      "description": "Compare your moves with the teacher in real-time"
+    },
+    "liveScoring": {
+      "title": "Live Scoring",
+      "description": "Get instant feedback on arms, legs, and body position"
+    },
+    "private": {
+      "title": "100% Private",
+      "description": "All processing happens locally on your device"
+    }
+  },
+  "uploadPrompt": "Drag & drop your video here",
+  "uploadHint": "or click to browse",
+  "supportedFormats": "Supports MP4, WebM, MOV"
+}

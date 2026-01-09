@@ -1,0 +1,34 @@
+{
+  "celebration": {
+    "perfect": "SEMPURNA!",
+    "excellent": "LUAR BIASA!",
+    "good": "BAGUS!"
+  },
+  "timing": {
+    "behind": "Terlambat",
+    "ahead": "Terlalu Cepat"
+  },
+  "hints": {
+    "extendLeftElbow": "Luruskan siku kiri Anda lebih",
+    "bendLeftElbow": "Tekuk siku kiri Anda lebih",
+    "extendRightElbow": "Luruskan siku kanan Anda lebih",
+    "bendRightElbow": "Tekuk siku kanan Anda lebih",
+    "raiseLeftArm": "Angkat lengan kiri Anda lebih tinggi",
+    "lowerLeftArm": "Turunkan lengan kiri Anda",
+    "raiseRightArm": "Angkat lengan kanan Anda lebih tinggi",
+    "lowerRightArm": "Turunkan lengan kanan Anda",
+    "straightenLeftLeg": "Luruskan kaki kiri Anda lebih",
+    "bendLeftKnee": "Tekuk lutut kiri Anda lebih",
+    "straightenRightLeg": "Luruskan kaki kanan Anda lebih",
+    "bendRightKnee": "Tekuk lutut kanan Anda lebih",
+    "raiseLeftLeg": "Angkat kaki kiri Anda lebih tinggi",
+    "lowerLeftLeg": "Turunkan kaki kiri Anda",
+    "raiseRightLeg": "Angkat kaki kanan Anda lebih tinggi",
+    "lowerRightLeg": "Turunkan kaki kanan Anda",
+    "alignTorso": "Sejajarkan badan Anda dengan guru",
+    "standStraighter": "Berdiri lebih tegak",
+    "leanForward": "Condongkan badan sedikit ke depan",
+    "leanBack": "Condongkan badan sedikit ke belakang",
+    "keepGoing": "Terus lanjutkan! Anda hebat!"
+  }
+}

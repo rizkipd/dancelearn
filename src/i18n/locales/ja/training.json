@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "title": "ポジション確認",
+    "checksProgress": "{{completed}}/3 チェック完了",
+    "checks": {
+      "bodyVisible": "全身が見えています",
+      "bodyVisibleHint": "後ろに下がって全身が見えるようにしてください",
+      "lighting": "照明が十分です",
+      "lightingHint": "より明るい場所に移動してください",
+      "distance": "適切な距離です",
+      "distanceHint": "カメラからの距離を調整してください"
+    },
+    "starting": "セッションを開始中...",
+    "allPassed": "すべてのチェックに合格しました！",
+    "adjustPosition": "続行するには位置を調整してください"
+  },
+  "session": {
+    "complete": "セッション完了！",
+    "howYouDid": "あなたの結果",
+    "overallScore": "総合スコア",
+    "breakdown": "パフォーマンス内訳",
+    "areasToPractice": "練習が必要な部分",
+    "timeline": "スコアタイムライン",
+    "start": "開始",
+    "end": "終了",
+    "grade": {
+      "excellent": "素晴らしい！",
+      "great": "よくできました！",
+      "good": "良い努力です！",
+      "keepPracticing": "練習を続けましょう！"
+    }
+  },
+  "controls": {
+    "volume": "音量",
+    "speed": "速度",
+    "loop": "ループ"
+  }
+}

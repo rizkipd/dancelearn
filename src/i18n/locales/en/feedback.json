@@ -1,0 +1,34 @@
+{
+  "celebration": {
+    "perfect": "PERFECT!",
+    "excellent": "EXCELLENT!",
+    "good": "GOOD!"
+  },
+  "timing": {
+    "behind": "Behind",
+    "ahead": "Ahead"
+  },
+  "hints": {
+    "extendLeftElbow": "Extend your left elbow more",
+    "bendLeftElbow": "Bend your left elbow more",
+    "extendRightElbow": "Extend your right elbow more",
+    "bendRightElbow": "Bend your right elbow more",
+    "raiseLeftArm": "Raise your left arm higher",
+    "lowerLeftArm": "Lower your left arm",
+    "raiseRightArm": "Raise your right arm higher",
+    "lowerRightArm": "Lower your right arm",
+    "straightenLeftLeg": "Straighten your left leg more",
+    "bendLeftKnee": "Bend your left knee more",
+    "straightenRightLeg": "Straighten your right leg more",
+    "bendRightKnee": "Bend your right knee more",
+    "raiseLeftLeg": "Raise your left leg higher",
+    "lowerLeftLeg": "Lower your left leg",
+    "raiseRightLeg": "Raise your right leg higher",
+    "lowerRightLeg": "Lower your right leg",
+    "alignTorso": "Keep your torso aligned with the teacher",
+    "standStraighter": "Stand up straighter",
+    "leanForward": "Lean forward slightly",
+    "leanBack": "Lean back slightly",
+    "keepGoing": "Keep going! You're doing great!"
+  }
+}

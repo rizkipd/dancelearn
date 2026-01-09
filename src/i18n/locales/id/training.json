@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "title": "Pemeriksaan Posisi",
+    "checksProgress": "{{completed}}/3 pemeriksaan berhasil",
+    "checks": {
+      "bodyVisible": "Seluruh tubuh terlihat",
+      "bodyVisibleHint": "Mundur agar kami bisa melihat Anda",
+      "lighting": "Pencahayaan baik",
+      "lightingHint": "Pindah ke area yang lebih terang",
+      "distance": "Jarak tepat",
+      "distanceHint": "Sesuaikan jarak Anda dari kamera"
+    },
+    "starting": "Memulai sesi...",
+    "allPassed": "Semua pemeriksaan berhasil!",
+    "adjustPosition": "Sesuaikan posisi Anda untuk melanjutkan"
+  },
+  "session": {
+    "complete": "Sesi Selesai!",
+    "howYouDid": "Berikut hasil Anda",
+    "overallScore": "Skor Keseluruhan",
+    "breakdown": "Rincian Performa",
+    "areasToPractice": "Area untuk Dilatih",
+    "timeline": "Timeline Skor",
+    "start": "Mulai",
+    "end": "Selesai",
+    "grade": {
+      "excellent": "Luar biasa!",
+      "great": "Bagus sekali!",
+      "good": "Usaha yang baik!",
+      "keepPracticing": "Terus berlatih!"
+    }
+  },
+  "controls": {
+    "volume": "Volume",
+    "speed": "Kecepatan",
+    "loop": "Ulangi"
+  }
+}

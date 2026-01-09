@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useCallback, RefObject } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PoseFrame } from '../types/pose';
 import { LANDMARKS } from '../engines/PoseNormalizer';
 
@@ -43,6 +44,7 @@ export function TeacherVideoPanel({
   currentPose,
   videoRef: externalVideoRef,
 }: TeacherVideoPanelProps) {
+  const { t } = useTranslation('common');
   const internalVideoRef = useRef<HTMLVideoElement>(null);
   const videoRef = (externalVideoRef || internalVideoRef) as RefObject<HTMLVideoElement>;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -183,7 +185,7 @@ export function TeacherVideoPanel({
               d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <p>No video loaded</p>
+          <p>{t('status.noVideoLoaded')}</p>
         </div>
       </div>
     );
@@ -203,7 +205,7 @@ export function TeacherVideoPanel({
         />
 
         <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 rounded text-xs text-gray-300">
-          Teacher
+          {t('labels.teacher')}
         </div>
       </div>
 

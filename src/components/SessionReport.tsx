@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { SessionResult } from '../types/pose';
 
 interface SessionReportProps {
@@ -16,6 +17,7 @@ function getScoreGrade(score: number): { letter: string; color: string; bgColor:
 }
 
 export function SessionReport({ result, onRestart, onNewSession }: SessionReportProps) {
+  const { t } = useTranslation(['training', 'common']);
   const grade = getScoreGrade(result.overallScore);
 
   const handleExport = () => {
@@ -42,9 +44,9 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-            Session Complete!
+            {t('session.complete')}
           </h1>
-          <p className="text-gray-400">Here's how you did</p>
+          <p className="text-gray-400">{t('session.howYouDid')}</p>
         </div>
 
         {/* Main Score Card */}
@@ -91,7 +93,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
               <div className="text-6xl sm:text-8xl font-black text-white tracking-tight">
                 {result.overallScore}
               </div>
-              <div className="text-gray-400 mt-2 text-lg">Overall Score</div>
+              <div className="text-gray-400 mt-2 text-lg">{t('session.overallScore')}</div>
             </div>
           </div>
         </div>
@@ -104,12 +106,12 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            Performance Breakdown
+            {t('session.breakdown')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <ScoreCard label="Arms" score={result.bodyParts.arms} icon={<ArmsIcon />} />
-            <ScoreCard label="Legs" score={result.bodyParts.legs} icon={<LegsIcon />} />
-            <ScoreCard label="Torso" score={result.bodyParts.torso} icon={<TorsoIcon />} />
+            <ScoreCard label={t('common:labels.arms')} score={result.bodyParts.arms} icon={<ArmsIcon />} />
+            <ScoreCard label={t('common:labels.legs')} score={result.bodyParts.legs} icon={<LegsIcon />} />
+            <ScoreCard label={t('common:labels.torso')} score={result.bodyParts.torso} icon={<TorsoIcon />} />
           </div>
         </div>
 
@@ -122,7 +124,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              Areas to Practice
+              {t('session.areasToPractice')}
             </h2>
             <div className="space-y-3">
               {result.weakSections.map((section, idx) => (
@@ -160,7 +162,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              Score Timeline
+              {t('session.timeline')}
             </h2>
             <div className="h-32 sm:h-40 flex items-end gap-0.5 sm:gap-1">
               {result.scoreTimeline.slice(0, 60).map((point, idx) => (
@@ -179,8 +181,8 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
               ))}
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-3">
-              <span>Start</span>
-              <span>End</span>
+              <span>{t('session.start')}</span>
+              <span>{t('session.end')}</span>
             </div>
           </div>
         )}
@@ -194,7 +196,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Try Again
+            {t('common:buttons.tryAgain')}
           </button>
           <button
             onClick={onNewSession}
@@ -203,7 +205,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            New Video
+            {t('common:buttons.newVideo')}
           </button>
           <button
             onClick={handleExport}
@@ -212,7 +214,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Export
+            {t('common:buttons.export')}
           </button>
         </div>
       </div>

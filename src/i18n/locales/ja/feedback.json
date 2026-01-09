@@ -1,0 +1,34 @@
+{
+  "celebration": {
+    "perfect": "パーフェクト！",
+    "excellent": "エクセレント！",
+    "good": "グッド！"
+  },
+  "timing": {
+    "behind": "遅れ",
+    "ahead": "先行"
+  },
+  "hints": {
+    "extendLeftElbow": "左肘をもっと伸ばして",
+    "bendLeftElbow": "左肘をもっと曲げて",
+    "extendRightElbow": "右肘をもっと伸ばして",
+    "bendRightElbow": "右肘をもっと曲げて",
+    "raiseLeftArm": "左腕をもっと上げて",
+    "lowerLeftArm": "左腕を下げて",
+    "raiseRightArm": "右腕をもっと上げて",
+    "lowerRightArm": "右腕を下げて",
+    "straightenLeftLeg": "左脚をもっと伸ばして",
+    "bendLeftKnee": "左膝をもっと曲げて",
+    "straightenRightLeg": "右脚をもっと伸ばして",
+    "bendRightKnee": "右膝をもっと曲げて",
+    "raiseLeftLeg": "左脚をもっと上げて",
+    "lowerLeftLeg": "左脚を下げて",
+    "raiseRightLeg": "右脚をもっと上げて",
+    "lowerRightLeg": "右脚を下げて",
+    "alignTorso": "先生に合わせて胴体を揃えて",
+    "standStraighter": "もっとまっすぐ立って",
+    "leanForward": "少し前に傾いて",
+    "leanBack": "少し後ろに傾いて",
+    "keepGoing": "その調子！頑張って！"
+  }
+}

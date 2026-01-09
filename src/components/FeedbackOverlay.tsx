@@ -1,9 +1,14 @@
 import { ScoreResult } from '../types/pose';
 import { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ConfettiAnimation } from './ConfettiAnimation';
+import { useCelebration } from '../hooks/useCelebration';
 
 interface FeedbackOverlayProps {
   score: ScoreResult | null;
   isActive: boolean;
+  celebrationEnabled?: boolean;
+  soundEnabled?: boolean;
 }
 
 function getScoreColor(score: number): string {
@@ -26,13 +31,32 @@ function getTrendIcon(trend: 'up' | 'down' | 'stable'): { icon: string; color: s
   }
 }
 
+function getCelebrationClass(type: 'perfect' | 'excellent' | 'good' | null): string {
+  switch (type) {
+    case 'perfect': return 'celebration-perfect';
+    case 'excellent': return 'celebration-excellent';
+    case 'good': return 'celebration-good';
+    default: return '';
+  }
+}
 
-export function FeedbackOverlay({ score, isActive }: FeedbackOverlayProps) {
+export function FeedbackOverlay({
+  score,
+  isActive,
+  celebrationEnabled = true,
+  soundEnabled = true
+}: FeedbackOverlayProps) {
+  const { t } = useTranslation(['feedback', 'common']);
   const prevScoreRef = useRef<ScoreResult['bodyParts'] | null>(null);
   const [trends, setTrends] = useState<Record<string, 'up' | 'down' | 'stable'>>({
     arms: 'stable',
     legs: 'stable',
     torso: 'stable',
+  });
+
+  const { celebrationType, isActive: isCelebrating, checkScore, clearCelebration } = useCelebration({
+    effectsEnabled: celebrationEnabled,
+    soundEnabled: soundEnabled,
   });
 
   // Calculate trends based on score changes
@@ -52,7 +76,19 @@ export function FeedbackOverlay({ score, isActive }: FeedbackOverlayProps) {
       });
     }
     prevScoreRef.current = { ...score.bodyParts };
-  }, [score]);
+
+    // Check for celebration
+    if (celebrationEnabled) {
+      checkScore(score.overallScore);
+    }
+  }, [score, celebrationEnabled, checkScore]);
+
+  // Clear celebration when inactive
+  useEffect(() => {
+    if (!isActive) {
+      clearCelebration();
+    }
+  }, [isActive, clearCelebration]);
 
   if (!isActive || !score) {
     return null;
@@ -61,61 +97,80 @@ export function FeedbackOverlay({ score, isActive }: FeedbackOverlayProps) {
   // Find the weakest body part for hint coloring
   const weakestScore = Math.min(score.bodyParts.arms, score.bodyParts.legs, score.bodyParts.torso);
   const hintStyle = getHintUrgency(weakestScore);
+  const celebrationClass = getCelebrationClass(celebrationType);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 sm:p-6">
-      <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-6">
-        {/* Main Score */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className={`text-4xl sm:text-6xl font-bold transition-colors duration-300 ${getScoreColor(score.overallScore)}`}>
-            {score.overallScore}
+    <>
+      {/* Confetti for perfect scores */}
+      <ConfettiAnimation
+        isActive={isCelebrating && celebrationType === 'perfect'}
+        particleCount={50}
+        duration={1500}
+      />
+
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-6">
+          {/* Main Score */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className={`text-4xl sm:text-6xl font-bold transition-colors duration-300 ${getScoreColor(score.overallScore)} ${celebrationClass}`}>
+              {score.overallScore}
+            </div>
+            <div className="text-gray-400 text-xs sm:text-sm">
+              <div>/ 100</div>
+              <div>{t('common:labels.score')}</div>
+            </div>
+            {/* Celebration badge */}
+            {isCelebrating && celebrationType && (
+              <div className={`celebration-badge celebration-badge-${celebrationType}`}>
+                {celebrationType === 'perfect' && `🌟 ${t('celebration.perfect')}`}
+                {celebrationType === 'excellent' && `✨ ${t('celebration.excellent')}`}
+                {celebrationType === 'good' && `👍 ${t('celebration.good')}`}
+              </div>
+            )}
           </div>
-          <div className="text-gray-400 text-xs sm:text-sm">
-            <div>/ 100</div>
-            <div>Score</div>
+
+          {/* Body Part Scores with Trends */}
+          <div className="flex gap-2 sm:gap-4">
+            <BodyPartScore label={t('common:labels.arms')} score={score.bodyParts.arms} trend={trends.arms} isGlowing={isCelebrating} />
+            <BodyPartScore label={t('common:labels.legs')} score={score.bodyParts.legs} trend={trends.legs} isGlowing={isCelebrating} />
+            <BodyPartScore label={t('common:labels.torso')} score={score.bodyParts.torso} trend={trends.torso} isGlowing={isCelebrating} />
           </div>
+
+          {/* Timing */}
+          {score.timingOffsetMs !== 0 && (
+            <div className="text-center hidden sm:block">
+              <div className={`text-lg font-medium ${score.timingOffsetMs < 0 ? 'text-yellow-400' : 'text-blue-400'}`}>
+                {score.timingOffsetMs > 0 ? '+' : ''}{score.timingOffsetMs}ms
+              </div>
+              <div className="text-xs text-gray-500">
+                {score.timingOffsetMs < 0 ? t('timing.behind') : t('timing.ahead')}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Body Part Scores with Trends */}
-        <div className="flex gap-2 sm:gap-4">
-          <BodyPartScore label="Arms" score={score.bodyParts.arms} trend={trends.arms} />
-          <BodyPartScore label="Legs" score={score.bodyParts.legs} trend={trends.legs} />
-          <BodyPartScore label="Torso" score={score.bodyParts.torso} trend={trends.torso} />
-        </div>
-
-        {/* Timing */}
-        {score.timingOffsetMs !== 0 && (
-          <div className="text-center hidden sm:block">
-            <div className={`text-lg font-medium ${score.timingOffsetMs < 0 ? 'text-yellow-400' : 'text-blue-400'}`}>
-              {score.timingOffsetMs > 0 ? '+' : ''}{score.timingOffsetMs}ms
-            </div>
-            <div className="text-xs text-gray-500">
-              {score.timingOffsetMs < 0 ? 'Behind' : 'Ahead'}
-            </div>
+        {/* Color-Coded Hint */}
+        {score.hint && !isCelebrating && (
+          <div className={`mt-3 sm:mt-4 p-2 sm:p-3 ${hintStyle.bg} border ${hintStyle.border} rounded-lg transition-colors duration-300`}>
+            <p className={`${hintStyle.text} text-xs sm:text-sm flex items-center gap-2`}>
+              <span className="text-base sm:text-lg">{hintStyle.icon}</span>
+              {score.hint}
+            </p>
           </div>
         )}
       </div>
-
-      {/* Color-Coded Hint */}
-      {score.hint && (
-        <div className={`mt-3 sm:mt-4 p-2 sm:p-3 ${hintStyle.bg} border ${hintStyle.border} rounded-lg transition-colors duration-300`}>
-          <p className={`${hintStyle.text} text-xs sm:text-sm flex items-center gap-2`}>
-            <span className="text-base sm:text-lg">{hintStyle.icon}</span>
-            {score.hint}
-          </p>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 
-function BodyPartScore({ label, score, trend }: { label: string; score: number; trend?: 'up' | 'down' | 'stable' }) {
+function BodyPartScore({ label, score, trend, isGlowing }: { label: string; score: number; trend?: 'up' | 'down' | 'stable'; isGlowing?: boolean }) {
   const trendInfo = trend ? getTrendIcon(trend) : null;
+  const glowClass = isGlowing && score >= 80 ? 'celebration-glow' : '';
 
   return (
     <div className="text-center">
       <div className="relative">
-        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800 flex items-center justify-center">
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800 flex items-center justify-center ${glowClass}`}>
           <div
             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300"
             style={{

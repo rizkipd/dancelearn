@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "play": "Play",
+    "pause": "Pause",
+    "start": "Start Dancing",
+    "endSession": "End Session",
+    "tryAgain": "Try Again",
+    "newVideo": "New Video",
+    "export": "Export",
+    "exportResults": "Export Results",
+    "backToHome": "Back to Home",
+    "backToSetup": "Back to Setup",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "labels": {
+    "camera": "Camera",
+    "mirrorMode": "Mirror mode",
+    "you": "You",
+    "teacher": "Teacher",
+    "score": "Score",
+    "arms": "Arms",
+    "legs": "Legs",
+    "torso": "Torso",
+    "overall": "Overall"
+  },
+  "status": {
+    "loading": "Loading...",
+    "ready": "Ready",
+    "processing": "Processing...",
+    "cameraNotActive": "Camera not active",
+    "noVideoLoaded": "No video loaded"
+  },
+  "nav": {
+    "home": "Home",
+    "howToUse": "How to Use",
+    "about": "About",
+    "privacy": "Privacy",
+    "faq": "FAQ"
+  },
+  "footer": {
+    "localProcessing": "All processing happens locally on your device",
+    "copyright": "© 2025 DanceTwin. All rights reserved.",
+    "contact": "Contact",
+    "email": "dancetwin2025@gmail.com"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語",
+    "id": "Indonesia"
+  }
+}

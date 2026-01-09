@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "play": "Putar",
+    "pause": "Jeda",
+    "start": "Mulai Menari",
+    "endSession": "Akhiri Sesi",
+    "tryAgain": "Coba Lagi",
+    "newVideo": "Video Baru",
+    "export": "Ekspor",
+    "exportResults": "Ekspor Hasil",
+    "backToHome": "Kembali ke Beranda",
+    "backToSetup": "Kembali ke Pengaturan",
+    "getStarted": "Mulai",
+    "learnMore": "Pelajari Lebih Lanjut"
+  },
+  "labels": {
+    "camera": "Kamera",
+    "mirrorMode": "Mode cermin",
+    "you": "Kamu",
+    "teacher": "Guru",
+    "score": "Skor",
+    "arms": "Lengan",
+    "legs": "Kaki",
+    "torso": "Badan",
+    "overall": "Keseluruhan"
+  },
+  "status": {
+    "loading": "Memuat...",
+    "ready": "Siap",
+    "processing": "Memproses...",
+    "cameraNotActive": "Kamera tidak aktif",
+    "noVideoLoaded": "Tidak ada video"
+  },
+  "nav": {
+    "home": "Beranda",
+    "howToUse": "Cara Pakai",
+    "about": "Tentang",
+    "privacy": "Privasi",
+    "faq": "FAQ"
+  },
+  "footer": {
+    "localProcessing": "Semua pemrosesan dilakukan di perangkat Anda",
+    "copyright": "© 2025 DanceTwin. Hak cipta dilindungi.",
+    "contact": "Kontak",
+    "email": "dancetwin2025@gmail.com"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語",
+    "id": "Indonesia"
+  }
+}

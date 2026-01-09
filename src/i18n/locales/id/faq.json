@@ -1,0 +1,78 @@
+{
+  "title": "Pertanyaan yang Sering Diajukan",
+  "subtitle": "Temukan jawaban untuk pertanyaan umum tentang DanceTwin",
+  "categories": {
+    "all": "Semua",
+    "privacy": "Privasi & Keamanan",
+    "technical": "Teknis",
+    "scoring": "Penilaian",
+    "usage": "Penggunaan",
+    "troubleshooting": "Pemecahan Masalah"
+  },
+  "items": [
+    {
+      "category": "privacy",
+      "question": "Apakah video saya diunggah ke mana pun?",
+      "answer": "Tidak! Semua pemrosesan terjadi langsung di browser Anda menggunakan WebAssembly. Feed webcam Anda tidak pernah direkam atau dikirim ke server manapun. Frame video diproses secara real-time dan langsung dihapus."
+    },
+    {
+      "category": "privacy",
+      "question": "Apakah Anda mengumpulkan data pribadi?",
+      "answer": "Kami tidak mengumpulkan data pribadi apapun. DanceTwin tidak memerlukan login, tidak melacak penggunaan, dan tidak menyimpan informasi apapun tentang Anda atau sesi tari Anda."
+    },
+    {
+      "category": "technical",
+      "question": "Browser apa yang didukung?",
+      "answer": "DanceTwin bekerja paling baik di browser modern seperti Chrome, Edge, atau Firefox (versi terbaru). Safari didukung tetapi mungkin memiliki performa yang berkurang. Kami merekomendasikan Chrome untuk pengalaman terbaik."
+    },
+    {
+      "category": "technical",
+      "question": "Mengapa aplikasi memerlukan izin kamera?",
+      "answer": "Akses kamera diperlukan untuk menangkap gerakan tari Anda untuk perbandingan real-time dengan video guru. Feed kamera hanya digunakan secara lokal dan tidak pernah direkam atau ditransmisikan."
+    },
+    {
+      "category": "technical",
+      "question": "Bisakah saya menggunakan ini di ponsel?",
+      "answer": "DanceTwin dioptimalkan untuk browser desktop di mana Anda dapat memposisikan perangkat untuk menangkap gerakan seluruh tubuh. Dukungan mobile terbatas karena tantangan penempatan kamera."
+    },
+    {
+      "category": "scoring",
+      "question": "Bagaimana skor dihitung?",
+      "answer": "Skor Anda berdasarkan perbandingan sudut sendi antara Anda dan guru. Kami menganalisis lengan (35%), kaki (40%), dan badan (25%). Skor yang lebih tinggi berarti pose Anda lebih cocok dengan guru."
+    },
+    {
+      "category": "scoring",
+      "question": "Mengapa skor saya rendah padahal saya merasa sudah cocok?",
+      "answer": "Alasan umum termasuk: perbedaan timing (Anda mungkin sedikit lebih cepat atau lambat), presisi sudut (perbedaan kecil menumpuk), atau masalah visibilitas (beberapa bagian tubuh mungkin tidak terdeteksi dengan jelas)."
+    },
+    {
+      "category": "scoring",
+      "question": "Apa arti efek perayaan?",
+      "answer": "Sempurna (90+): Anda berhasil! Luar biasa (85-89): Hampir sempurna! Bagus (80-84): Kemajuan hebat! Perayaan ini muncul saat Anda melakukannya dengan baik untuk menjaga motivasi Anda."
+    },
+    {
+      "category": "usage",
+      "question": "Format video apa yang didukung?",
+      "answer": "Kami mendukung format video MP4, WebM, dan MOV. Untuk hasil terbaik, gunakan video dengan gerakan seluruh tubuh yang jelas dan pencahayaan yang baik."
+    },
+    {
+      "category": "usage",
+      "question": "Bagaimana saya harus memposisikan kamera?",
+      "answer": "Posisikan kamera untuk menangkap seluruh tubuh dari kepala hingga kaki. Berdiri sekitar 2-3 meter jauhnya. Pastikan area terang dan latar belakang relatif bersih."
+    },
+    {
+      "category": "usage",
+      "question": "Apa itu mode cermin?",
+      "answer": "Mode cermin membalik feed kamera Anda secara horizontal, seperti melihat ke cermin. Ini memudahkan untuk mengikuti saat guru menghadap Anda."
+    },
+    {
+      "category": "troubleshooting",
+      "question": "Deteksi pose tidak bekerja dengan baik. Apa yang bisa saya lakukan?",
+      "answer": "Coba tingkatkan pencahayaan, kenakan pakaian yang kontras dengan latar belakang, dan pastikan seluruh tubuh Anda terlihat. Hindari pakaian longgar yang dapat mengaburkan bentuk tubuh."
+    }
+  ],
+  "stillHaveQuestions": "Masih punya pertanyaan?",
+  "checkGuide": "Lihat panduan Cara Pakai kami untuk instruksi detail.",
+  "contactUs": "Atau hubungi kami di",
+  "email": "dancetwin2025@gmail.com"
+}

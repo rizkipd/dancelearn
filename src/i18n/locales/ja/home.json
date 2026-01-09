@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "title": "どんなダンスも",
+    "titleHighlight": "完璧に学ぶ",
+    "subtitle": "ダンス動画をアップロードして、並べて練習し、リアルタイムでフィードバックを受けましょう"
+  },
+  "step1": {
+    "title": "ダンスを選ぶ",
+    "subtitle": "学びたいダンス動画をアップロード"
+  },
+  "step2": {
+    "title": "設定をカスタマイズ",
+    "subtitle": "カメラと表示オプションを調整"
+  },
+  "features": {
+    "sideBySide": {
+      "title": "並列表示",
+      "description": "リアルタイムで先生の動きと比較"
+    },
+    "liveScoring": {
+      "title": "ライブスコアリング",
+      "description": "腕、脚、体の位置について即座にフィードバック"
+    },
+    "private": {
+      "title": "100%プライベート",
+      "description": "すべての処理はお使いのデバイス上で行われます"
+    }
+  },
+  "uploadPrompt": "ここに動画をドラッグ＆ドロップ",
+  "uploadHint": "またはクリックして選択",
+  "supportedFormats": "MP4、WebM、MOV対応"
+}

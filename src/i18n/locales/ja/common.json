@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "play": "再生",
+    "pause": "一時停止",
+    "start": "ダンスを始める",
+    "endSession": "セッション終了",
+    "tryAgain": "もう一度",
+    "newVideo": "新しい動画",
+    "export": "エクスポート",
+    "exportResults": "結果をエクスポート",
+    "backToHome": "ホームに戻る",
+    "backToSetup": "設定に戻る",
+    "getStarted": "始める",
+    "learnMore": "詳しく見る"
+  },
+  "labels": {
+    "camera": "カメラ",
+    "mirrorMode": "ミラーモード",
+    "you": "あなた",
+    "teacher": "先生",
+    "score": "スコア",
+    "arms": "腕",
+    "legs": "脚",
+    "torso": "胴体",
+    "overall": "総合"
+  },
+  "status": {
+    "loading": "読み込み中...",
+    "ready": "準備完了",
+    "processing": "処理中...",
+    "cameraNotActive": "カメラが有効ではありません",
+    "noVideoLoaded": "動画が読み込まれていません"
+  },
+  "nav": {
+    "home": "ホーム",
+    "howToUse": "使い方",
+    "about": "について",
+    "privacy": "プライバシー",
+    "faq": "よくある質問"
+  },
+  "footer": {
+    "localProcessing": "すべての処理はお使いのデバイス上で行われます",
+    "copyright": "© 2025 DanceTwin. All rights reserved.",
+    "contact": "お問い合わせ",
+    "email": "dancetwin2025@gmail.com"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語",
+    "id": "Indonesia"
+  }
+}

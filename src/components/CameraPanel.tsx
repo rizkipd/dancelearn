@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keypoint, ScoreResult } from '../types/pose';
 import { LANDMARKS } from '../engines/PoseNormalizer';
 
@@ -64,6 +65,7 @@ export function CameraPanel({
   onVideoReady,
   score,
 }: CameraPanelProps) {
+  const { t } = useTranslation('common');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -196,13 +198,13 @@ export function CameraPanel({
                 d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
               />
             </svg>
-            <p>Camera not active</p>
+            <p>{t('status.cameraNotActive')}</p>
           </div>
         </div>
       )}
 
       <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 rounded text-xs text-gray-300">
-        You
+        {t('labels.you')}
       </div>
     </div>
   );

@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "title": "Position Check",
+    "checksProgress": "{{completed}}/3 checks passed",
+    "checks": {
+      "bodyVisible": "Full body visible",
+      "bodyVisibleHint": "Step back so we can see you",
+      "lighting": "Good lighting",
+      "lightingHint": "Move to a brighter area",
+      "distance": "Right distance",
+      "distanceHint": "Adjust your distance from camera"
+    },
+    "starting": "Starting session...",
+    "allPassed": "All checks passed!",
+    "adjustPosition": "Adjust your position to continue"
+  },
+  "session": {
+    "complete": "Session Complete!",
+    "howYouDid": "Here's how you did",
+    "overallScore": "Overall Score",
+    "breakdown": "Performance Breakdown",
+    "areasToPractice": "Areas to Practice",
+    "timeline": "Score Timeline",
+    "start": "Start",
+    "end": "End",
+    "grade": {
+      "excellent": "Excellent!",
+      "great": "Great job!",
+      "good": "Good effort!",
+      "keepPracticing": "Keep practicing!"
+    }
+  },
+  "controls": {
+    "volume": "Volume",
+    "speed": "Speed",
+    "loop": "Loop"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "About DanceTwin",
+  "subtitle": "Your AI-powered dance learning companion",
+  "mission": {
+    "title": "Our Mission",
+    "description": "DanceTwin was created to make dance learning accessible to everyone. We believe that anyone can learn to dance with the right tools and feedback."
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "AI Pose Detection",
+      "description": "We use MediaPipe's advanced pose estimation to track 33 key points on your body in real-time."
+    },
+    "step2": {
+      "title": "Movement Comparison",
+      "description": "Your movements are compared against the teacher video, analyzing angles and positions."
+    },
+    "step3": {
+      "title": "Instant Feedback",
+      "description": "Get real-time scores and hints to improve your technique as you practice."
+    }
+  },
+  "privacy": {
+    "title": "Privacy First",
+    "description": "All processing happens locally in your browser. Your video never leaves your device."
+  },
+  "team": {
+    "title": "Built with Love",
+    "description": "DanceTwin is an open project built for dancers by technology enthusiasts who love dance."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "description": "Have questions or feedback? We'd love to hear from you!",
+    "email": "dancetwin2025@gmail.com"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Tentang DanceTwin",
+  "subtitle": "Partner belajar menari bertenaga AI",
+  "mission": {
+    "title": "Misi Kami",
+    "description": "DanceTwin diciptakan untuk membuat pembelajaran tari dapat diakses oleh semua orang. Kami percaya siapa pun bisa belajar menari dengan alat dan umpan balik yang tepat."
+  },
+  "howItWorks": {
+    "title": "Cara Kerjanya",
+    "step1": {
+      "title": "Deteksi Pose AI",
+      "description": "Kami menggunakan estimasi pose canggih MediaPipe untuk melacak 33 titik kunci pada tubuh Anda secara real-time."
+    },
+    "step2": {
+      "title": "Perbandingan Gerakan",
+      "description": "Gerakan Anda dibandingkan dengan video guru, menganalisis sudut dan posisi."
+    },
+    "step3": {
+      "title": "Umpan Balik Instan",
+      "description": "Dapatkan skor dan tips real-time untuk meningkatkan teknik Anda saat berlatih."
+    }
+  },
+  "privacy": {
+    "title": "Privasi Utama",
+    "description": "Semua pemrosesan terjadi secara lokal di browser Anda. Video Anda tidak pernah meninggalkan perangkat Anda."
+  },
+  "team": {
+    "title": "Dibuat dengan Cinta",
+    "description": "DanceTwin adalah proyek terbuka yang dibuat untuk penari oleh penggemar teknologi yang mencintai tari."
+  },
+  "contact": {
+    "title": "Hubungi Kami",
+    "description": "Punya pertanyaan atau masukan? Kami senang mendengar dari Anda!",
+    "email": "dancetwin2025@gmail.com"
+  }
+}

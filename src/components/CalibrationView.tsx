@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keypoint, CalibrationStatus } from '../types/pose';
 import { LANDMARKS } from '../engines/PoseNormalizer';
 
@@ -16,6 +17,7 @@ export function CalibrationView({
   onBack,
 }: CalibrationViewProps) {
   void _isReady; // Reserved for future model ready indicator
+  const { t } = useTranslation(['training', 'common']);
   const [status, setStatus] = useState<CalibrationStatus>({
     bodyInFrame: false,
     goodLighting: false,
@@ -126,10 +128,10 @@ export function CalibrationView({
             </svg>
           </div>
           <h3 className="text-2xl font-bold text-white mb-2">
-            Position Check
+            {t('calibration.title')}
           </h3>
           <p className="text-base text-gray-400">
-            {completedChecks}/3 checks passed
+            {t('calibration.checksProgress', { completed: completedChecks })}
           </p>
         </div>
 
@@ -144,19 +146,19 @@ export function CalibrationView({
         {/* Status items */}
         <div className="space-y-4 mb-8">
           <StatusItem
-            label="Full body visible"
+            label={t('calibration.checks.bodyVisible')}
             isOk={status.bodyInFrame}
-            hint="Step back so we can see you"
+            hint={t('calibration.checks.bodyVisibleHint')}
           />
           <StatusItem
-            label="Good lighting"
+            label={t('calibration.checks.lighting')}
             isOk={status.goodLighting}
-            hint="Move to a brighter area"
+            hint={t('calibration.checks.lightingHint')}
           />
           <StatusItem
-            label="Right distance"
+            label={t('calibration.checks.distance')}
             isOk={status.properDistance}
-            hint="Adjust your distance"
+            hint={t('calibration.checks.distanceHint')}
           />
         </div>
 
@@ -189,7 +191,7 @@ export function CalibrationView({
                 </defs>
               </svg>
             </div>
-            <p className="text-gray-400 mt-3 text-sm">Starting session...</p>
+            <p className="text-gray-400 mt-3 text-sm">{t('calibration.starting')}</p>
           </div>
         ) : (
           <div className="text-center py-2">
@@ -198,10 +200,10 @@ export function CalibrationView({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="font-medium">All checks passed!</span>
+                <span className="font-medium">{t('calibration.allPassed')}</span>
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">Adjust your position to continue</p>
+              <p className="text-gray-400 text-sm">{t('calibration.adjustPosition')}</p>
             )}
           </div>
         )}
@@ -214,7 +216,7 @@ export function CalibrationView({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Setup
+          {t('common:buttons.backToSetup')}
         </button>
       </div>
     </div>
