@@ -26,6 +26,12 @@ export function CalibrationView({
   });
   const [countdown, setCountdown] = useState<number | null>(null);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('[CalibrationView] Keypoints:', keypoints ? `${keypoints.length} landmarks` : 'null');
+    console.log('[CalibrationView] isPoseReady:', _isReady);
+  }, [keypoints, _isReady]);
+
   useEffect(() => {
     if (!keypoints) {
       setStatus({

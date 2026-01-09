@@ -90,11 +90,19 @@ async function getOrCreatePose(): Promise<Pose> {
   }
 
   globalPosePromise = (async () => {
+    console.log('[MediaPipe] Starting initialization...');
+    console.log('[MediaPipe] crossOriginIsolated:', self.crossOriginIsolated);
+    console.log('[MediaPipe] SharedArrayBuffer available:', typeof SharedArrayBuffer !== 'undefined');
+
     const pose = new Pose({
       locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+        const url = `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+        console.log('[MediaPipe] Loading file:', file, 'from', url);
+        return url;
       },
     });
+
+    console.log('[MediaPipe] Pose instance created');
 
     pose.setOptions({
       modelComplexity: 1,
@@ -104,11 +112,15 @@ async function getOrCreatePose(): Promise<Pose> {
       minTrackingConfidence: 0.5,
     });
 
+    console.log('[MediaPipe] Options set');
+
     pose.onResults((results: Results) => {
       globalResultsCallback?.(results, currentProcessingSource);
     });
 
+    console.log('[MediaPipe] Initializing model...');
     await pose.initialize();
+    console.log('[MediaPipe] ✅ Model initialized successfully!');
     globalPoseInstance = pose;
     return pose;
   })();
@@ -189,6 +201,7 @@ export function usePoseEstimation(options: UsePoseEstimationOptions = {}): UsePo
 
     const initPose = async () => {
       try {
+        console.log('[usePoseEstimation] Starting pose initialization...');
         const pose = await getOrCreatePose();
 
         if (!isMountedRef.current) return;
@@ -196,9 +209,16 @@ export function usePoseEstimation(options: UsePoseEstimationOptions = {}): UsePo
         poseRef.current = pose;
         setIsReady(true);
         setIsLoading(false);
+        console.log('[usePoseEstimation] ✅ Pose ready, isReady set to true');
       } catch (err) {
         if (!isMountedRef.current) return;
         const message = err instanceof Error ? err.message : 'Failed to initialize pose model';
+        console.error('[usePoseEstimation] ❌ Initialization failed:', err);
+        console.error('[usePoseEstimation] Error details:', {
+          message,
+          stack: err instanceof Error ? err.stack : undefined,
+          error: err,
+        });
         setError(message);
         setIsLoading(false);
       }

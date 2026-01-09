@@ -53,6 +53,7 @@ export function TrainingPage() {
   const {
     isLoading: isPoseLoading,
     isReady: isPoseReady,
+    error: poseError,
     stopProcessing: stopDancerProcessing,
     processFrame,
   } = usePoseEstimation({
@@ -66,6 +67,18 @@ export function TrainingPage() {
       }
     },
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[TrainingPage] Pose status:', {
+      isLoading: isPoseLoading,
+      isReady: isPoseReady,
+      error: poseError,
+      isCameraActive,
+      trainingState,
+      dancerPose: dancerPose ? 'detected' : 'null',
+    });
+  }, [isPoseLoading, isPoseReady, poseError, isCameraActive, trainingState, dancerPose]);
 
   // Start camera on mount
   useEffect(() => {
