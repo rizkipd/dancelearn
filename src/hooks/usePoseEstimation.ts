@@ -1,7 +1,43 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Pose, Results } from '@mediapipe/pose';
 import { Keypoint, PoseFrame } from '../types/pose';
 import { calculateAngles, calculateConfidence } from '../engines/PoseNormalizer';
+
+// MediaPipe types (loaded from CDN)
+interface Landmark {
+  x: number;
+  y: number;
+  z: number;
+  visibility?: number;
+}
+
+interface Results {
+  poseLandmarks?: Landmark[];
+  image: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement;
+}
+
+interface PoseConfig {
+  locateFile: (file: string) => string;
+}
+
+interface Pose {
+  setOptions: (options: {
+    modelComplexity?: 0 | 1 | 2;
+    smoothLandmarks?: boolean;
+    enableSegmentation?: boolean;
+    minDetectionConfidence?: number;
+    minTrackingConfidence?: number;
+  }) => void;
+  onResults: (callback: (results: Results) => void) => void;
+  initialize: () => Promise<void>;
+  send: (input: { image: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement }) => Promise<void>;
+  close: () => void;
+}
+
+declare global {
+  interface Window {
+    Pose: new (config: PoseConfig) => Pose;
+  }
+}
 
 // Singleton to manage MediaPipe Pose instance
 let globalPoseInstance: Pose | null = null;
@@ -94,7 +130,23 @@ async function getOrCreatePose(): Promise<Pose> {
     console.log('[MediaPipe] crossOriginIsolated:', self.crossOriginIsolated);
     console.log('[MediaPipe] SharedArrayBuffer available:', typeof SharedArrayBuffer !== 'undefined');
 
-    const pose = new Pose({
+    // Wait for MediaPipe to be loaded from CDN
+    if (typeof window.Pose === 'undefined') {
+      console.log('[MediaPipe] Waiting for Pose class to load from CDN...');
+      await new Promise<void>((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (typeof window.Pose !== 'undefined') {
+            clearInterval(checkInterval);
+            console.log('[MediaPipe] Pose class loaded from CDN');
+            resolve();
+          }
+        }, 100);
+      });
+    } else {
+      console.log('[MediaPipe] Pose class already available');
+    }
+
+    const pose = new window.Pose({
       locateFile: (file) => {
         const url = `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
         console.log('[MediaPipe] Loading file:', file, 'from', url);
