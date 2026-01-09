@@ -84,7 +84,14 @@
     </div>
 
     <div>
-        <button onclick="testLanguage('en')">No Country Code (en)</button>
+        <button onclick="testLanguage('ja')">Language Only: Japanese (ja)</button>
+        <button onclick="testLanguage('id')">Language Only: Indonesian (id)</button>
+        <button onclick="testLanguage('en')">Language Only: English (en)</button>
+    </div>
+
+    <div>
+        <button onclick="testLanguage('fr')">Unsupported Language (fr)</button>
+        <button onclick="testLanguage('de')">Unsupported Language (de)</button>
         <button onclick="testLanguage('')">Empty String</button>
     </div>
 
@@ -121,7 +128,15 @@
             if (!browserLang) return DEFAULT_LANGUAGE;
 
             const parts = browserLang.split('-');
-            if (parts.length < 2) return DEFAULT_LANGUAGE;
+            const languageCode = parts[0].toLowerCase();
+
+            if (parts.length < 2) {
+                // No country code - check if language code is supported
+                if (languageCode === 'ja' || languageCode === 'id' || languageCode === 'en') {
+                    return languageCode;
+                }
+                return DEFAULT_LANGUAGE;
+            }
 
             const countryCode = parts[1].toUpperCase();
             return countryToLanguageMap[countryCode] || DEFAULT_LANGUAGE;

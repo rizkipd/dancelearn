@@ -35,13 +35,24 @@ export const countryDetector = {
       return DEFAULT_LANGUAGE;
     }
 
-    // Extract country code from language string
-    // Examples: 'en-US' → 'US', 'ja-JP' → 'JP', 'id-ID' → 'ID'
+    // Extract parts from language string
+    // Examples: 'en-US' → ['en', 'US'], 'ja-JP' → ['ja', 'JP'], 'ja' → ['ja']
     const parts = browserLang.split('-');
+    const languageCode = parts[0].toLowerCase();
 
     if (parts.length < 2) {
-      // No country code (e.g., just 'en'), use default
-      console.log('[countryDetector] No country code in language string, using default:', DEFAULT_LANGUAGE);
+      // No country code (e.g., just 'ja', 'id', 'en')
+      // Try to use the language code directly if it's supported
+      console.log('[countryDetector] No country code, checking language code:', languageCode);
+
+      // If language code matches one of our supported languages, use it
+      if (languageCode === 'ja' || languageCode === 'id' || languageCode === 'en') {
+        console.log('[countryDetector] Language code is supported, using:', languageCode);
+        return languageCode;
+      }
+
+      // Otherwise use default
+      console.log('[countryDetector] Language code not supported, using default:', DEFAULT_LANGUAGE);
       return DEFAULT_LANGUAGE;
     }
 
