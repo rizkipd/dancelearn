@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MediaPipe Diagnostic Test - DanceTwin</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            background: #0f0f23;
+            color: #fff;
+        }
+        .status { padding: 10px; margin: 10px 0; border-radius: 8px; }
+        .success { background: #10b98120; border: 1px solid #10b981; }
+        .error { background: #ef444420; border: 1px solid #ef4444; }
+        .info { background: #3b82f620; border: 1px solid #3b82f6; }
+        h1 { color: #8b5cf6; }
+        h2 { color: #ec4899; margin-top: 30px; }
+        pre { background: #1a1a2e; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        video { max-width: 400px; border: 2px solid #8b5cf6; border-radius: 8px; }
+        #canvas { border: 2px solid #ec4899; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>MediaPipe Pose Estimation Diagnostic</h1>
+    <div id="results"></div>
+
+    <h2>Video Feed</h2>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script type="module">
+        const results = document.getElementById('results');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let testsPassed = 0;
+        let testsFailed = 0;
+
+        function logSuccess(message) {
+            results.innerHTML += `<div class="status success">✅ ${message}</div>`;
+            testsPassed++;
+        }
+
+        function logError(message, error) {
+            results.innerHTML += `<div class="status error">❌ ${message}<br><pre>${error || ''}</pre></div>`;
+            testsFailed++;
+        }
+
+        function logInfo(message) {
+            results.innerHTML += `<div class="status info">ℹ️ ${message}</div>`;
+        }
+
+        // Test 1: Cross-Origin Isolation
+        logInfo('<strong>Test 1: Cross-Origin Isolation</strong>');
+        if (typeof SharedArrayBuffer !== 'undefined') {
+            logSuccess('SharedArrayBuffer is available');
+        } else {
+            logError('SharedArrayBuffer is NOT available - COEP/COOP headers may be missing');
+        }
+
+        if (self.crossOriginIsolated) {
+            logSuccess('crossOriginIsolated = true');
+        } else {
+            logError('crossOriginIsolated = false - Check COEP/COOP headers');
+        }
+
+        // Test 2: Display Headers
+        logInfo('<strong>Test 2: Current Page Headers</strong>');
+        logInfo(`URL: ${location.href}`);
+        logInfo(`Protocol: ${location.protocol}`);
+        logInfo(`User Agent: ${navigator.userAgent}`);
+
+        // Test 3: MediaPipe CDN Access
+        logInfo('<strong>Test 3: MediaPipe CDN Access</strong>');
+
+        try {
+            const cdnTest = await fetch('https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js', { method: 'HEAD' });
+            if (cdnTest.ok) {
+                logSuccess(`MediaPipe CDN accessible (Status: ${cdnTest.status})`);
+            } else {
+                logError(`MediaPipe CDN returned status: ${cdnTest.status}`);
+            }
+        } catch (error) {
+            logError('MediaPipe CDN access failed', error.message);
+        }
+
+        // Test 4: Camera Access
+        logInfo('<strong>Test 4: Camera Access</strong>');
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            logError('getUserMedia API not available');
+        } else {
+            logSuccess('getUserMedia API is available');
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480 }
+                });
+                video.srcObject = stream;
+                logSuccess('Camera access granted');
+
+                // Wait for video to be ready
+                await new Promise(resolve => {
+                    video.onloadedmetadata = resolve;
+                });
+                logSuccess(`Video ready: ${video.videoWidth}x${video.videoHeight}`);
+
+            } catch (error) {
+                logError('Camera access denied or failed', error.message);
+            }
+        }
+
+        // Test 5: MediaPipe Pose Initialization
+        logInfo('<strong>Test 5: MediaPipe Pose Initialization</strong>');
+
+        try {
+            // Load MediaPipe Pose
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js';
+            script.crossOrigin = 'anonymous';
+
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+
+            logSuccess('MediaPipe Pose script loaded');
+
+            // Check if Pose class exists
+            if (typeof window.Pose === 'undefined') {
+                logError('Pose class not found in window object');
+            } else {
+                logSuccess('Pose class is available');
+
+                // Try to initialize
+                const pose = new window.Pose({
+                    locateFile: (file) => {
+                        const url = `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                        logInfo(`Loading MediaPipe file: ${file}`);
+                        return url;
+                    },
+                });
+
+                logSuccess('Pose instance created');
+
+                pose.setOptions({
+                    modelComplexity: 1,
+                    smoothLandmarks: true,
+                    enableSegmentation: false,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5,
+                });
+
+                logSuccess('Pose options configured');
+
+                pose.onResults((results) => {
+                    if (results.poseLandmarks) {
+                        logSuccess(`Pose detected! ${results.poseLandmarks.length} landmarks found`);
+
+                        // Draw landmarks on canvas
+                        ctx.save();
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        // Draw skeleton
+                        ctx.fillStyle = '#00ff88';
+                        results.poseLandmarks.forEach(landmark => {
+                            const x = landmark.x * canvas.width;
+                            const y = landmark.y * canvas.height;
+                            ctx.beginPath();
+                            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                            ctx.fill();
+                        });
+                        ctx.restore();
+                    }
+                });
+
+                logInfo('Initializing MediaPipe Pose model...');
+                await pose.initialize();
+                logSuccess('MediaPipe Pose initialized successfully!');
+
+                // Start processing video frames
+                logInfo('Starting pose detection on video feed...');
+
+                async function detectPose() {
+                    if (video.videoWidth > 0) {
+                        await pose.send({ image: video });
+                    }
+                    requestAnimationFrame(detectPose);
+                }
+
+                detectPose();
+                logSuccess('Pose detection loop started - watch the canvas for skeleton overlay');
+            }
+
+        } catch (error) {
+            logError('MediaPipe initialization failed', `${error.name}: ${error.message}\n${error.stack}`);
+        }
+
+        // Summary
+        setTimeout(() => {
+            results.innerHTML += `<h2>Summary</h2>`;
+            results.innerHTML += `<div class="status info">
+                <strong>Tests Passed:</strong> ${testsPassed}<br>
+                <strong>Tests Failed:</strong> ${testsFailed}
+            </div>`;
+
+            if (testsFailed === 0) {
+                results.innerHTML += `<div class="status success">
+                    <strong>All tests passed!</strong> MediaPipe should work correctly.
+                </div>`;
+            } else {
+                results.innerHTML += `<div class="status error">
+                    <strong>Some tests failed.</strong> Please review the errors above.
+                </div>`;
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
