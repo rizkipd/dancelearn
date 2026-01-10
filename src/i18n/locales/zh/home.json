@@ -28,5 +28,6 @@
   },
   "uploadPrompt": "将视频拖放到此处",
   "uploadHint": "或点击浏览",
-  "supportedFormats": "支持 MP4、WebM、MOV"
+  "supportedFormats": "支持 MP4、WebM、MOV",
+  "watchHowItWorks": "观看使用教程"
 }

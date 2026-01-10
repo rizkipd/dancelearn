@@ -28,5 +28,6 @@
   },
   "uploadPrompt": "Drag & drop your video here",
   "uploadHint": "or click to browse",
-  "supportedFormats": "Supports MP4, WebM, MOV"
+  "supportedFormats": "Supports MP4, WebM, MOV",
+  "watchHowItWorks": "Watch How It Works"
 }

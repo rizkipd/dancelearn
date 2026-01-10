@@ -28,5 +28,6 @@
   },
   "uploadPrompt": "ここに動画をドラッグ＆ドロップ",
   "uploadHint": "またはクリックして選択",
-  "supportedFormats": "MP4、WebM、MOV対応"
+  "supportedFormats": "MP4、WebM、MOV対応",
+  "watchHowItWorks": "使い方を見る"
 }

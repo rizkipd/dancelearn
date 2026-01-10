@@ -28,5 +28,6 @@
   },
   "uploadPrompt": "여기에 영상을 드래그하세요",
   "uploadHint": "또는 클릭하여 찾아보기",
-  "supportedFormats": "MP4, WebM, MOV 지원"
+  "supportedFormats": "MP4, WebM, MOV 지원",
+  "watchHowItWorks": "사용 방법 보기"
 }

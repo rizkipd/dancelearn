@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FileVideoLoaderProps {
   onVideoLoaded: (file: File, url: string) => void;
 }
 
 export function FileVideoLoader({ onVideoLoaded }: FileVideoLoaderProps) {
+  const { t } = useTranslation('home');
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,13 +104,13 @@ export function FileVideoLoader({ onVideoLoaded }: FileVideoLoaderProps) {
             {/* Text */}
             <div>
               <p className={`text-lg sm:text-xl font-semibold transition-colors ${isDragging ? 'text-cyan-300' : 'text-white'}`}>
-                {isDragging ? 'Drop your video here' : 'Drop your dance video here'}
+                {t('uploadPrompt')}
               </p>
               <p className="text-sm sm:text-base text-gray-400 mt-2">
-                or <span className="text-cyan-400 hover:text-cyan-300 transition-colors">browse files</span>
+                {t('uploadHint')}
               </p>
               <p className="text-xs text-gray-500 mt-3">
-                Supports MP4, WebM, MOV
+                {t('supportedFormats')}
               </p>
             </div>
 

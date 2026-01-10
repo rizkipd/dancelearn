@@ -255,6 +255,25 @@ export function HomePage() {
             />
           </div>
 
+          {/* YouTube Video Section */}
+          <div className="mt-12 sm:mt-16">
+            <div className="glass rounded-2xl p-6 sm:p-8">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-6 text-center">
+                {t('watchHowItWorks')}
+              </h3>
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full rounded-xl"
+                  src="https://www.youtube.com/embed/s4bEeWXafrc"
+                  title="DanceTwin Demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Share Section */}
           <div className="mt-12 sm:mt-16">
             <div className="glass rounded-2xl p-6 sm:p-8">
