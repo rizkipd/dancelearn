@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 export function Footer() {
   const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="relative z-10 glass border-t border-white/10 px-4 sm:px-6 py-8">
@@ -48,7 +49,7 @@ export function Footer() {
 
           {/* Copyright */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>{t('footer.copyright')}</span>
+            <span>© {currentYear} DanceTwin. All rights reserved.</span>
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline">{t('footer.localProcessing')}</span>
           </div>
