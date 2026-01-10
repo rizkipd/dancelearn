@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaFacebook, FaLinkedin, FaWhatsapp, FaLink } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaWhatsapp, FaLink } from 'react-icons/fa';
 import { BsTwitterX } from 'react-icons/bs';
 
 interface ShareButtonsProps {
@@ -27,7 +27,7 @@ export function ShareButtons({
   const shareUrls = {
     twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+    instagram: `https://www.instagram.com/`,
     whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
   };
 
@@ -63,12 +63,12 @@ export function ShareButtons({
       onClick: () => handleShare('facebook'),
     },
     {
-      name: 'linkedin',
-      icon: FaLinkedin,
-      color: 'text-[#0A66C2]',
-      hoverBg: 'hover:bg-[#0A66C2]/10',
-      label: t('share.linkedin'),
-      onClick: () => handleShare('linkedin'),
+      name: 'instagram',
+      icon: FaInstagram,
+      color: 'text-[#E4405F]',
+      hoverBg: 'hover:bg-[#E4405F]/10',
+      label: t('share.instagram'),
+      onClick: () => handleShare('instagram'),
     },
     {
       name: 'whatsapp',
