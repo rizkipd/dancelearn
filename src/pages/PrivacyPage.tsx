@@ -42,11 +42,14 @@ export function PrivacyPage() {
           <div className="space-y-6">
             {/* Overview */}
             <div className="glass rounded-2xl p-6 sm:p-8 border border-green-500/30">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">
-                  TL;DR
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </span>
-              </div>
+                {t('sections.overview.title')}
+              </h2>
               <p className="text-white text-lg font-medium">
                 {t('sections.overview.content')}
               </p>
