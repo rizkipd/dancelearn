@@ -1,0 +1,47 @@
+{
+  "title": "隐私政策",
+  "subtitle": "您的隐私是我们的首要任务",
+  "lastUpdated": "最后更新：2025年1月",
+  "sections": {
+    "overview": {
+      "title": "概述",
+      "content": "DanceTwin 的核心设计理念是保护隐私。我们相信您的舞蹈练习应该保持私密。"
+    },
+    "dataCollection": {
+      "title": "数据收集",
+      "content": "我们不收集：",
+      "items": [
+        "您的摄像头视频或图像",
+        "您的舞蹈动作或姿势",
+        "任何个人信息",
+        "使用分析或跟踪数据"
+      ]
+    },
+    "localStorage": {
+      "title": "本地存储",
+      "content": "唯一存储在您设备上的本地数据：",
+      "items": [
+        "您的语言偏好",
+        "应用设置（摄像头选择、镜像模式）",
+        "会话结果（仅当您选择导出时）"
+      ]
+    },
+    "processing": {
+      "title": "处理方式",
+      "content": "所有 AI 姿势估计和评分都完全在您的浏览器中使用 WebAssembly 进行。您的视频帧实时处理并立即丢弃。不会发送任何数据到服务器。"
+    },
+    "thirdParty": {
+      "title": "第三方服务",
+      "content": "DanceTwin 使用 MediaPipe 进行姿势估计，该服务完全在您的浏览器中运行。不会向 Google 或任何其他第三方发送数据。"
+    },
+    "cookies": {
+      "title": "Cookie",
+      "content": "我们不使用 Cookie 进行跟踪。使用的唯一 Cookie 是用于基本功能，如记住您的语言偏好。"
+    },
+    "contact": {
+      "title": "联系我们",
+      "content": "如果您对我们的隐私做法有任何疑问，请联系我们：",
+      "email": "dancetwin2025@gmail.com"
+    }
+  }
+}

@@ -33,6 +33,26 @@ import idPrivacy from './locales/id/privacy.json';
 import idHowto from './locales/id/howto.json';
 import idFaq from './locales/id/faq.json';
 
+// Korean translations
+import koCommon from './locales/ko/common.json';
+import koHome from './locales/ko/home.json';
+import koTraining from './locales/ko/training.json';
+import koFeedback from './locales/ko/feedback.json';
+import koAbout from './locales/ko/about.json';
+import koPrivacy from './locales/ko/privacy.json';
+import koHowto from './locales/ko/howto.json';
+import koFaq from './locales/ko/faq.json';
+
+// Chinese translations
+import zhCommon from './locales/zh/common.json';
+import zhHome from './locales/zh/home.json';
+import zhTraining from './locales/zh/training.json';
+import zhFeedback from './locales/zh/feedback.json';
+import zhAbout from './locales/zh/about.json';
+import zhPrivacy from './locales/zh/privacy.json';
+import zhHowto from './locales/zh/howto.json';
+import zhFaq from './locales/zh/faq.json';
+
 const resources = {
   en: {
     common: enCommon,
@@ -64,6 +84,26 @@ const resources = {
     howto: idHowto,
     faq: idFaq,
   },
+  ko: {
+    common: koCommon,
+    home: koHome,
+    training: koTraining,
+    feedback: koFeedback,
+    about: koAbout,
+    privacy: koPrivacy,
+    howto: koHowto,
+    faq: koFaq,
+  },
+  zh: {
+    common: zhCommon,
+    home: zhHome,
+    training: zhTraining,
+    feedback: zhFeedback,
+    about: zhAbout,
+    privacy: zhPrivacy,
+    howto: zhHowto,
+    faq: zhFaq,
+  },
 };
 
 // Create language detector instance and add custom country detector
@@ -76,7 +116,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    supportedLngs: ['en', 'ja', 'id'],
+    supportedLngs: ['en', 'ja', 'id', 'ko', 'zh'],
     defaultNS: 'common',
     ns: ['common', 'home', 'training', 'feedback', 'about', 'privacy', 'howto', 'faq'],
     interpolation: {

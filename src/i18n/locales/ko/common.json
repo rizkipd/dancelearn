@@ -1,0 +1,64 @@
+{
+  "buttons": {
+    "play": "재생",
+    "pause": "일시정지",
+    "start": "춤추기 시작",
+    "endSession": "세션 종료",
+    "tryAgain": "다시 시도",
+    "newVideo": "새 영상",
+    "export": "내보내기",
+    "exportResults": "결과 내보내기",
+    "backToHome": "홈으로",
+    "backToSetup": "설정으로",
+    "getStarted": "시작하기",
+    "learnMore": "자세히 보기"
+  },
+  "labels": {
+    "camera": "카메라",
+    "mirrorMode": "거울 모드",
+    "you": "나",
+    "teacher": "선생님",
+    "score": "점수",
+    "arms": "팔",
+    "legs": "다리",
+    "torso": "몸통",
+    "overall": "전체"
+  },
+  "status": {
+    "loading": "로딩 중...",
+    "ready": "준비 완료",
+    "processing": "처리 중...",
+    "cameraNotActive": "카메라가 활성화되지 않음",
+    "noVideoLoaded": "영상이 로드되지 않음"
+  },
+  "nav": {
+    "home": "홈",
+    "howToUse": "사용 방법",
+    "about": "소개",
+    "privacy": "개인정보",
+    "faq": "자주 묻는 질문"
+  },
+  "footer": {
+    "localProcessing": "모든 처리는 사용자 기기에서 로컬로 이루어집니다",
+    "copyright": "© 2025 DanceTwin. All rights reserved.",
+    "contact": "문의",
+    "email": "dancetwin2025@gmail.com"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語",
+    "id": "Indonesia",
+    "ko": "한국어",
+    "zh": "中文"
+  },
+  "share": {
+    "title": "DanceTwin 공유",
+    "twitter": "X에 공유",
+    "facebook": "Facebook에 공유",
+    "instagram": "Instagram에 공유",
+    "whatsapp": "WhatsApp으로 공유",
+    "copyLink": "링크 복사",
+    "linkCopied": "링크가 복사되었습니다!",
+    "shareText": "DanceTwin을 확인하세요 - AI 기반 춤 학습!"
+  }
+}

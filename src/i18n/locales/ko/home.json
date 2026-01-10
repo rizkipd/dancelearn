@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "title": "모든 춤을",
+    "titleHighlight": "완벽하게",
+    "subtitle": "댄스 영상을 업로드하고, 함께 연습하며, 실시간 피드백을 받아보세요"
+  },
+  "step1": {
+    "title": "춤 선택하기",
+    "subtitle": "배우고 싶은 댄스 영상을 업로드하세요"
+  },
+  "step2": {
+    "title": "설정 조정",
+    "subtitle": "카메라 및 화면 옵션 조정"
+  },
+  "features": {
+    "sideBySide": {
+      "title": "나란히 비교",
+      "description": "선생님의 동작과 실시간으로 비교하세요"
+    },
+    "liveScoring": {
+      "title": "실시간 채점",
+      "description": "팔, 다리, 몸통 자세에 대한 즉각적인 피드백"
+    },
+    "private": {
+      "title": "100% 프라이버시",
+      "description": "모든 처리는 사용자 기기에서 로컬로 이루어집니다"
+    }
+  },
+  "uploadPrompt": "여기에 영상을 드래그하세요",
+  "uploadHint": "또는 클릭하여 찾아보기",
+  "supportedFormats": "MP4, WebM, MOV 지원"
+}

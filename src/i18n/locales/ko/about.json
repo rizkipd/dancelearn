@@ -1,0 +1,36 @@
+{
+  "title": "DanceTwin 소개",
+  "subtitle": "AI 기반 춤 학습 도우미",
+  "mission": {
+    "title": "우리의 미션",
+    "description": "DanceTwin은 모든 사람이 춤을 배울 수 있도록 만들어졌습니다. 올바른 도구와 피드백만 있다면 누구나 춤을 배울 수 있다고 믿습니다."
+  },
+  "howItWorks": {
+    "title": "작동 방식",
+    "step1": {
+      "title": "AI 자세 감지",
+      "description": "MediaPipe의 고급 자세 추정을 사용하여 실시간으로 신체의 33개 주요 지점을 추적합니다."
+    },
+    "step2": {
+      "title": "동작 비교",
+      "description": "선생님 영상과 사용자의 동작을 비교하여 각도와 위치를 분석합니다."
+    },
+    "step3": {
+      "title": "즉각적인 피드백",
+      "description": "연습하는 동안 실시간 점수와 기술 향상을 위한 힌트를 받습니다."
+    }
+  },
+  "privacy": {
+    "title": "프라이버시 우선",
+    "description": "모든 처리는 브라우저에서 로컬로 이루어집니다. 영상은 기기를 벗어나지 않습니다."
+  },
+  "team": {
+    "title": "사랑으로 제작",
+    "description": "DanceTwin은 춤을 사랑하는 기술 애호가들이 댄서들을 위해 만든 오픈 프로젝트입니다."
+  },
+  "contact": {
+    "title": "문의하기",
+    "description": "질문이나 피드백이 있으신가요? 연락주세요!",
+    "email": "dancetwin2025@gmail.com"
+  }
+}

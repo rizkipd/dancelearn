@@ -1,0 +1,78 @@
+{
+  "title": "常见问题",
+  "subtitle": "查找有关 DanceTwin 的常见问题的答案",
+  "categories": {
+    "all": "全部",
+    "privacy": "隐私与安全",
+    "technical": "技术",
+    "scoring": "评分",
+    "usage": "使用",
+    "troubleshooting": "故障排除"
+  },
+  "items": [
+    {
+      "category": "privacy",
+      "question": "我的视频会被上传到某处吗？",
+      "answer": "不会！所有处理都直接在您的浏览器中使用 WebAssembly 进行。您的摄像头源从未被记录或发送到任何服务器。视频帧实时处理并立即丢弃。"
+    },
+    {
+      "category": "privacy",
+      "question": "您会收集任何个人数据吗？",
+      "answer": "我们不收集任何个人数据。DanceTwin 不需要登录，不跟踪使用情况，也不存储有关您或您的舞蹈会话的任何信息。"
+    },
+    {
+      "category": "technical",
+      "question": "支持哪些浏览器？",
+      "answer": "DanceTwin 在 Chrome、Edge 或 Firefox（最新版本）等现代浏览器上效果最佳。支持 Safari，但性能可能会降低。我们建议使用 Chrome 以获得最佳体验。"
+    },
+    {
+      "category": "technical",
+      "question": "为什么应用需要摄像头权限？",
+      "answer": "需要摄像头访问权限才能捕捉您的舞蹈动作，以便与老师视频进行实时比较。摄像头源仅在本地使用，从未被记录或传输。"
+    },
+    {
+      "category": "technical",
+      "question": "我可以在手机上使用吗？",
+      "answer": "DanceTwin 针对桌面浏览器进行了优化，您可以在其中定位设备以捕捉全身动作。由于摄像头定位的挑战，移动支持有限。"
+    },
+    {
+      "category": "scoring",
+      "question": "分数是如何计算的？",
+      "answer": "您的分数基于比较您和老师之间的关节角度。我们分析手臂（35%）、腿部（40%）和躯干（25%）。分数越高意味着您的姿势越接近老师。"
+    },
+    {
+      "category": "scoring",
+      "question": "为什么即使我认为我匹配得很好，分数也很低？",
+      "answer": "常见原因包括：时间差异（您可能稍微提前或落后）、角度精度（小差异会累积）或可见性问题（某些身体部位可能无法清晰检测）。"
+    },
+    {
+      "category": "scoring",
+      "question": "庆祝效果是什么意思？",
+      "answer": "完美（90+）：您做到了！优秀（85-89）：几乎完美！良好（80-84）：进步很大！这些庆祝在您表现良好时出现，以保持您的积极性。"
+    },
+    {
+      "category": "usage",
+      "question": "支持哪些视频格式？",
+      "answer": "我们支持 MP4、WebM 和 MOV 视频格式。为获得最佳效果，请使用具有清晰全身动作和良好照明的视频。"
+    },
+    {
+      "category": "usage",
+      "question": "我应该如何定位摄像头？",
+      "answer": "定位摄像头以捕捉您的全身从头到脚。距离约 2-3 米。确保区域光线充足且背景相对清晰。"
+    },
+    {
+      "category": "usage",
+      "question": "什么是镜像模式？",
+      "answer": "镜像模式水平翻转您的摄像头源，就像照镜子一样。当老师面对您时，这使跟随变得更容易。"
+    },
+    {
+      "category": "troubleshooting",
+      "question": "姿势检测效果不佳。我该怎么办？",
+      "answer": "尝试改善照明，穿着与背景对比鲜明的衣服，并确保您的全身可见。避免穿宽松或肥大的衣服，因为它们可能会遮挡身体形状。"
+    }
+  ],
+  "stillHaveQuestions": "还有问题吗？",
+  "checkGuide": "查看我们的使用指南以获取详细说明。",
+  "contactUs": "或通过以下方式联系我们",
+  "email": "dancetwin2025@gmail.com"
+}

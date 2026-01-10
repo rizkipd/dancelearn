@@ -1,0 +1,36 @@
+{
+  "title": "关于 DanceTwin",
+  "subtitle": "您的 AI 驱动舞蹈学习伙伴",
+  "mission": {
+    "title": "我们的使命",
+    "description": "DanceTwin 旨在让每个人都能学习舞蹈。我们相信，只要有合适的工具和反馈，任何人都能学会跳舞。"
+  },
+  "howItWorks": {
+    "title": "工作原理",
+    "step1": {
+      "title": "AI 姿势检测",
+      "description": "我们使用 MediaPipe 的高级姿势估计技术，实时追踪您身体上的 33 个关键点。"
+    },
+    "step2": {
+      "title": "动作对比",
+      "description": "您的动作与老师视频进行对比，分析角度和位置。"
+    },
+    "step3": {
+      "title": "即时反馈",
+      "description": "在练习时获得实时评分和提示，以改善您的技巧。"
+    }
+  },
+  "privacy": {
+    "title": "隐私优先",
+    "description": "所有处理均在您的浏览器中本地进行。您的视频不会离开您的设备。"
+  },
+  "team": {
+    "title": "用心打造",
+    "description": "DanceTwin 是一个开放项目，由热爱舞蹈的技术爱好者为舞者打造。"
+  },
+  "contact": {
+    "title": "联系我们",
+    "description": "有问题或反馈？我们很乐意听取您的意见！",
+    "email": "dancetwin2025@gmail.com"
+  }
+}

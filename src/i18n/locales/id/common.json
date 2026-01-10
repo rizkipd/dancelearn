@@ -47,7 +47,9 @@
   "language": {
     "en": "English",
     "ja": "日本語",
-    "id": "Indonesia"
+    "id": "Indonesia",
+    "ko": "한국어",
+    "zh": "中文"
   },
   "share": {
     "title": "Bagikan DanceTwin",

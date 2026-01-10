@@ -12,9 +12,11 @@
 const countryToLanguageMap: Record<string, string> = {
   JP: 'ja',  // Japan → Japanese
   ID: 'id',  // Indonesia → Indonesian
-  // Add more countries here as needed:
-  // KR: 'ko',  // Korea → Korean
-  // CN: 'zh',  // China → Chinese
+  KR: 'ko',  // Korea → Korean
+  CN: 'zh',  // China → Chinese
+  TW: 'zh',  // Taiwan → Chinese
+  HK: 'zh',  // Hong Kong → Chinese
+  SG: 'zh',  // Singapore → Chinese (can also be English)
 };
 
 // Default language for countries not in the map
@@ -46,7 +48,7 @@ export const countryDetector = {
       console.log('[countryDetector] No country code, checking language code:', languageCode);
 
       // If language code matches one of our supported languages, use it
-      if (languageCode === 'ja' || languageCode === 'id' || languageCode === 'en') {
+      if (languageCode === 'ja' || languageCode === 'id' || languageCode === 'en' || languageCode === 'ko' || languageCode === 'zh') {
         console.log('[countryDetector] Language code is supported, using:', languageCode);
         return languageCode;
       }

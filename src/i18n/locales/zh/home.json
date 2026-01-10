@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "title": "学会任何舞蹈，",
+    "titleHighlight": "完美呈现",
+    "subtitle": "上传舞蹈视频，并排练习，实时获得动作反馈"
+  },
+  "step1": {
+    "title": "选择您的舞蹈",
+    "subtitle": "上传任何您想学习的舞蹈视频"
+  },
+  "step2": {
+    "title": "自定义设置",
+    "subtitle": "调整摄像头和显示选项"
+  },
+  "features": {
+    "sideBySide": {
+      "title": "并排对比",
+      "description": "实时将您的动作与老师对比"
+    },
+    "liveScoring": {
+      "title": "实时评分",
+      "description": "即时获得手臂、腿部和身体姿势的反馈"
+    },
+    "private": {
+      "title": "100% 隐私",
+      "description": "所有处理均在您的设备上本地进行"
+    }
+  },
+  "uploadPrompt": "将视频拖放到此处",
+  "uploadHint": "或点击浏览",
+  "supportedFormats": "支持 MP4、WebM、MOV"
+}

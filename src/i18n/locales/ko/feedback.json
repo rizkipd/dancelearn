@@ -1,0 +1,34 @@
+{
+  "celebration": {
+    "perfect": "완벽해요!",
+    "excellent": "훌륭해요!",
+    "good": "좋아요!"
+  },
+  "timing": {
+    "behind": "느려요",
+    "ahead": "빨라요"
+  },
+  "hints": {
+    "extendLeftElbow": "왼쪽 팔꿈치를 더 펴세요",
+    "bendLeftElbow": "왼쪽 팔꿈치를 더 구부리세요",
+    "extendRightElbow": "오른쪽 팔꿈치를 더 펴세요",
+    "bendRightElbow": "오른쪽 팔꿈치를 더 구부리세요",
+    "raiseLeftArm": "왼팔을 더 높이 올리세요",
+    "lowerLeftArm": "왼팔을 내리세요",
+    "raiseRightArm": "오른팔을 더 높이 올리세요",
+    "lowerRightArm": "오른팔을 내리세요",
+    "straightenLeftLeg": "왼쪽 다리를 더 펴세요",
+    "bendLeftKnee": "왼쪽 무릎을 더 구부리세요",
+    "straightenRightLeg": "오른쪽 다리를 더 펴세요",
+    "bendRightKnee": "오른쪽 무릎을 더 구부리세요",
+    "raiseLeftLeg": "왼쪽 다리를 더 높이 올리세요",
+    "lowerLeftLeg": "왼쪽 다리를 내리세요",
+    "raiseRightLeg": "오른쪽 다리를 더 높이 올리세요",
+    "lowerRightLeg": "오른쪽 다리를 내리세요",
+    "alignTorso": "몸통을 선생님과 맞추세요",
+    "standStraighter": "더 바르게 서세요",
+    "leanForward": "약간 앞으로 기울이세요",
+    "leanBack": "약간 뒤로 기울이세요",
+    "keepGoing": "계속하세요! 잘하고 있어요!"
+  }
+}

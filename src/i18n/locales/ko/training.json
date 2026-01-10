@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "title": "위치 확인",
+    "checksProgress": "{{completed}}/3 확인 완료",
+    "checks": {
+      "bodyVisible": "전신이 보임",
+      "bodyVisibleHint": "뒤로 물러나세요",
+      "lighting": "적절한 조명",
+      "lightingHint": "더 밝은 곳으로 이동하세요",
+      "distance": "적절한 거리",
+      "distanceHint": "카메라와의 거리를 조정하세요"
+    },
+    "starting": "세션 시작 중...",
+    "allPassed": "모든 확인 완료!",
+    "adjustPosition": "계속하려면 위치를 조정하세요"
+  },
+  "session": {
+    "complete": "세션 완료!",
+    "howYouDid": "결과입니다",
+    "overallScore": "전체 점수",
+    "breakdown": "성능 분석",
+    "areasToPractice": "연습할 부분",
+    "timeline": "점수 추이",
+    "start": "시작",
+    "end": "종료",
+    "grade": {
+      "excellent": "훌륭합니다!",
+      "great": "잘했어요!",
+      "good": "좋은 노력이에요!",
+      "keepPracticing": "계속 연습하세요!"
+    }
+  },
+  "controls": {
+    "volume": "볼륨",
+    "speed": "속도",
+    "loop": "반복"
+  }
+}

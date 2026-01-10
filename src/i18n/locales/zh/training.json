@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "title": "位置检查",
+    "checksProgress": "{{completed}}/3 检查已通过",
+    "checks": {
+      "bodyVisible": "全身可见",
+      "bodyVisibleHint": "向后退，以便我们能看到您",
+      "lighting": "良好的照明",
+      "lightingHint": "移至更明亮的区域",
+      "distance": "适当的距离",
+      "distanceHint": "调整您与摄像头的距离"
+    },
+    "starting": "正在开始会话...",
+    "allPassed": "所有检查已通过！",
+    "adjustPosition": "调整您的位置以继续"
+  },
+  "session": {
+    "complete": "会话完成！",
+    "howYouDid": "您的表现",
+    "overallScore": "总体分数",
+    "breakdown": "表现分析",
+    "areasToPractice": "需要练习的部分",
+    "timeline": "分数时间线",
+    "start": "开始",
+    "end": "结束",
+    "grade": {
+      "excellent": "优秀！",
+      "great": "很好！",
+      "good": "不错！",
+      "keepPracticing": "继续练习！"
+    }
+  },
+  "controls": {
+    "volume": "音量",
+    "speed": "速度",
+    "loop": "循环"
+  }
+}

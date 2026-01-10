@@ -1,0 +1,34 @@
+{
+  "celebration": {
+    "perfect": "完美！",
+    "excellent": "优秀！",
+    "good": "很好！"
+  },
+  "timing": {
+    "behind": "慢了",
+    "ahead": "快了"
+  },
+  "hints": {
+    "extendLeftElbow": "伸展您的左肘",
+    "bendLeftElbow": "弯曲您的左肘",
+    "extendRightElbow": "伸展您的右肘",
+    "bendRightElbow": "弯曲您的右肘",
+    "raiseLeftArm": "抬高您的左臂",
+    "lowerLeftArm": "放低您的左臂",
+    "raiseRightArm": "抬高您的右臂",
+    "lowerRightArm": "放低您的右臂",
+    "straightenLeftLeg": "伸直您的左腿",
+    "bendLeftKnee": "弯曲您的左膝",
+    "straightenRightLeg": "伸直您的右腿",
+    "bendRightKnee": "弯曲您的右膝",
+    "raiseLeftLeg": "抬高您的左腿",
+    "lowerLeftLeg": "放低您的左腿",
+    "raiseRightLeg": "抬高您的右腿",
+    "lowerRightLeg": "放低您的右腿",
+    "alignTorso": "将您的躯干与老师对齐",
+    "standStraighter": "站得更直",
+    "leanForward": "稍微向前倾",
+    "leanBack": "稍微向后倾",
+    "keepGoing": "继续！您做得很好！"
+  }
+}
