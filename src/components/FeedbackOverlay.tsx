@@ -150,11 +150,11 @@ export function FeedbackOverlay({
         </div>
 
         {/* Color-Coded Hint */}
-        {score.hint && !isCelebrating && (
+        {(score.hintKey || score.hint) && !isCelebrating && (
           <div className={`mt-3 sm:mt-4 p-2 sm:p-3 ${hintStyle.bg} border ${hintStyle.border} rounded-lg transition-colors duration-300`}>
             <p className={`${hintStyle.text} text-xs sm:text-sm flex items-center gap-2`}>
               <span className="text-base sm:text-lg">{hintStyle.icon}</span>
-              {score.hint}
+              {score.hintKey ? t(score.hintKey, score.hintParams || {}) : score.hint}
             </p>
           </div>
         )}

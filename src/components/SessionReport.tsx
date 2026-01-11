@@ -165,7 +165,7 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
               {t('session.timeline')}
             </h2>
             <div className="h-32 sm:h-40 flex items-end gap-0.5 sm:gap-1">
-              {result.scoreTimeline.slice(0, 60).map((point, idx) => (
+              {sampleTimeline(result.scoreTimeline, 60).map((point, idx) => (
                 <div
                   key={idx}
                   className="flex-1 rounded-t-sm transition-all duration-300 hover:opacity-80"
@@ -285,4 +285,36 @@ function formatTime(ms: number): string {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Sample timeline to a fixed number of bars, averaging scores within each bucket.
+ * This ensures the full session is visible regardless of duration.
+ */
+function sampleTimeline(
+  timeline: { timestamp: number; score: number }[],
+  maxBars: number
+): { timestamp: number; score: number }[] {
+  if (timeline.length <= maxBars) {
+    return timeline;
+  }
+
+  const bucketSize = timeline.length / maxBars;
+  const sampled: { timestamp: number; score: number }[] = [];
+
+  for (let i = 0; i < maxBars; i++) {
+    const startIdx = Math.floor(i * bucketSize);
+    const endIdx = Math.floor((i + 1) * bucketSize);
+    const bucket = timeline.slice(startIdx, endIdx);
+
+    if (bucket.length > 0) {
+      const avgScore = bucket.reduce((sum, p) => sum + p.score, 0) / bucket.length;
+      sampled.push({
+        timestamp: bucket[0].timestamp,
+        score: Math.round(avgScore),
+      });
+    }
+  }
+
+  return sampled;
 }

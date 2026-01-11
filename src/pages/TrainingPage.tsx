@@ -12,6 +12,7 @@ import { usePoseEstimation } from '../hooks/usePoseEstimation';
 import { normalizePose } from '../engines/PoseNormalizer';
 import { compareFrames, SessionScorer } from '../engines/ScoringEngine';
 import { ScoreResult, SessionResult, PoseFrame } from '../types/pose';
+import { PoseBuffer } from '../utils/PoseBuffer';
 
 type TrainingState = 'calibration' | 'training' | 'report';
 
@@ -39,7 +40,7 @@ export function TrainingPage() {
 
   const sessionScorerRef = useRef(new SessionScorer());
   const teacherVideoRef = useRef<HTMLVideoElement>(null);
-  const dancerPoseRef = useRef<PoseFrame | null>(null);
+  const dancerPoseBuffer = useRef(new PoseBuffer(60)); // Store last 2 seconds of poses
   const sessionStartTimeRef = useRef<number>(0);
   const lastTeacherPoseRef = useRef<PoseFrame | null>(null);
 
@@ -59,7 +60,7 @@ export function TrainingPage() {
   } = usePoseEstimation({
     onPoseDetected: (pose, source) => {
       if (source === 'dancer') {
-        dancerPoseRef.current = pose;
+        dancerPoseBuffer.current.push(pose);
         setDancerPose(pose);
       } else {
         lastTeacherPoseRef.current = pose;
@@ -125,24 +126,28 @@ export function TrainingPage() {
     return () => cancelAnimationFrame(animationId);
   }, [trainingState, isPlaying, isPoseReady, processFrame, webcamRef]);
 
-  // Score comparison
+  // Score comparison - 50ms interval for 20 FPS feedback
   useEffect(() => {
     if (trainingState !== 'training' || !isPlaying) return;
 
     const compareInterval = setInterval(() => {
-      const dancerPose = dancerPoseRef.current;
+      const latestDancerPose = dancerPoseBuffer.current.getLatest();
       const tPose = lastTeacherPoseRef.current;
-      if (dancerPose && tPose) {
-        const dancerNormalized = normalizePose(dancerPose.keypoints, options.mirrored);
+      if (latestDancerPose && tPose) {
+        const dancerNormalized = normalizePose(latestDancerPose.keypoints, options.mirrored);
         const teacherNormalized = normalizePose(tPose.keypoints);
-        const score = compareFrames(dancerNormalized, teacherNormalized);
-        setCurrentScore(score);
+
+        // Get video timestamp
         const videoTimeMs = teacherVideoRef.current
           ? teacherVideoRef.current.currentTime * 1000
           : performance.now() - sessionStartTimeRef.current;
+
+        // Compare dancer pose with current teacher pose (real-time comparison)
+        const score = compareFrames(dancerNormalized, teacherNormalized);
+        setCurrentScore(score);
         sessionScorerRef.current.addScore(videoTimeMs, score);
       }
-    }, 150);
+    }, 50); // Changed from 150ms to 50ms for 3x more responsive feedback
 
     return () => clearInterval(compareInterval);
   }, [trainingState, isPlaying, options.mirrored]);
@@ -199,6 +204,7 @@ export function TrainingPage() {
 
   const handleRestart = useCallback(() => {
     sessionScorerRef.current.reset();
+    dancerPoseBuffer.current.clear();
     setCurrentScore(null);
     setTrainingState('calibration');
   }, []);

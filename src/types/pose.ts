@@ -30,6 +30,8 @@ export interface ScoreResult {
     torso: number;
   };
   hint?: string;
+  hintKey?: string;
+  hintParams?: Record<string, string | number>;
 }
 
 export interface SessionResult {

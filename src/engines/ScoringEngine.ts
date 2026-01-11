@@ -1,5 +1,5 @@
-import { NormalizedPose, ScoreResult, SessionResult, PoseFrame } from '../types/pose';
-import { normalizePose, getBodyPartAngles } from './PoseNormalizer';
+import { NormalizedPose, ScoreResult, SessionResult } from '../types/pose';
+import { getBodyPartAngles } from './PoseNormalizer';
 
 const ANGLE_WEIGHTS = {
   arms: 0.35,
@@ -68,6 +68,10 @@ function calculateBodyPartScore(
   return validCount > 0 ? totalScore / validCount : 0;
 }
 
+/**
+ * Compare dancer pose to teacher pose and generate a score.
+ * Uses 10 joint angles (4 arms, 4 legs, 2 torso) with weighted scoring.
+ */
 export function compareFrames(
   dancerPose: NormalizedPose,
   teacherPose: NormalizedPose
@@ -86,7 +90,7 @@ export function compareFrames(
     torsoScore * ANGLE_WEIGHTS.torso
   );
 
-  const hint = generateHint(armsScore, legsScore, torsoScore, dancerParts, teacherParts);
+  const hintResult = generateHintKey(armsScore, legsScore, torsoScore, dancerParts, teacherParts);
 
   return {
     overallScore,
@@ -96,17 +100,29 @@ export function compareFrames(
       legs: Math.round(legsScore),
       torso: Math.round(torsoScore),
     },
-    hint,
+    hint: hintResult?.hint,
+    hintKey: hintResult?.key,
+    hintParams: hintResult?.params,
   };
 }
 
-function generateHint(
+interface HintResult {
+  hint: string;
+  key: string;
+  params?: Record<string, string | number>;
+}
+
+/**
+ * Generate a hint for the weakest body part.
+ * Returns both a fallback English string and an i18n key for translation.
+ */
+function generateHintKey(
   armsScore: number,
   legsScore: number,
   torsoScore: number,
   dancerParts: ReturnType<typeof getBodyPartAngles>,
   teacherParts: ReturnType<typeof getBodyPartAngles>
-): string | undefined {
+): HintResult | undefined {
   const scores = [
     { part: 'arms', score: armsScore },
     { part: 'legs', score: legsScore },
@@ -115,6 +131,7 @@ function generateHint(
 
   const weakest = scores.reduce((min, s) => s.score < min.score ? s : min);
 
+  // No hint needed if score is good
   if (weakest.score >= 80) return undefined;
 
   if (weakest.part === 'arms') {
@@ -122,13 +139,17 @@ function generateHint(
     const rightElbowDiff = angleDifference(dancerParts.arms[3], teacherParts.arms[3]);
 
     if (leftElbowDiff > rightElbowDiff) {
-      return dancerParts.arms[1] < teacherParts.arms[1]
-        ? 'Extend your left elbow more'
-        : 'Bend your left elbow more';
+      if (dancerParts.arms[1] < teacherParts.arms[1]) {
+        return { hint: 'Extend your left elbow more', key: 'hints.extendLeftElbow' };
+      } else {
+        return { hint: 'Bend your left elbow more', key: 'hints.bendLeftElbow' };
+      }
     } else {
-      return dancerParts.arms[3] < teacherParts.arms[3]
-        ? 'Extend your right elbow more'
-        : 'Bend your right elbow more';
+      if (dancerParts.arms[3] < teacherParts.arms[3]) {
+        return { hint: 'Extend your right elbow more', key: 'hints.extendRightElbow' };
+      } else {
+        return { hint: 'Bend your right elbow more', key: 'hints.bendRightElbow' };
+      }
     }
   }
 
@@ -137,30 +158,28 @@ function generateHint(
     const rightKneeDiff = angleDifference(dancerParts.legs[3], teacherParts.legs[3]);
 
     if (leftKneeDiff > rightKneeDiff) {
-      return dancerParts.legs[1] < teacherParts.legs[1]
-        ? 'Straighten your left leg more'
-        : 'Bend your left knee more';
+      if (dancerParts.legs[1] < teacherParts.legs[1]) {
+        return { hint: 'Straighten your left leg more', key: 'hints.straightenLeftLeg' };
+      } else {
+        return { hint: 'Bend your left knee more', key: 'hints.bendLeftKnee' };
+      }
     } else {
-      return dancerParts.legs[3] < teacherParts.legs[3]
-        ? 'Straighten your right leg more'
-        : 'Bend your right knee more';
+      if (dancerParts.legs[3] < teacherParts.legs[3]) {
+        return { hint: 'Straighten your right leg more', key: 'hints.straightenRightLeg' };
+      } else {
+        return { hint: 'Bend your right knee more', key: 'hints.bendRightKnee' };
+      }
     }
   }
 
-  return 'Keep your torso aligned with the teacher';
+  return { hint: 'Keep your torso aligned with the teacher', key: 'hints.alignTorso' };
 }
 
+/**
+ * Tracks scores throughout a training session and provides analytics.
+ */
 export class SessionScorer {
   private scores: { timestamp: number; score: number; bodyParts: ScoreResult['bodyParts'] }[] = [];
-  private teacherPoses: Map<number, NormalizedPose> = new Map();
-
-  setTeacherPoses(poses: PoseFrame[]) {
-    this.teacherPoses.clear();
-    poses.forEach(pose => {
-      const normalized = normalizePose(pose.keypoints);
-      this.teacherPoses.set(Math.round(pose.timestamp), normalized);
-    });
-  }
 
   addScore(timestamp: number, result: ScoreResult) {
     this.scores.push({
@@ -168,32 +187,6 @@ export class SessionScorer {
       score: result.overallScore,
       bodyParts: result.bodyParts,
     });
-  }
-
-  findTeacherPose(timestamp: number): NormalizedPose | null {
-    const roundedTimestamp = Math.round(timestamp);
-
-    if (this.teacherPoses.has(roundedTimestamp)) {
-      return this.teacherPoses.get(roundedTimestamp)!;
-    }
-
-    // Find closest timestamp
-    let closestTime = -1;
-    let minDiff = Infinity;
-
-    for (const t of this.teacherPoses.keys()) {
-      const diff = Math.abs(t - roundedTimestamp);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestTime = t;
-      }
-    }
-
-    if (closestTime >= 0 && minDiff < 100) { // Within 100ms
-      return this.teacherPoses.get(closestTime)!;
-    }
-
-    return null;
   }
 
   getSessionResult(): SessionResult {
@@ -234,7 +227,7 @@ export class SessionScorer {
 
   private findWeakSections(): SessionResult['weakSections'] {
     const threshold = 60;
-    const minSectionDuration = 500; // Minimum 500ms to count as a section
+    const minSectionDuration = 300; // Minimum 300ms (6 frames at 50ms) to count as a section
     const mergeTolerance = 1000; // Merge sections within 1 second of each other
     const sections: SessionResult['weakSections'] = [];
     let currentSection: { start: number; end: number; scores: number[] } | null = null;
