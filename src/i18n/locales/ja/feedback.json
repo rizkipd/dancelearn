@@ -1,8 +1,72 @@
 {
+  "encouragement": {
+    "onFire": [
+      "最高！",
+      "すごい動き！",
+      "できてる！",
+      "完璧なバイブス！",
+      "決まった！",
+      "信じられない！",
+      "輝いてる！"
+    ],
+    "niceMoves": [
+      "いい感じ！",
+      "そのエネルギーを保って！",
+      "いいリズム！",
+      "つかんできた！",
+      "ビートを感じて！",
+      "スムーズな動き！",
+      "その調子！"
+    ],
+    "keepItUp": [
+      "続けて！",
+      "頑張ってる！",
+      "もう少し！",
+      "いい努力！",
+      "ついていって！",
+      "動き続けて！",
+      "できる！"
+    ],
+    "dancing": [
+      "動き続けて！",
+      "音楽を感じて！",
+      "踊ってる！",
+      "どの動きも大切！",
+      "楽しんで！",
+      "流れに乗って！",
+      "リズムを楽しんで！"
+    ]
+  },
+  "tips": {
+    "arms": "腕をもっと自由に動かしてみて",
+    "legs": "足でリズムを感じて",
+    "torso": "体をビートに合わせて揺らして"
+  },
+  "session": {
+    "greatSession": "素晴らしいセッション！",
+    "awesomeSession": "最高のセッション！",
+    "funSession": "楽しいセッション！",
+    "youDanced": "{{duration}}踊りました！",
+    "keptMoving": "ずっと動き続けました！",
+    "highlights": "ハイライト",
+    "nextTimeTry": "次回はこれを試して",
+    "armsFlowing": "腕がとても流れていました！",
+    "greatEnergy": "終始素晴らしいエネルギー！",
+    "stayedWithBeat": "ビートに乗れていました！",
+    "niceFootwork": "いいフットワーク！",
+    "goodBodyMovement": "いい体の動き！",
+    "focusOnLegs": "脚の動きに集中してみて",
+    "watchFootwork": "先生のフットワークを見て",
+    "tryArmMovements": "腕の動きを合わせてみて",
+    "feelTheRhythm": "体でリズムを感じて"
+  },
   "celebration": {
     "perfect": "パーフェクト！",
     "excellent": "エクセレント！",
-    "good": "グッド！"
+    "good": "グッド！",
+    "onFire": "最高！",
+    "niceMoves": "いい動き！",
+    "keepItUp": "その調子！"
   },
   "timing": {
     "behind": "遅れ",

@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { SessionResult } from '../types/pose';
+import { ConfettiAnimation } from './ConfettiAnimation';
+import { useState, useEffect } from 'react';
 
 interface SessionReportProps {
   result: SessionResult;
@@ -7,18 +9,85 @@ interface SessionReportProps {
   onNewSession: () => void;
 }
 
-function getScoreGrade(score: number): { letter: string; color: string; bgColor: string; glowColor: string } {
-  if (score >= 90) return { letter: 'A+', color: 'text-emerald-400', bgColor: 'from-emerald-500/20 to-emerald-500/5', glowColor: 'shadow-emerald-500/20' };
-  if (score >= 80) return { letter: 'A', color: 'text-emerald-400', bgColor: 'from-emerald-500/20 to-emerald-500/5', glowColor: 'shadow-emerald-500/20' };
-  if (score >= 70) return { letter: 'B', color: 'text-blue-400', bgColor: 'from-blue-500/20 to-blue-500/5', glowColor: 'shadow-blue-500/20' };
-  if (score >= 60) return { letter: 'C', color: 'text-yellow-400', bgColor: 'from-yellow-500/20 to-yellow-500/5', glowColor: 'shadow-yellow-500/20' };
-  if (score >= 50) return { letter: 'D', color: 'text-orange-400', bgColor: 'from-orange-500/20 to-orange-500/5', glowColor: 'shadow-orange-500/20' };
-  return { letter: 'F', color: 'text-red-400', bgColor: 'from-red-500/20 to-red-500/5', glowColor: 'shadow-red-500/20' };
+// Get session mood based on overall experience (not score)
+function getSessionMood(score: number): 'great' | 'awesome' | 'fun' {
+  if (score >= 70) return 'great';
+  if (score >= 50) return 'awesome';
+  return 'fun';
+}
+
+// Format duration from milliseconds to friendly string
+function formatDuration(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes > 0 && seconds > 0) {
+    return `${minutes}m ${seconds}s`;
+  } else if (minutes > 0) {
+    return `${minutes} min`;
+  } else {
+    return `${seconds} sec`;
+  }
 }
 
 export function SessionReport({ result, onRestart, onNewSession }: SessionReportProps) {
-  const { t } = useTranslation(['training', 'common']);
-  const grade = getScoreGrade(result.overallScore);
+  const { t } = useTranslation(['feedback', 'training', 'common']);
+  const [showConfetti, setShowConfetti] = useState(true);
+
+  const sessionMood = getSessionMood(result.overallScore);
+  const { arms, legs, torso } = result.bodyParts;
+
+  // Calculate duration from timeline
+  const duration = result.scoreTimeline.length > 0
+    ? result.scoreTimeline[result.scoreTimeline.length - 1].timestamp - result.scoreTimeline[0].timestamp
+    : 0;
+
+  // Determine highlights based on body parts (pick the best ones)
+  const highlights: string[] = [];
+  const sortedParts = [
+    { name: 'arms', score: arms },
+    { name: 'legs', score: legs },
+    { name: 'torso', score: torso }
+  ].sort((a, b) => b.score - a.score);
+
+  // Add positive highlights for better-performing areas
+  if (sortedParts[0].score >= 50) {
+    if (sortedParts[0].name === 'arms') highlights.push(t('session.armsFlowing'));
+    if (sortedParts[0].name === 'legs') highlights.push(t('session.niceFootwork'));
+    if (sortedParts[0].name === 'torso') highlights.push(t('session.goodBodyMovement'));
+  }
+  if (sortedParts[1].score >= 50) {
+    if (sortedParts[1].name === 'arms') highlights.push(t('session.armsFlowing'));
+    if (sortedParts[1].name === 'legs') highlights.push(t('session.niceFootwork'));
+    if (sortedParts[1].name === 'torso') highlights.push(t('session.goodBodyMovement'));
+  }
+  // Always add energy highlight if they danced
+  if (result.scoreTimeline.length > 5) {
+    highlights.push(t('session.greatEnergy'));
+  }
+  if (result.overallScore >= 60) {
+    highlights.push(t('session.stayedWithBeat'));
+  }
+  // Limit to 3 highlights max
+  const displayHighlights = highlights.slice(0, 3);
+
+  // Suggestions for next time (based on weakest area, framed positively)
+  const suggestions: string[] = [];
+  const weakest = sortedParts[sortedParts.length - 1];
+  if (weakest.score < 60) {
+    if (weakest.name === 'arms') suggestions.push(t('session.tryArmMovements'));
+    if (weakest.name === 'legs') suggestions.push(t('session.focusOnLegs'));
+    if (weakest.name === 'torso') suggestions.push(t('session.feelTheRhythm'));
+  }
+  // Only show 1-2 gentle suggestions
+  const displaySuggestions = suggestions.slice(0, 2);
+
+  // Hide confetti after a moment
+  useEffect(() => {
+    const timer = setTimeout(() => setShowConfetti(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleExport = () => {
     const data = JSON.stringify(result, null, 2);
@@ -33,6 +102,9 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
 
   return (
     <div className="min-h-screen p-4 sm:p-8 relative overflow-hidden">
+      {/* Celebration Confetti */}
+      <ConfettiAnimation isActive={showConfetti} particleCount={80} duration={3000} />
+
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="bg-orb bg-orb-1" />
@@ -40,149 +112,71 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
         <div className="bg-orb bg-orb-3" />
       </div>
 
-      <div className="max-w-3xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
+      <div className="max-w-2xl mx-auto relative z-10">
+        {/* Celebration Header */}
+        <div className="text-center mb-8 sm:mb-10">
+          <div className="text-6xl mb-4">
+            {sessionMood === 'great' ? '🎉' : sessionMood === 'awesome' ? '🌟' : '💃'}
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-            {t('session.complete')}
+            {sessionMood === 'great' && t('session.greatSession')}
+            {sessionMood === 'awesome' && t('session.awesomeSession')}
+            {sessionMood === 'fun' && t('session.funSession')}
           </h1>
-          <p className="text-gray-400">{t('session.howYouDid')}</p>
+
+          {/* Duration message */}
+          <p className="text-xl text-gray-300">
+            {duration > 0
+              ? t('session.youDanced', { duration: formatDuration(duration) })
+              : t('session.keptMoving')
+            }
+          </p>
         </div>
 
-        {/* Main Score Card */}
-        <div className={`glass rounded-3xl p-6 sm:p-10 mb-6 card-hover shadow-2xl ${grade.glowColor}`}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
-            {/* Grade Circle */}
-            <div className="relative">
-              <div className={`w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br ${grade.bgColor} flex items-center justify-center border border-white/10`}>
-                <span className={`text-6xl sm:text-7xl font-black ${grade.color}`}>
-                  {grade.letter}
-                </span>
-              </div>
-              {/* Animated ring */}
-              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="46"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  className="text-white/5"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="46"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  strokeDasharray={`${result.overallScore * 2.89} 289`}
-                  strokeLinecap="round"
-                  className={grade.color}
-                  style={{ transition: 'stroke-dasharray 1s ease-out' }}
-                />
-              </svg>
-            </div>
-
-            {/* Divider */}
-            <div className="hidden sm:block h-32 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-
-            {/* Score Number */}
-            <div className="text-center">
-              <div className="text-6xl sm:text-8xl font-black text-white tracking-tight">
-                {result.overallScore}
-              </div>
-              <div className="text-gray-400 mt-2 text-lg">{t('session.overallScore')}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Body Part Breakdown */}
-        <div className="glass rounded-2xl p-5 sm:p-8 mb-6 card-hover">
-          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-              <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            {t('session.breakdown')}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <ScoreCard label={t('common:labels.arms')} score={result.bodyParts.arms} icon={<ArmsIcon />} />
-            <ScoreCard label={t('common:labels.legs')} score={result.bodyParts.legs} icon={<LegsIcon />} />
-            <ScoreCard label={t('common:labels.torso')} score={result.bodyParts.torso} icon={<TorsoIcon />} />
-          </div>
-        </div>
-
-        {/* Weak Sections */}
-        {result.weakSections.length > 0 && (
+        {/* Highlights Section */}
+        {displayHighlights.length > 0 && (
           <div className="glass rounded-2xl p-5 sm:p-8 mb-6 card-hover">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center">
-                <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              {t('session.areasToPractice')}
+            <h2 className="text-xl font-semibold text-white mb-5 flex items-center gap-3">
+              <span className="text-2xl">🔥</span>
+              {t('session.highlights')}
             </h2>
             <div className="space-y-3">
-              {result.weakSections.map((section, idx) => (
+              {displayHighlights.map((highlight, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between glass rounded-xl p-4 hover:bg-white/5 transition-all"
+                  className="flex items-center gap-3 glass rounded-xl p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 font-bold text-sm">
-                      {idx + 1}
-                    </div>
-                    <span className="text-gray-300 font-medium">
-                      {formatTime(section.start)} - {formatTime(section.end)}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center">
+                    <span className="text-lg">
+                      {idx === 0 ? '⭐' : idx === 1 ? '✨' : '💫'}
                     </span>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    section.score < 40 ? 'bg-red-500/20 text-red-400' :
-                    section.score < 60 ? 'bg-orange-500/20 text-orange-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {Math.round(section.score)}
-                  </div>
+                  <span className="text-gray-200 font-medium">{highlight}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Score Timeline */}
-        {result.scoreTimeline.length > 0 && (
+        {/* Suggestions Section - Only show if there are suggestions */}
+        {displaySuggestions.length > 0 && (
           <div className="glass rounded-2xl p-5 sm:p-8 mb-6 card-hover">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              {t('session.timeline')}
+            <h2 className="text-xl font-semibold text-white mb-5 flex items-center gap-3">
+              <span className="text-2xl">💡</span>
+              {t('session.nextTimeTry')}
             </h2>
-            <div className="h-32 sm:h-40 flex items-end gap-0.5 sm:gap-1">
-              {sampleTimeline(result.scoreTimeline, 60).map((point, idx) => (
+            <div className="space-y-3">
+              {displaySuggestions.map((suggestion, idx) => (
                 <div
                   key={idx}
-                  className="flex-1 rounded-t-sm transition-all duration-300 hover:opacity-80"
-                  style={{
-                    height: `${point.score}%`,
-                    background: point.score >= 80
-                      ? 'linear-gradient(to top, #10b981, #34d399)'
-                      : point.score >= 60
-                      ? 'linear-gradient(to top, #f59e0b, #fbbf24)'
-                      : 'linear-gradient(to top, #ef4444, #f87171)',
-                  }}
-                />
+                  className="flex items-center gap-3 glass rounded-xl p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/30 to-blue-500/30 flex items-center justify-center">
+                    <span className="text-lg">💪</span>
+                  </div>
+                  <span className="text-gray-200 font-medium">{suggestion}</span>
+                </div>
               ))}
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-3">
-              <span>{t('session.start')}</span>
-              <span>{t('session.end')}</span>
             </div>
           </div>
         )}
@@ -222,99 +216,3 @@ export function SessionReport({ result, onRestart, onNewSession }: SessionReport
   );
 }
 
-function ScoreCard({ label, score, icon }: { label: string; score: number; icon: React.ReactNode }) {
-  const getBarColor = (score: number) => {
-    if (score >= 80) return 'from-emerald-500 to-emerald-400';
-    if (score >= 60) return 'from-yellow-500 to-yellow-400';
-    return 'from-red-500 to-red-400';
-  };
-
-  const getTextColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-400';
-    if (score >= 60) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  return (
-    <div className="glass rounded-xl p-4 sm:p-5 hover:bg-white/5 transition-all">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
-          {icon}
-        </div>
-        <span className="text-gray-300 font-medium">{label}</span>
-      </div>
-      <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-3">
-        <div
-          className={`h-full bg-gradient-to-r ${getBarColor(score)} rounded-full transition-all duration-1000`}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <div className={`text-2xl font-bold ${getTextColor(score)}`}>
-        {score}%
-      </div>
-    </div>
-  );
-}
-
-function ArmsIcon() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 12h2m12 0h2M6 12l4-4m0 0l2 2m-2-2v8m8-4l-4-4m0 0l-2 2m2-2v8" />
-    </svg>
-  );
-}
-
-function LegsIcon() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v4m0 0l-3 8m3-8l3 8m-6 0l-2 4m5-4l2 4" />
-    </svg>
-  );
-}
-
-function TorsoIcon() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4a2 2 0 100-4 2 2 0 000 4zm0 0v4m-4 4v8m8-8v8m-8-8h8" />
-    </svg>
-  );
-}
-
-function formatTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${minutes}:${secs.toString().padStart(2, '0')}`;
-}
-
-/**
- * Sample timeline to a fixed number of bars, averaging scores within each bucket.
- * This ensures the full session is visible regardless of duration.
- */
-function sampleTimeline(
-  timeline: { timestamp: number; score: number }[],
-  maxBars: number
-): { timestamp: number; score: number }[] {
-  if (timeline.length <= maxBars) {
-    return timeline;
-  }
-
-  const bucketSize = timeline.length / maxBars;
-  const sampled: { timestamp: number; score: number }[] = [];
-
-  for (let i = 0; i < maxBars; i++) {
-    const startIdx = Math.floor(i * bucketSize);
-    const endIdx = Math.floor((i + 1) * bucketSize);
-    const bucket = timeline.slice(startIdx, endIdx);
-
-    if (bucket.length > 0) {
-      const avgScore = bucket.reduce((sum, p) => sum + p.score, 0) / bucket.length;
-      sampled.push({
-        timestamp: bucket[0].timestamp,
-        score: Math.round(avgScore),
-      });
-    }
-  }
-
-  return sampled;
-}

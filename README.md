@@ -1,50 +1,83 @@
-# React + TypeScript + Vite
+# DanceTwin 💃
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-based AI dance training app that helps you learn dance moves through real-time pose comparison - all running privately in your browser!
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Privacy-First**: All AI processing runs locally in your browser - no video uploads, no tracking
+- **Any Dance Video**: Upload any MP4/WebM/MOV file and practice alongside it
+- **Real-Time Encouragement**: Get supportive feedback as you dance (no scores or grades!)
+- **Celebration Effects**: Confetti and badges celebrate your great moments
+- **Side-by-Side View**: See yourself and the teacher video simultaneously
+- **Skeleton Overlay**: Visual pose tracking helps you see your movements
+- **Multi-Language**: Available in English, Indonesian, Japanese, Korean, and Chinese
 
-## Expanding the ESLint configuration
+## 🎯 How It Works
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. **Upload** your favorite dance video
+2. **Position** yourself in front of your webcam
+3. **Dance** alongside the teacher and get real-time encouragement
+4. **Celebrate** your session with highlights and friendly tips
 
-- Configure the top-level `parserOptions` property like this:
+## 🚀 Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Open http://localhost:5173 in your browser
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## 🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS** for styling
+- **MediaPipe Pose** for AI pose estimation (runs in browser via WebAssembly)
+- **i18next** for internationalization
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+## 🌐 Browser Requirements
+
+- Modern browser with WebAssembly support
+- Webcam access
+- Recommended: Chrome, Edge, or Firefox (latest versions)
+
+## 🔒 Privacy
+
+- ✅ All processing runs locally in your browser
+- ✅ No video data leaves your device
+- ✅ No external API calls for AI
+- ✅ No login required
+- ✅ No tracking or analytics
+
+## 📝 Development
+
+```bash
+npm run dev      # Start development server
+npm run build    # Production build
+npm run preview  # Preview production build
+npm run lint     # Run ESLint
 ```
+
+## 🎨 Design Philosophy
+
+**Confidence-First Feedback**
+- No numeric scores or grades shown
+- Encouragement over evaluation
+- Celebration of effort and progress
+- Gentle, friendly tips when helpful
+- Fun for kids, teens, and adults alike
+
+## 📄 License
+
+See LICENSE file for details.
+
+## 🤝 Contributing
+
+We welcome contributions! Please feel free to submit issues or pull requests.
+
+## 📧 Contact
+
+Questions or feedback? Reach out at dancetwin2025@gmail.com

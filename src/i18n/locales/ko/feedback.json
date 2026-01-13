@@ -1,8 +1,72 @@
 {
+  "encouragement": {
+    "onFire": [
+      "대박!",
+      "멋진 움직임!",
+      "할 수 있어!",
+      "완벽한 바이브!",
+      "성공!",
+      "믿을 수 없어!",
+      "빛나고 있어!"
+    ],
+    "niceMoves": [
+      "좋아 보여!",
+      "그 에너지 유지해!",
+      "좋은 리듬!",
+      "감을 잡고 있어!",
+      "비트를 느껴!",
+      "부드러운 움직임!",
+      "그래 맞아!"
+    ],
+    "keepItUp": [
+      "계속해!",
+      "잘하고 있어!",
+      "거의 다 왔어!",
+      "좋은 노력!",
+      "함께해!",
+      "계속 움직여!",
+      "할 수 있어!"
+    ],
+    "dancing": [
+      "계속 움직여!",
+      "음악을 느껴!",
+      "춤추고 있어!",
+      "모든 움직임이 중요해!",
+      "즐겨!",
+      "흐름에 맡겨!",
+      "리듬을 즐겨!"
+    ]
+  },
+  "tips": {
+    "arms": "팔을 더 자유롭게 움직여 보세요",
+    "legs": "발로 리듬을 느껴보세요",
+    "torso": "비트에 맞춰 몸을 흔들어 보세요"
+  },
+  "session": {
+    "greatSession": "멋진 세션!",
+    "awesomeSession": "최고의 세션!",
+    "funSession": "즐거운 세션!",
+    "youDanced": "{{duration}} 동안 춤췄어요!",
+    "keptMoving": "계속 움직였어요!",
+    "highlights": "하이라이트",
+    "nextTimeTry": "다음에 시도해 보세요",
+    "armsFlowing": "팔이 정말 잘 흘러갔어요!",
+    "greatEnergy": "처음부터 끝까지 좋은 에너지!",
+    "stayedWithBeat": "비트를 잘 따라갔어요!",
+    "niceFootwork": "좋은 발놀림!",
+    "goodBodyMovement": "좋은 몸 움직임!",
+    "focusOnLegs": "다리 움직임에 집중해 보세요",
+    "watchFootwork": "선생님의 발놀림을 보세요",
+    "tryArmMovements": "팔 동작을 맞춰 보세요",
+    "feelTheRhythm": "몸으로 리듬을 느껴보세요"
+  },
   "celebration": {
     "perfect": "완벽해요!",
     "excellent": "훌륭해요!",
-    "good": "좋아요!"
+    "good": "좋아요!",
+    "onFire": "대박!",
+    "niceMoves": "멋진 움직임!",
+    "keepItUp": "계속해!"
   },
   "timing": {
     "behind": "느려요",

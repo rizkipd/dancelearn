@@ -5,7 +5,7 @@
     "all": "Semua",
     "privacy": "Privasi & Keamanan",
     "technical": "Teknis",
-    "scoring": "Penilaian",
+    "feedback": "Feedback",
     "usage": "Penggunaan",
     "troubleshooting": "Pemecahan Masalah"
   },
@@ -36,19 +36,19 @@
       "answer": "DanceTwin dioptimalkan untuk browser desktop di mana Anda dapat memposisikan perangkat untuk menangkap gerakan seluruh tubuh. Dukungan mobile terbatas karena tantangan penempatan kamera."
     },
     {
-      "category": "scoring",
-      "question": "Bagaimana skor dihitung?",
-      "answer": "Skor Anda berdasarkan perbandingan sudut sendi antara Anda dan guru. Kami menganalisis lengan (35%), kaki (40%), dan badan (25%). Skor yang lebih tinggi berarti pose Anda lebih cocok dengan guru."
+      "category": "feedback",
+      "question": "Bagaimana sistem feedback bekerja?",
+      "answer": "DanceTwin menggunakan AI untuk membandingkan gerakan Anda dengan video guru secara real-time. Alih-alih menampilkan skor atau nilai, ia memberikan pesan penyemangat seperti 'Luar biasa!' atau 'Gerakan bagus!' untuk menjaga Anda tetap termotivasi dan bersenang-senang."
     },
     {
-      "category": "scoring",
-      "question": "Mengapa skor saya rendah padahal saya merasa sudah cocok?",
-      "answer": "Alasan umum termasuk: perbedaan timing (Anda mungkin sedikit lebih cepat atau lambat), presisi sudut (perbedaan kecil menumpuk), atau masalah visibilitas (beberapa bagian tubuh mungkin tidak terdeteksi dengan jelas)."
+      "category": "feedback",
+      "question": "Mengapa saya tidak melihat skor atau nilai?",
+      "answer": "Kami percaya menari harus menyenangkan dan bebas dari penilaian! Alih-alih angka yang mengintimidasi, DanceTwin fokus pada penyemangat dan tips ramah untuk membantu Anda berkembang secara alami sambil menikmati pengalaman."
     },
     {
-      "category": "scoring",
+      "category": "feedback",
       "question": "Apa arti efek perayaan?",
-      "answer": "Sempurna (90+): Anda berhasil! Luar biasa (85-89): Hampir sempurna! Bagus (80-84): Kemajuan hebat! Perayaan ini muncul saat Anda melakukannya dengan baik untuk menjaga motivasi Anda."
+      "answer": "Luar biasa!: Anda mencocokkan gerakan dengan indah! Gerakan bagus!: Terlihat bagus, pertahankan energi itu! Terus begitu!: Anda mulai menguasainya! Perayaan ini muncul untuk menjaga motivasi Anda dan merayakan kemajuan Anda."
     },
     {
       "category": "usage",

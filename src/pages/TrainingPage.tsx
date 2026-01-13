@@ -264,7 +264,11 @@ export function TrainingPage() {
               )}
 
               {trainingState === 'training' && (
-                <FeedbackOverlay score={currentScore} isActive={isPlaying} />
+                <FeedbackOverlay
+                  score={currentScore}
+                  isActive={isPlaying}
+                  isMoving={dancerPose?.isMoving ?? false}
+                />
               )}
             </div>
 

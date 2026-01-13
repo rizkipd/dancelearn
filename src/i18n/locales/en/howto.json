@@ -35,30 +35,26 @@
     "step4": {
       "number": "4",
       "title": "Start Dancing!",
-      "description": "Follow along with the teacher video. Watch your real-time score and follow the hints to improve your moves.",
+      "description": "Follow along with the teacher video. Get real-time encouragement and friendly tips to help you feel the rhythm.",
       "tips": [
-        "Focus on matching the timing first",
-        "Pay attention to the body part scores",
-        "Practice weak sections repeatedly"
+        "Focus on having fun and feeling the music",
+        "Follow the encouraging messages as you dance",
+        "Every move counts - just keep dancing!"
       ]
     }
   },
-  "scoringGuide": {
-    "title": "Understanding Your Score",
-    "description": "Your score is calculated by comparing your pose to the teacher's:",
-    "bodyParts": {
-      "arms": "Arms (35%): Shoulder and elbow angles",
-      "legs": "Legs (40%): Hip and knee angles",
-      "torso": "Torso (25%): Body alignment"
-    },
-    "grades": {
-      "title": "Score Grades",
-      "aPlus": "A+ (95-100): Perfect!",
-      "a": "A (90-94): Excellent",
-      "b": "B (80-89): Great",
-      "c": "C (70-79): Good",
-      "d": "D (60-69): Keep practicing",
-      "f": "F (Below 60): Needs work"
+  "encouragementGuide": {
+    "title": "How Feedback Works",
+    "description": "DanceTwin gives you friendly, encouraging feedback as you dance. No grades or scores - just supportive messages to keep you moving!",
+    "levels": {
+      "onFire": "You're on fire!",
+      "onFireDesc": "You're matching the moves beautifully",
+      "niceMoves": "Nice moves!",
+      "niceMovesDesc": "Looking good, keep that energy going",
+      "keepItUp": "Keep it up!",
+      "keepItUpDesc": "You're getting the hang of it",
+      "dancing": "Feel the music!",
+      "dancingDesc": "Just keep moving and have fun"
     }
   },
   "troubleshooting": {
@@ -73,8 +69,8 @@
         "solution": "Improve lighting and ensure your full body is visible"
       },
       {
-        "problem": "Low scores despite good moves",
-        "solution": "Check timing and try to match the speed of the teacher video"
+        "problem": "Not getting encouragement",
+        "solution": "Make sure you're visible on camera and moving with the music"
       }
     ]
   }

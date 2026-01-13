@@ -16,19 +16,9 @@
   },
   "session": {
     "complete": "세션 완료!",
-    "howYouDid": "결과입니다",
-    "overallScore": "전체 점수",
-    "breakdown": "성능 분석",
-    "areasToPractice": "연습할 부분",
-    "timeline": "점수 추이",
+    "timeline": "당신의 댄스 여정",
     "start": "시작",
-    "end": "종료",
-    "grade": {
-      "excellent": "훌륭합니다!",
-      "great": "잘했어요!",
-      "good": "좋은 노력이에요!",
-      "keepPracticing": "계속 연습하세요!"
-    }
+    "end": "종료"
   },
   "controls": {
     "volume": "볼륨",

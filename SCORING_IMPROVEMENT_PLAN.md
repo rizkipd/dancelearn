@@ -1,5 +1,7 @@
 # Dance Scoring System Improvement Plan
 
+> **⚠️ ARCHIVED**: This document has been superseded by the confidence-first feedback system implemented in January 2025. See `IMPROVEMENT.md` for the new design philosophy. The app no longer shows numeric scores or grades to users - it uses encouragement-based feedback instead.
+
 ## Overview
 
 Improve the DanceTwin dance scoring system to provide more accurate pose comparison, better timing synchronization, internationalized feedback, and enhanced user experience. The current system has solid fundamentals but lacks timing alignment, has performance bottlenecks, and provides limited feedback quality.

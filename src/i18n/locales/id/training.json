@@ -16,19 +16,9 @@
   },
   "session": {
     "complete": "Sesi Selesai!",
-    "howYouDid": "Berikut hasil Anda",
-    "overallScore": "Skor Keseluruhan",
-    "breakdown": "Rincian Performa",
-    "areasToPractice": "Area untuk Dilatih",
-    "timeline": "Timeline Skor",
+    "timeline": "Perjalanan Menarimu",
     "start": "Mulai",
-    "end": "Selesai",
-    "grade": {
-      "excellent": "Luar biasa!",
-      "great": "Bagus sekali!",
-      "good": "Usaha yang baik!",
-      "keepPracticing": "Terus berlatih!"
-    }
+    "end": "Selesai"
   },
   "controls": {
     "volume": "Volume",

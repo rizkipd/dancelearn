@@ -35,30 +35,26 @@
     "step4": {
       "number": "4",
       "title": "Mulai Menari!",
-      "description": "Ikuti video guru. Perhatikan skor real-time Anda dan ikuti tips untuk meningkatkan gerakan Anda.",
+      "description": "Ikuti video guru. Dapatkan semangat real-time dan tips ramah untuk membantu Anda merasakan ritme.",
       "tips": [
-        "Fokus pada pencocokan waktu terlebih dahulu",
-        "Perhatikan skor bagian tubuh",
-        "Latih bagian yang lemah berulang kali"
+        "Fokus pada bersenang-senang dan merasakan musik",
+        "Ikuti pesan penyemangat saat Anda menari",
+        "Setiap gerakan penting - terus menari!"
       ]
     }
   },
-  "scoringGuide": {
-    "title": "Memahami Skor Anda",
-    "description": "Skor Anda dihitung dengan membandingkan pose Anda dengan guru:",
-    "bodyParts": {
-      "arms": "Lengan (35%): Sudut bahu dan siku",
-      "legs": "Kaki (40%): Sudut pinggul dan lutut",
-      "torso": "Badan (25%): Keselarasan tubuh"
-    },
-    "grades": {
-      "title": "Tingkat Skor",
-      "aPlus": "A+ (95-100): Sempurna!",
-      "a": "A (90-94): Luar biasa",
-      "b": "B (80-89): Hebat",
-      "c": "C (70-79): Bagus",
-      "d": "D (60-69): Terus berlatih",
-      "f": "F (Di bawah 60): Perlu latihan"
+  "encouragementGuide": {
+    "title": "Cara Kerja Feedback",
+    "description": "DanceTwin memberikan feedback yang ramah dan menyemangati saat Anda menari. Tidak ada nilai atau skor - hanya pesan dukungan untuk membuat Anda terus bergerak!",
+    "levels": {
+      "onFire": "Luar biasa!",
+      "onFireDesc": "Anda mencocokkan gerakan dengan indah",
+      "niceMoves": "Gerakan bagus!",
+      "niceMovesDesc": "Terlihat bagus, pertahankan energi itu",
+      "keepItUp": "Terus begitu!",
+      "keepItUpDesc": "Anda mulai menguasainya",
+      "dancing": "Rasakan musiknya!",
+      "dancingDesc": "Terus bergerak dan bersenang-senang"
     }
   },
   "troubleshooting": {
@@ -73,8 +69,8 @@
         "solution": "Tingkatkan pencahayaan dan pastikan seluruh tubuh Anda terlihat"
       },
       {
-        "problem": "Skor rendah meskipun gerakan bagus",
-        "solution": "Periksa timing dan coba cocokkan kecepatan video guru"
+        "problem": "Tidak mendapat semangat",
+        "solution": "Pastikan Anda terlihat di kamera dan bergerak mengikuti musik"
       }
     ]
   }

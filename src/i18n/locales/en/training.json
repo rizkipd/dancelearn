@@ -16,19 +16,9 @@
   },
   "session": {
     "complete": "Session Complete!",
-    "howYouDid": "Here's how you did",
-    "overallScore": "Overall Score",
-    "breakdown": "Performance Breakdown",
-    "areasToPractice": "Areas to Practice",
-    "timeline": "Score Timeline",
+    "timeline": "Your Dance Journey",
     "start": "Start",
-    "end": "End",
-    "grade": {
-      "excellent": "Excellent!",
-      "great": "Great job!",
-      "good": "Good effort!",
-      "keepPracticing": "Keep practicing!"
-    }
+    "end": "End"
   },
   "controls": {
     "volume": "Volume",

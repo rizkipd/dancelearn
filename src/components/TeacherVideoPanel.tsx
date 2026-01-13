@@ -36,7 +36,7 @@ const SKELETON_CONNECTIONS: [number, number][] = [
 export function TeacherVideoPanel({
   videoUrl,
   isPlaying,
-  showSkeleton = true,
+  showSkeleton = false,
   onTimeUpdate,
   onEnded,
   playbackRate = 1,

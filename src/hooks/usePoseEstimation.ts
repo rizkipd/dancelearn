@@ -55,6 +55,12 @@ const FAST_MOVEMENT_THRESHOLD = 0.03; // Movement > 3% = fast movement
 const MIN_SMOOTHING = 0.85; // Fast movements: 85% current frame (very responsive)
 const MAX_SMOOTHING = 0.55; // Slow movements: 55% current frame (more stable)
 
+// Movement detection for hiding feedback when user is idle
+let dancerPoseHistory: PoseFrame[] = [];
+const POSE_HISTORY_SIZE = 40; // Track last 40 frames (~1-2 seconds at 20-30 FPS)
+const MOVEMENT_THRESHOLD = 0.01; // 1% screen position change per second
+const KEY_JOINTS_FOR_MOVEMENT = [11, 12, 15, 16, 23, 24, 27, 28]; // shoulders, wrists, hips, ankles
+
 function smoothKeypoints(current: Keypoint[]): Keypoint[] {
   if (!previousKeypoints) {
     previousKeypoints = current;
@@ -114,6 +120,66 @@ function smoothKeypoints(current: Keypoint[]): Keypoint[] {
 export function resetSmoothing() {
   previousKeypoints = null;
   keypointVelocities = [];
+  dancerPoseHistory = [];
+}
+
+/**
+ * Calculate average velocity of key joints over recent pose history
+ * to determine if the user is actively moving or standing still
+ */
+function calculateMovementVelocity(poseHistory: PoseFrame[]): number {
+  if (poseHistory.length < 2) return 0;
+
+  let totalVelocity = 0;
+  let count = 0;
+
+  // Compare consecutive frames
+  for (let i = 1; i < poseHistory.length; i++) {
+    const prev = poseHistory[i - 1];
+    const curr = poseHistory[i];
+    const dt = (curr.timestamp - prev.timestamp) / 1000; // Convert to seconds
+
+    if (dt <= 0) continue; // Skip if timestamps are invalid
+
+    // Check movement of key joints
+    for (const jointIdx of KEY_JOINTS_FOR_MOVEMENT) {
+      const prevKp = prev.keypoints[jointIdx];
+      const currKp = curr.keypoints[jointIdx];
+
+      // Skip joints with low visibility
+      if (!prevKp || !currKp ||
+          (prevKp.visibility ?? 0) < 0.5 ||
+          (currKp.visibility ?? 0) < 0.5) {
+        continue;
+      }
+
+      // Calculate distance moved (using normalized coordinates 0-1)
+      const dx = currKp.x - prevKp.x;
+      const dy = currKp.y - prevKp.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Calculate velocity (distance per second)
+      const velocity = distance / dt;
+
+      totalVelocity += velocity;
+      count++;
+    }
+  }
+
+  // Return average velocity across all tracked joints
+  return count > 0 ? totalVelocity / count : 0;
+}
+
+/**
+ * Determine if the user is currently moving based on recent pose history
+ */
+function isUserMoving(poseHistory: PoseFrame[]): boolean {
+  // Need at least 20 frames (1 second) to make a reliable determination
+  // If insufficient history, assume moving (avoids hiding feedback at session start)
+  if (poseHistory.length < 20) return true;
+
+  const avgVelocity = calculateMovementVelocity(poseHistory);
+  return avgVelocity >= MOVEMENT_THRESHOLD;
 }
 
 async function getOrCreatePose(): Promise<Pose> {
@@ -237,11 +303,31 @@ export function usePoseEstimation(options: UsePoseEstimationOptions = {}): UsePo
         const angles = calculateAngles(keypoints);
         const confidence = calculateConfidence(keypoints);
 
+        // For dancer poses, track movement history and determine if moving
+        let isMoving: boolean | undefined = undefined;
+        if (source === 'dancer') {
+          // Add to history buffer (keep last 40 frames)
+          dancerPoseHistory.push({
+            timestamp: performance.now(),
+            keypoints,
+            angles,
+            confidence,
+          });
+
+          if (dancerPoseHistory.length > POSE_HISTORY_SIZE) {
+            dancerPoseHistory.shift(); // Remove oldest frame
+          }
+
+          // Calculate movement state
+          isMoving = isUserMoving(dancerPoseHistory);
+        }
+
         const poseFrame: PoseFrame = {
           timestamp: performance.now(),
           keypoints,
           angles,
           confidence,
+          isMoving,
         };
 
         if (source === 'dancer') {

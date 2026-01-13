@@ -16,19 +16,9 @@
   },
   "session": {
     "complete": "会话完成！",
-    "howYouDid": "您的表现",
-    "overallScore": "总体分数",
-    "breakdown": "表现分析",
-    "areasToPractice": "需要练习的部分",
-    "timeline": "分数时间线",
+    "timeline": "你的舞蹈之旅",
     "start": "开始",
-    "end": "结束",
-    "grade": {
-      "excellent": "优秀！",
-      "great": "很好！",
-      "good": "不错！",
-      "keepPracticing": "继续练习！"
-    }
+    "end": "结束"
   },
   "controls": {
     "volume": "音量",

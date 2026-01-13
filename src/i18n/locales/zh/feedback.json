@@ -1,8 +1,72 @@
 {
+  "encouragement": {
+    "onFire": [
+      "太棒了！",
+      "动作很棒！",
+      "你做到了！",
+      "完美的感觉！",
+      "成功了！",
+      "难以置信！",
+      "你在发光！"
+    ],
+    "niceMoves": [
+      "看起来很好！",
+      "保持这个能量！",
+      "节奏很好！",
+      "你找到感觉了！",
+      "感受节拍！",
+      "动作流畅！",
+      "就是这样！"
+    ],
+    "keepItUp": [
+      "继续！",
+      "你做得很好！",
+      "快到了！",
+      "努力得好！",
+      "坚持下去！",
+      "继续动！",
+      "你可以的！"
+    ],
+    "dancing": [
+      "继续动起来！",
+      "感受音乐！",
+      "你在跳舞！",
+      "每个动作都重要！",
+      "开心就好！",
+      "让它流动！",
+      "享受节奏！"
+    ]
+  },
+  "tips": {
+    "arms": "试着让手臂更自由地移动",
+    "legs": "用脚感受节奏",
+    "torso": "让身体随着节拍摆动"
+  },
+  "session": {
+    "greatSession": "精彩的训练！",
+    "awesomeSession": "超棒的训练！",
+    "funSession": "有趣的训练！",
+    "youDanced": "你跳了{{duration}}！",
+    "keptMoving": "你一直在动！",
+    "highlights": "亮点",
+    "nextTimeTry": "下次试试",
+    "armsFlowing": "你的手臂动作很流畅！",
+    "greatEnergy": "全程都很有活力！",
+    "stayedWithBeat": "你跟上了节拍！",
+    "niceFootwork": "脚步很好！",
+    "goodBodyMovement": "身体动作很好！",
+    "focusOnLegs": "注意腿部动作",
+    "watchFootwork": "看看老师的脚步",
+    "tryArmMovements": "试着跟上手臂动作",
+    "feelTheRhythm": "用身体感受节奏"
+  },
   "celebration": {
     "perfect": "完美！",
     "excellent": "优秀！",
-    "good": "很好！"
+    "good": "很好！",
+    "onFire": "太棒了！",
+    "niceMoves": "动作很棒！",
+    "keepItUp": "继续保持！"
   },
   "timing": {
     "behind": "慢了",

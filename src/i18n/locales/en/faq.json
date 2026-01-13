@@ -5,7 +5,7 @@
     "all": "All",
     "privacy": "Privacy & Security",
     "technical": "Technical",
-    "scoring": "Scoring",
+    "feedback": "Feedback",
     "usage": "Usage",
     "troubleshooting": "Troubleshooting"
   },
@@ -36,19 +36,19 @@
       "answer": "DanceTwin is optimized for desktop browsers where you can position your device to capture full-body movements. Mobile support is limited due to camera positioning challenges."
     },
     {
-      "category": "scoring",
-      "question": "How is the score calculated?",
-      "answer": "Your score is based on comparing joint angles between you and the teacher. We analyze arms (35%), legs (40%), and torso (25%). Higher scores mean your poses more closely match the teacher."
+      "category": "feedback",
+      "question": "How does the feedback system work?",
+      "answer": "DanceTwin uses AI to compare your movements with the teacher video in real-time. Instead of showing scores or grades, it provides encouraging messages like 'You're on fire!' or 'Nice moves!' to keep you motivated and having fun."
     },
     {
-      "category": "scoring",
-      "question": "Why is my score low even when I think I'm matching?",
-      "answer": "Common reasons include: timing differences (you might be slightly ahead or behind), angle precision (small differences add up), or visibility issues (some body parts may not be clearly detected)."
+      "category": "feedback",
+      "question": "Why don't I see any scores or grades?",
+      "answer": "We believe dancing should be fun and judgment-free! Instead of intimidating numbers, DanceTwin focuses on encouragement and friendly tips to help you improve naturally while enjoying the experience."
     },
     {
-      "category": "scoring",
+      "category": "feedback",
       "question": "What do the celebration effects mean?",
-      "answer": "Perfect (90+): You nailed it! Excellent (85-89): Almost perfect! Good (80-84): Great progress! These celebrations appear when you're doing well to keep you motivated."
+      "answer": "On Fire: You're matching the moves beautifully! Nice Moves: Looking good, keep that energy! Keep It Up: You're getting the hang of it! These celebrations appear to keep you motivated and celebrate your progress."
     },
     {
       "category": "usage",

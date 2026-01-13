@@ -19,12 +19,12 @@ You are great Webdeveloper, great planner, designer, create a dance training web
 │ UI Layer (React Components)                     │
 │ ├─ CameraPanel (webcam + skeleton overlay)      │
 │ ├─ TeacherVideoPanel (local MP4 playback)       │
-│ ├─ FeedbackOverlay (live score + hints)         │
+│ ├─ FeedbackOverlay (live encouragement)         │
 │                                                 │
 │ AI Processing                                   │
 │ ├─ MediaPipe Pose (33 landmarks)                │
 │ ├─ PoseNormalizer (angles, scaling)             │
-│ ├─ ScoringEngine (comparison + hints)           │
+│ ├─ ScoringEngine (internal comparison logic)    │
 │                                                 │
 │ Privacy-First Design                            │
 │ ├─ All processing runs locally in browser       │
@@ -41,15 +41,15 @@ src/
 │   ├── FileVideoLoader.tsx    # Drag-drop video upload
 │   ├── CameraPanel.tsx        # Webcam with skeleton overlay
 │   ├── TeacherVideoPanel.tsx  # Teacher video player with controls
-│   ├── FeedbackOverlay.tsx    # Real-time score display
+│   ├── FeedbackOverlay.tsx    # Real-time encouragement & celebrations
 │   ├── CalibrationView.tsx    # Pre-session position checks
-│   └── SessionReport.tsx      # Post-session analysis
+│   └── SessionReport.tsx      # Post-session celebration & highlights
 ├── hooks/                # Custom React hooks
 │   ├── useWebcam.ts           # Webcam device management
 │   └── usePoseEstimation.ts   # MediaPipe integration
 ├── engines/              # Core logic
 │   ├── PoseNormalizer.ts      # Pose processing & angle calculation
-│   └── ScoringEngine.ts       # Pose comparison & scoring
+│   └── ScoringEngine.ts       # Pose comparison (internal use only)
 ├── types/                # TypeScript definitions
 │   └── pose.ts                # Pose, Score, Session interfaces
 ├── App.tsx               # Main application component
@@ -70,9 +70,10 @@ src/
 - Draws skeleton overlay (red #ff6b6b) on teacher poses
 
 ### FeedbackOverlay
-- Shows real-time score (0-100)
-- Body part breakdown (arms, legs, torso)
-- Actionable hints for improvement
+- Shows encouraging messages ("You're on fire!", "Nice moves!")
+- Warmth bar (visual gradient, no numbers)
+- Celebration effects (confetti, badges) for great moments
+- Gentle tips when needed ("Try flowing your arms more freely")
 
 ### CalibrationView
 - Validates user position before training
@@ -80,36 +81,46 @@ src/
 - Auto-starts session when all checks pass
 
 ### SessionReport
-- Letter grade (A+ to F)
-- Performance breakdown by body part
-- Score timeline visualization
-- Weak section identification
+- Celebration header based on session mood (🎉 Great Session!, 🌟 Awesome Session!)
+- Highlights of what went well ("Your arms were really flowing!")
+- Friendly suggestions for next time ("Try matching the arm movements")
+- Visual dance journey timeline (colorful bars, no numbers)
+- Session duration display
 - JSON export functionality
 
-## Scoring System
+## Feedback System (Confidence-First Design)
 
-### Joint Angles Tracked
-- **Arms**: Shoulder angles, elbow angles (left/right)
-- **Legs**: Hip angles, knee angles (left/right)
-- **Torso**: Shoulder-hip alignment
+### Philosophy
+- **No numeric scores shown to users** - dancing should be fun, not judged
+- **Encouragement over evaluation** - focus on positive reinforcement
+- **Internal scoring** is used only to determine which encouragement to show
 
-### Weights
-- Arms: 35%
-- Legs: 40%
-- Torso: 25%
+### Real-time Feedback
+- Dynamic encouragement messages rotate to avoid repetition
+- Warmth bar provides visual feedback without numbers
+- Celebration effects (confetti, badges) trigger for high-confidence moments
+- Gentle tips appear only when helpful, framed positively
 
-### Score Calculation
-1. Extract joint angles from both dancer and teacher
-2. Calculate angle differences for each joint
-3. Weight by confidence and body part importance
-4. Generate 0-100 score with hints for lowest-scoring area
+### Post-Session Experience
+- Highlights what went well (best body parts)
+- Friendly suggestions for improvement (framed as "next time try...")
+- Visual journey timeline shows energy and flow
+- Session duration and overall mood celebration
+
+### Internal Scoring (Not Shown to Users)
+The app internally tracks:
+- **Arms**: Shoulder angles, elbow angles (weight: 35%)
+- **Legs**: Hip angles, knee angles (weight: 40%)
+- **Torso**: Shoulder-hip alignment (weight: 25%)
+
+These scores determine which encouragement messages and tips to show, but are never displayed as numbers or grades.
 
 ## User Flow
 
 1. **Setup**: Upload teacher video, select camera, configure options
 2. **Calibration**: Position check (body in frame, lighting, distance)
-3. **Training**: Side-by-side view with real-time scoring
-4. **Report**: Session analysis with grades and weak sections
+3. **Training**: Side-by-side view with real-time encouragement & celebrations
+4. **Celebration**: Session highlights, friendly tips, and dance journey visualization
 
 ## Development Commands
 
@@ -137,7 +148,9 @@ npm run preview  # Preview production build
 
 - [ ] Teacher pose pre-extraction for faster comparison
 - [ ] Dynamic Time Warping for timing alignment
-- [ ] Loop weak sections for focused practice
+- [ ] Replay highlights or challenging moments for focused practice
 - [ ] WebGPU acceleration for better performance
 - [ ] IndexedDB caching for teacher poses
-- [ ] Cloud sync for progress tracking (opt-in)
+- [ ] Progress journey tracking (opt-in, privacy-first)
+- [ ] Custom encouragement message themes
+- [ ] Multi-language support expansion

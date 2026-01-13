@@ -11,6 +11,7 @@ export interface PoseFrame {
   keypoints: Keypoint[];
   angles: number[];
   confidence: number[];
+  isMoving?: boolean;
 }
 
 export interface NormalizedPose {

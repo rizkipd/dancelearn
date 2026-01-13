@@ -1,8 +1,72 @@
 {
+  "encouragement": {
+    "onFire": [
+      "Kamu luar biasa!",
+      "Gerakan hebat!",
+      "Kamu bisa!",
+      "Vibes sempurna!",
+      "Mantap!",
+      "Luar biasa!",
+      "Kamu bersinar!"
+    ],
+    "niceMoves": [
+      "Keren!",
+      "Pertahankan energinya!",
+      "Ritme bagus!",
+      "Kamu mulai paham!",
+      "Rasakan iramanya!",
+      "Gerakan mulus!",
+      "Begitu!"
+    ],
+    "keepItUp": [
+      "Terus lanjutkan!",
+      "Kamu hebat!",
+      "Hampir sampai!",
+      "Usaha bagus!",
+      "Tetap semangat!",
+      "Terus bergerak!",
+      "Kamu pasti bisa!"
+    ],
+    "dancing": [
+      "Terus bergerak saja!",
+      "Rasakan musiknya!",
+      "Kamu sedang menari!",
+      "Setiap gerakan berarti!",
+      "Nikmati saja!",
+      "Biarkan mengalir!",
+      "Nikmati iramanya!"
+    ]
+  },
+  "tips": {
+    "arms": "Coba gerakkan lenganmu lebih bebas",
+    "legs": "Rasakan ritme di kakimu",
+    "torso": "Biarkan tubuhmu bergoyang mengikuti irama"
+  },
+  "session": {
+    "greatSession": "Sesi Hebat!",
+    "awesomeSession": "Sesi Luar Biasa!",
+    "funSession": "Sesi Menyenangkan!",
+    "youDanced": "Kamu menari selama {{duration}}!",
+    "keptMoving": "Kamu terus bergerak sepanjang waktu!",
+    "highlights": "Sorotan",
+    "nextTimeTry": "Coba Lain Kali",
+    "armsFlowing": "Lenganmu mengalir dengan baik!",
+    "greatEnergy": "Energi hebat sepanjang waktu!",
+    "stayedWithBeat": "Kamu mengikuti irama!",
+    "niceFootwork": "Gerakan kaki bagus!",
+    "goodBodyMovement": "Gerakan tubuh bagus!",
+    "focusOnLegs": "Fokus pada gerakan kakimu",
+    "watchFootwork": "Perhatikan gerakan kaki guru",
+    "tryArmMovements": "Coba ikuti gerakan lengan",
+    "feelTheRhythm": "Rasakan ritme di tubuhmu"
+  },
   "celebration": {
     "perfect": "SEMPURNA!",
     "excellent": "LUAR BIASA!",
-    "good": "BAGUS!"
+    "good": "BAGUS!",
+    "onFire": "KEREN BANGET!",
+    "niceMoves": "GERAKAN KEREN!",
+    "keepItUp": "TERUS SEMANGAT!"
   },
   "timing": {
     "behind": "Terlambat",

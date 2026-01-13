@@ -1,8 +1,72 @@
 {
+  "encouragement": {
+    "onFire": [
+      "You're on fire!",
+      "Amazing moves!",
+      "You've got this!",
+      "Perfect vibe!",
+      "Nailed it!",
+      "Incredible!",
+      "You're glowing!"
+    ],
+    "niceMoves": [
+      "Looking good!",
+      "Keep that energy!",
+      "Nice rhythm!",
+      "You're getting it!",
+      "Feel the beat!",
+      "Smooth moves!",
+      "That's it!"
+    ],
+    "keepItUp": [
+      "Keep going!",
+      "You're doing great!",
+      "Almost there!",
+      "Nice effort!",
+      "Stay with it!",
+      "Keep moving!",
+      "You got this!"
+    ],
+    "dancing": [
+      "Just keep moving!",
+      "Feel the music!",
+      "You're dancing!",
+      "Every move counts!",
+      "Have fun with it!",
+      "Let it flow!",
+      "Enjoy the rhythm!"
+    ]
+  },
+  "tips": {
+    "arms": "Try flowing your arms more freely",
+    "legs": "Feel the rhythm in your feet",
+    "torso": "Let your body sway with the beat"
+  },
+  "session": {
+    "greatSession": "Great Session!",
+    "awesomeSession": "Awesome Session!",
+    "funSession": "Fun Session!",
+    "youDanced": "You danced for {{duration}}!",
+    "keptMoving": "You kept moving the whole time!",
+    "highlights": "Highlights",
+    "nextTimeTry": "Next Time Try",
+    "armsFlowing": "Your arms were really flowing!",
+    "greatEnergy": "Great energy throughout!",
+    "stayedWithBeat": "You stayed with the beat!",
+    "niceFootwork": "Nice footwork!",
+    "goodBodyMovement": "Good body movement!",
+    "focusOnLegs": "Focus on your leg movements",
+    "watchFootwork": "Watch the teacher's footwork",
+    "tryArmMovements": "Try matching the arm movements",
+    "feelTheRhythm": "Feel the rhythm in your body"
+  },
   "celebration": {
     "perfect": "PERFECT!",
     "excellent": "EXCELLENT!",
-    "good": "GOOD!"
+    "good": "GOOD!",
+    "onFire": "ON FIRE!",
+    "niceMoves": "NICE MOVES!",
+    "keepItUp": "KEEP IT UP!"
   },
   "timing": {
     "behind": "Behind",

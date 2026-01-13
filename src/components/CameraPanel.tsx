@@ -60,7 +60,7 @@ export function CameraPanel({
   videoRef,
   isActive,
   mirrored = true,
-  showSkeleton = true,
+  showSkeleton = false,
   keypoints,
   onVideoReady,
   score,

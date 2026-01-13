@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-export type CelebrationType = 'perfect' | 'excellent' | 'good' | null;
+// New celebration types: more encouraging, triggers more often
+export type CelebrationType = 'onFire' | 'niceMoves' | 'keepItUp' | 'dancing' | null;
 
 interface UseCelebrationOptions {
-  perfectThreshold?: number;
-  excellentThreshold?: number;
-  goodThreshold?: number;
+  onFireThreshold?: number;
+  niceMovesThreshold?: number;
+  keepItUpThreshold?: number;
   cooldownMs?: number;
   soundEnabled?: boolean;
   effectsEnabled?: boolean;
@@ -28,9 +29,10 @@ if (typeof window !== 'undefined') {
 
 export function useCelebration(options: UseCelebrationOptions = {}): UseCelebrationReturn {
   const {
-    perfectThreshold = 90,
-    excellentThreshold = 85,
-    goodThreshold = 80,
+    // Lowered thresholds for more frequent encouragement
+    onFireThreshold = 75,      // was 90 (perfect)
+    niceMovesThreshold = 60,   // was 85 (excellent)
+    keepItUpThreshold = 45,    // was 80 (good)
     cooldownMs = 2000,
     soundEnabled = true,
     effectsEnabled = true,
@@ -60,7 +62,8 @@ export function useCelebration(options: UseCelebrationOptions = {}): UseCelebrat
     setCelebrationType(type);
     setIsActive(true);
 
-    if (type === 'perfect' || type === 'excellent') {
+    // Play sound for top celebrations
+    if (type === 'onFire' || type === 'niceMoves') {
       playSound();
     }
 
@@ -75,14 +78,15 @@ export function useCelebration(options: UseCelebrationOptions = {}): UseCelebrat
   }, [effectsEnabled, cooldownMs, playSound]);
 
   const checkScore = useCallback((score: number) => {
-    if (score >= perfectThreshold) {
-      triggerCelebration('perfect');
-    } else if (score >= excellentThreshold) {
-      triggerCelebration('excellent');
-    } else if (score >= goodThreshold) {
-      triggerCelebration('good');
+    if (score >= onFireThreshold) {
+      triggerCelebration('onFire');
+    } else if (score >= niceMovesThreshold) {
+      triggerCelebration('niceMoves');
+    } else if (score >= keepItUpThreshold) {
+      triggerCelebration('keepItUp');
     }
-  }, [perfectThreshold, excellentThreshold, goodThreshold, triggerCelebration]);
+    // 'dancing' is always active (shown in UI, not triggered here)
+  }, [onFireThreshold, niceMovesThreshold, keepItUpThreshold, triggerCelebration]);
 
   const clearCelebration = useCallback(() => {
     setIsActive(false);
