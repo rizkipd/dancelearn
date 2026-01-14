@@ -2,12 +2,19 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { SEO } from '../components/SEO';
 
 export function AboutPage() {
   const { t } = useTranslation(['about', 'common']);
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="About DanceTwin"
+        description="DanceTwin is an AI-powered dance training app that helps you learn any dance by practicing side-by-side with videos. Privacy-first, browser-based."
+        canonical="https://www.dancetwin.com/about"
+      />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
@@ -146,5 +153,6 @@ export function AboutPage() {
 
       <Footer />
     </div>
+    </>
   );
 }

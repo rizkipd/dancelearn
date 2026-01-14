@@ -52,6 +52,11 @@
     },
     {
       "category": "usage",
+      "question": "Can I slow down the dance video to learn moves?",
+      "answer": "Yes! DanceTwin supports playback speed from 0.5x (slow motion) to 1.5x (faster). You can adjust the speed anytime during practice to match your learning pace. Slower speeds are perfect for mastering complex choreography."
+    },
+    {
+      "category": "usage",
       "question": "What video formats are supported?",
       "answer": "We support MP4, WebM, and MOV video formats. For best results, use videos with clear, full-body movements and good lighting."
     },

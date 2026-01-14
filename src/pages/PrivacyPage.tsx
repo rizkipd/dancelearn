@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { SEO } from '../components/SEO';
 
 export function PrivacyPage() {
   const { t } = useTranslation(['privacy', 'common']);
@@ -10,7 +11,14 @@ export function PrivacyPage() {
   const localStorageItems = t('sections.localStorage.items', { returnObjects: true }) as string[];
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="Privacy Policy"
+        description="DanceTwin privacy policy. All AI processing runs locally in your browser. No video uploads, no tracking, 100% private."
+        canonical="https://www.dancetwin.com/privacy"
+        noindex={true}
+      />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
@@ -181,5 +189,6 @@ export function PrivacyPage() {
 
       <Footer />
     </div>
+    </>
   );
 }

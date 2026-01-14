@@ -13,6 +13,7 @@ import { normalizePose } from '../engines/PoseNormalizer';
 import { compareFrames, SessionScorer } from '../engines/ScoringEngine';
 import { ScoreResult, SessionResult, PoseFrame } from '../types/pose';
 import { PoseBuffer } from '../utils/PoseBuffer';
+import { SEO } from '../components/SEO';
 
 type TrainingState = 'calibration' | 'training' | 'report';
 
@@ -229,7 +230,14 @@ export function TrainingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="Training Session"
+        description="Dance training in progress"
+        canonical="https://www.dancetwin.com/training"
+        noindex={true}
+      />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
@@ -321,5 +329,6 @@ export function TrainingPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

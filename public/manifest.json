@@ -1,0 +1,27 @@
+{
+  "name": "DanceTwin - AI Dance Training",
+  "short_name": "DanceTwin",
+  "description": "Learn dance moves with AI-powered real-time feedback. Practice side-by-side with any dance video.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#8b5cf6",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "/DanceTwin-Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/DanceTwin-Logo-Transparent.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "fitness", "entertainment"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

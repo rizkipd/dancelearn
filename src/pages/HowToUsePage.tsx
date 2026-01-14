@@ -2,9 +2,70 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { SEO } from '../components/SEO';
+import { StructuredData } from '../components/StructuredData';
 
 export function HowToUsePage() {
   const { t } = useTranslation(['howto', 'common']);
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Use DanceTwin for Dance Training",
+    "description": "Step-by-step guide to learning dance with adjustable playback speed and real-time AI feedback",
+    "totalTime": "PT5M",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Upload Dance Video",
+        "text": "Choose any dance video from your device (MP4, WebM, or MOV format). Works with any dance style.",
+        "image": "https://www.dancetwin.com/DanceTwin-Logo.png",
+        "url": "https://www.dancetwin.com/how-to-use#upload"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Configure Settings",
+        "text": "Enable mirror mode for easier following. Adjust playback speed (0.5x to 1.5x) - slow down for learning, speed up for challenge.",
+        "image": "https://www.dancetwin.com/DanceTwin-Logo.png",
+        "url": "https://www.dancetwin.com/how-to-use#configure",
+        "tip": {
+          "@type": "HowToTip",
+          "text": "Start at 0.5x speed to learn complex moves, then gradually increase as you improve"
+        }
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Position Your Camera",
+        "text": "Stand 2-3 meters from camera with full body visible and good lighting. The app will check your position automatically.",
+        "image": "https://www.dancetwin.com/DanceTwin-Logo.png",
+        "url": "https://www.dancetwin.com/how-to-use#calibrate"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Practice Side-by-Side",
+        "text": "Dance alongside the teacher video at your chosen speed. Get real-time encouragement messages without judgmental scores.",
+        "image": "https://www.dancetwin.com/DanceTwin-Logo.png",
+        "url": "https://www.dancetwin.com/how-to-use#practice"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Review Your Session",
+        "text": "View session highlights, duration, and friendly tips for next time. Export your session data if desired.",
+        "image": "https://www.dancetwin.com/DanceTwin-Logo.png",
+        "url": "https://www.dancetwin.com/how-to-use#review"
+      }
+    ],
+    "tool": [
+      {
+        "@type": "HowToTool",
+        "name": "Webcam"
+      },
+      {
+        "@type": "HowToTool",
+        "name": "Dance video file (MP4, WebM, or MOV)"
+      }
+    ]
+  };
 
   const steps = [
     {
@@ -66,7 +127,14 @@ export function HowToUsePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="How to Use DanceTwin | Step-by-Step Guide"
+        description="Learn how to use DanceTwin: Upload videos, adjust playback speed (0.5x-1.5x), position camera, enable mirror mode, and get real-time feedback. Master any dance move at your own pace."
+        canonical="https://www.dancetwin.com/how-to-use"
+      />
+      <StructuredData data={howToSchema} />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
@@ -192,5 +260,6 @@ export function HowToUsePage() {
 
       <Footer />
     </div>
+    </>
   );
 }

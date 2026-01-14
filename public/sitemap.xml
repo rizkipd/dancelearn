@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://www.dancetwin.com/</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.dancetwin.com/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.dancetwin.com/?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.dancetwin.com/?lang=id" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.dancetwin.com/?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://www.dancetwin.com/?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.dancetwin.com/" />
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://www.dancetwin.com/about</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.dancetwin.com/about" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.dancetwin.com/about?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.dancetwin.com/about?lang=id" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.dancetwin.com/about?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://www.dancetwin.com/about?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.dancetwin.com/about" />
+  </url>
+
+  <!-- How to Use Page -->
+  <url>
+    <loc>https://www.dancetwin.com/how-to-use</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.dancetwin.com/how-to-use" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.dancetwin.com/how-to-use?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.dancetwin.com/how-to-use?lang=id" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.dancetwin.com/how-to-use?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://www.dancetwin.com/how-to-use?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.dancetwin.com/how-to-use" />
+  </url>
+
+  <!-- FAQ Page -->
+  <url>
+    <loc>https://www.dancetwin.com/faq</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.dancetwin.com/faq" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.dancetwin.com/faq?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.dancetwin.com/faq?lang=id" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.dancetwin.com/faq?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://www.dancetwin.com/faq?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.dancetwin.com/faq" />
+  </url>
+
+  <!-- Privacy Page -->
+  <url>
+    <loc>https://www.dancetwin.com/privacy</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.dancetwin.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.dancetwin.com/privacy?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.dancetwin.com/privacy?lang=id" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.dancetwin.com/privacy?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://www.dancetwin.com/privacy?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.dancetwin.com/privacy" />
+  </url>
+
+</urlset>

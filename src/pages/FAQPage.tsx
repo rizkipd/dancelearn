@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { SEO } from '../components/SEO';
+import { StructuredData } from '../components/StructuredData';
 
 interface FAQItem {
   question: string;
@@ -49,8 +51,70 @@ export function FAQPage() {
     ? faqItems
     : faqItems.filter(f => f.category === activeCategory);
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is my video uploaded to a server?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No! All processing happens locally in your browser using WebAssembly. Your camera feed is never recorded or sent to any server. DanceTwin is 100% private and runs entirely in your browser."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I slow down the dance video to learn moves?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! DanceTwin supports playback speed from 0.5x (slow motion) to 1.5x (faster). You can adjust the speed anytime during practice to match your learning pace. Slower speeds are perfect for mastering complex choreography."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the AI feedback system work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "DanceTwin uses AI to compare your movements with the teacher video in real-time. Instead of showing scores or grades, it provides encouraging messages like 'You're on fire!' or 'Nice moves!' to keep you motivated and having fun."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is mirror mode and when should I use it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mirror mode horizontally flips your camera feed, making it easier to follow along when the teacher is facing you. Enable it in the settings before starting your practice session. Most users find mirror mode more intuitive for learning."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What video formats are supported?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "DanceTwin supports MP4, WebM, and MOV video formats. For best results, use videos with clear full-body movements and good lighting. You can upload any dance video from your device."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to install any software?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No installation needed! DanceTwin runs entirely in your web browser. Just visit the website, upload a video, and start dancing. Works on Chrome, Edge, Firefox, and Safari (latest versions recommended)."
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="FAQ - Frequently Asked Questions"
+        description="Common questions about DanceTwin: privacy, browser compatibility, how the AI works, and more. Get answers to your dance training questions."
+        canonical="https://www.dancetwin.com/faq"
+      />
+      <StructuredData data={faqSchema} />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="bg-orb bg-orb-1" />
@@ -154,5 +218,6 @@ export function FAQPage() {
 
       <Footer />
     </div>
+    </>
   );
 }

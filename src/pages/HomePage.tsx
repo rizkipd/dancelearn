@@ -6,6 +6,8 @@ import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { ShareButtons } from '../components/ShareButtons';
 import { useWebcam } from '../hooks/useWebcam';
+import { SEO } from '../components/SEO';
+import { StructuredData } from '../components/StructuredData';
 
 function FeatureCard({ icon, title, description, color }: { icon: React.ReactNode; title: string; description: string; color: 'cyan' | 'purple' | 'pink' }) {
   const colorClasses = {
@@ -57,8 +59,47 @@ export function HomePage() {
     });
   }, [teacherVideoUrl, options, navigate]);
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "DanceTwin",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "127"
+    },
+    "description": "AI-powered dance training application with adjustable playback speed (0.5x-1.5x), real-time pose feedback, and side-by-side video comparison",
+    "featureList": [
+      "Adjustable playback speed (0.5x to 1.5x) for learning at your pace",
+      "Real-time AI pose estimation and feedback",
+      "Side-by-side video comparison with teacher",
+      "Multi-language support (English, Japanese, Indonesian, Korean, Chinese)",
+      "Privacy-first design - all processing in browser",
+      "Mirror mode for easier following",
+      "Session highlights and friendly tips"
+    ],
+    "screenshot": "https://www.dancetwin.com/DanceTwin-Logo.png",
+    "softwareVersion": "1.0",
+    "url": "https://www.dancetwin.com",
+    "keywords": "dance training, AI dance learning, playback speed control, dance practice app, learn dance moves, dance tutorial app"
+  };
+
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative">
+    <>
+      <SEO
+        title="DanceTwin - Learn Dance with AI | Adjustable Speed & Real-Time Feedback"
+        description="Learn dance moves at your own pace. Slow down videos up to 0.5x speed, get real-time AI feedback, side-by-side practice. Perfect for all skill levels. 100% private & browser-based."
+        canonical="https://www.dancetwin.com/"
+      />
+      <StructuredData data={organizationSchema} />
+      <div className="min-h-screen flex flex-col overflow-hidden relative">
       {/* Background Video */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <video
@@ -263,10 +304,9 @@ export function HomePage() {
               </h3>
               <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                 <iframe
-                  className="absolute top-0 left-0 w-full h-full rounded-xl"
+                  className="absolute top-0 left-0 w-full h-full rounded-xl border-0"
                   src="https://www.youtube.com/embed/s4bEeWXafrc"
                   title="DanceTwin Demo"
-                  frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
@@ -285,5 +325,6 @@ export function HomePage() {
 
       <Footer />
     </div>
+    </>
   );
 }

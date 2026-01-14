@@ -52,6 +52,11 @@
     },
     {
       "category": "usage",
+      "question": "Bisakah saya memperlambat video tari untuk belajar?",
+      "answer": "Ya! DanceTwin mendukung kecepatan pemutaran dari 0.5x (gerakan lambat) hingga 1.5x (lebih cepat). Anda dapat menyesuaikan kecepatan kapan saja selama latihan agar sesuai dengan kecepatan belajar Anda. Kecepatan lambat sangat cocok untuk menguasai koreografi yang rumit."
+    },
+    {
+      "category": "usage",
       "question": "Format video apa yang didukung?",
       "answer": "Kami mendukung format video MP4, WebM, dan MOV. Untuk hasil terbaik, gunakan video dengan gerakan seluruh tubuh yang jelas dan pencahayaan yang baik."
     },
